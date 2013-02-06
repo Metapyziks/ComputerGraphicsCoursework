@@ -10,13 +10,10 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework
 {
-    class TestShader : ShaderProgram3D
+    class WaterShader : ShaderProgram3D
     {
-        private Color4 _colour = Color4.White;
+        private Color4 _colour = new Color4(92, 191, 240, 127);
         private int _colourLoc = -1;
-
-        private Matrix4 _trans = Matrix4.Identity;
-        private int _transLoc = -1;
 
         public Color4 Colour
         {
@@ -30,31 +27,33 @@ namespace ComputerGraphicsCoursework
             }
         }
 
-        public Matrix4 Transform
-        {
-            get { return _trans; }
-            set
-            {
-                _trans = value;
-                if (_colourLoc != -1) {
-                    GL.UniformMatrix4(_transLoc, false, ref value);
-                }
-            }
-        }
-
-        public TestShader()
+        public WaterShader()
         {
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, false);
             vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
-            vert.AddUniform(ShaderVarType.Mat4, "transform");
+            vert.AddUniform(ShaderVarType.Sampler2D, "wavemap");
             vert.AddAttribute(ShaderVarType.Vec3, "in_vertex");
-            vert.AddAttribute(ShaderVarType.Vec3, "in_normal");
             vert.AddVarying(ShaderVarType.Vec3, "var_normal");
             vert.Logic = @"
                 void main(void)
                 {
-                    var_normal = (transform * vec4(in_normal, 0.0)).xyz;
-                    gl_Position = view_matrix * (transform * vec4(in_vertex, 1.0));
+                    const ivec2 offsets[] = ivec2[4] (
+                        ivec2(-1, 0), ivec2(0, -1),
+                        ivec2(1, 0), ivec2(0, 1)
+                    );
+
+                    vec2 tex_pos = vec2((in_vertex.x + 32.0) / 64.0, (in_vertex.z + 32.0) / 64.0);
+                    float wave = texture(wavemap, tex_pos).a;
+                    float neighbours[] = float[4] (
+                        textureOffset(wavemap, tex_pos, offsets[0]).a,
+                        textureOffset(wavemap, tex_pos, offsets[1]).a,
+                        textureOffset(wavemap, tex_pos, offsets[2]).a,
+                        textureOffset(wavemap, tex_pos, offsets[3]).a
+                    );
+                    vec3 horz = normalize(vec3(2.0, 0.0, neighbours[2] - neighbours[0]));
+                    vec3 vert = normalize(vec3(0.0, 2.0, neighbours[3] - neighbours[1]));
+                    var_normal = cross(horz, vert);
+                    gl_Position = view_matrix * vec4(in_vertex.x, in_vertex.y + wave, in_vertex.z, 1.0);
                 }
             ";
 
@@ -72,7 +71,7 @@ namespace ComputerGraphicsCoursework
             VertexSource = vert.Generate(GL3);
             FragmentSource = frag.Generate(GL3);
 
-            BeginMode = BeginMode.Triangles;
+            BeginMode = BeginMode.Quads;
 
             Create();
         }
@@ -82,33 +81,32 @@ namespace ComputerGraphicsCoursework
             base.OnCreate();
 
             AddAttribute("in_vertex", 3);
-            AddAttribute("in_normal", 3);
+            AddTexture("wavemap", TextureUnit.Texture1);
 
             _colourLoc = GL.GetUniformLocation(Program, "colour");
-            _transLoc = GL.GetUniformLocation(Program, "transform");
 
             GL.Uniform4(_colourLoc, Colour);
-            GL.UniformMatrix4(_transLoc, false, ref _trans);
         }
 
         protected override void OnStartBatch()
         {
             base.OnStartBatch();
 
-            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.Blend); GL.Enable(EnableCap.CullFace);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.CullFace(CullFaceMode.Front);
         }
 
         protected override void OnEndBatch()
         {
             base.OnEndBatch();
 
-            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.DepthTest); GL.Disable(EnableCap.Blend); GL.Disable(EnableCap.CullFace);
         }
 
-        public void Render(Vector3 vert, Vector3 norm)
+        public void Render(Vector3 vert)
         {
             GL.VertexAttrib3(Attributes[0].Location, vert);
-            GL.VertexAttrib3(Attributes[1].Location, norm);
         }
     }
 }

@@ -5,7 +5,7 @@ using OpenTK.Graphics;
 
 namespace ComputerGraphicsCoursework
 {
-    public class Sprite
+    public class Sprite : IRenderable<SpriteShader>
     {
         internal float[] Vertices
         {

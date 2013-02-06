@@ -26,6 +26,9 @@ namespace ComputerGraphicsCoursework
         private TestShader _testShader;
         private Model _testModel;
 
+        private WaterShader _waterShader;
+        private Water _water;
+
         private Stopwatch _timer;
         private double _lastFPSUpdate;
         private int _frameCount;
@@ -61,10 +64,15 @@ namespace ComputerGraphicsCoursework
             _camera.Pitch = 0.0f;
             _camera.Yaw = 0.0f;
             _camera.Position = new Vector3(-8f, 0f, 0f);
+            _camera.UpdateViewMatrix();
 
             _testShader = new TestShader();
             _testShader.Camera = _camera;
             _testModel = Model.FromFile("../../res/boat.obj");
+
+            _waterShader = new WaterShader();
+            _waterShader.Camera = _camera;
+            _water = new Water(64f);
 
             _captureMouse = true;
 
@@ -99,6 +107,10 @@ namespace ComputerGraphicsCoursework
             _testModel.Render(_testShader);
             _testShader.EndBatch();
 
+            _waterShader.StartBatch();
+            _water.Render(_waterShader);
+            _waterShader.EndBatch();
+
             SwapBuffers();
             ++_frameCount;
         }
@@ -108,7 +120,7 @@ namespace ComputerGraphicsCoursework
             base.OnUpdateFrame(e);
 
             if (_timer.Elapsed.TotalSeconds - _lastFPSUpdate > 0.5) {
-                Title = string.Format("FPS: {0}", _frameCount / (_timer.Elapsed.TotalSeconds - _lastFPSUpdate));
+                Title = string.Format("FPS: {0:F2}", _frameCount / (_timer.Elapsed.TotalSeconds - _lastFPSUpdate));
                 _lastFPSUpdate = _timer.Elapsed.TotalSeconds;
                 _frameCount = 0;
             }

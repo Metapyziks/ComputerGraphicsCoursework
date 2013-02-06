@@ -10,7 +10,7 @@ using OpenTK;
 
 namespace ComputerGraphicsCoursework
 {
-    class Model
+    class Model : IRenderable<TestShader>
     {
         private enum VertData : byte
         {

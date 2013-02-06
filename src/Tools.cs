@@ -12,5 +12,10 @@ namespace ComputerGraphicsCoursework
         {
             return val < min ? min : val > max ? max : val;
         }
+
+        public static double Clamp(double val, double min, double max)
+        {
+            return val < min ? min : val > max ? max : val;
+        }
     }
 }
