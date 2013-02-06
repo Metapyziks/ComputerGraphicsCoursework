@@ -95,6 +95,18 @@ namespace ComputerGraphicsCoursework
             }
         }
 
+        public Vector3 ViewVector
+        {
+            get
+            {
+                float cosYaw = (float) Math.Cos(Yaw);
+                float sinYaw = (float) Math.Sin(Yaw);
+                float cosPitch = (float) Math.Cos(Pitch);
+                float sinPitch = (float) Math.Sin(Pitch);
+                return new Vector3(sinYaw * cosPitch, sinPitch, cosYaw * cosPitch);
+            }
+        }
+
         public Camera(int width, int height, float scale = 1.0f)
         {
             Width = width;

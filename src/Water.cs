@@ -42,10 +42,12 @@ namespace ComputerGraphicsCoursework
 
             _vb.SetData(data);
 
+            Random rand = new Random();
+
             _wavemap = new LumTexture2D(64, 64);
             for (int x = 0; x < 64; ++x) {
                 for (int y = 0; y < 64; ++y) {
-                    _wavemap[x, y] = (byte) (Tools.Clamp(Math.Cos(x / 8.0 * Math.PI) * Math.Cos(y / 8.0 * Math.PI) / 2.0 + 0.5, 0.0, 1.0) * 255);
+                    _wavemap[x, y] = (byte) rand.Next(0, 256);
                 }
             }
         }

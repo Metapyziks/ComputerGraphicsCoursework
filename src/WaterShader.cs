@@ -12,8 +12,10 @@ namespace ComputerGraphicsCoursework
 {
     class WaterShader : ShaderProgram3D
     {
-        private Color4 _colour = new Color4(92, 191, 240, 127);
+        private Color4 _colour = new Color4(48, 92, 120, 127);
         private int _colourLoc = -1;
+
+        private int _viewVectorLoc = -1;
 
         public Color4 Colour
         {
@@ -59,12 +61,13 @@ namespace ComputerGraphicsCoursework
 
             ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false);
             frag.AddUniform(ShaderVarType.Vec4, "colour");
+            frag.AddUniform(ShaderVarType.Vec3, "view_vector");
             frag.AddVarying(ShaderVarType.Vec3, "var_normal");
             frag.Logic = @"
                 void main(void)
                 {
                     const vec3 light = normalize(vec3(-3, -4, -8));
-                    out_frag_colour = vec4(colour.rgb * (3.0 + dot(light, var_normal)) * 0.25, colour.a);
+                    out_frag_colour = vec4(colour.rgb + (vec3(0.3, 0.7, 0.9) - colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 3.4), colour.a);
                 }
             ";
 
@@ -84,6 +87,7 @@ namespace ComputerGraphicsCoursework
             AddTexture("wavemap", TextureUnit.Texture1);
 
             _colourLoc = GL.GetUniformLocation(Program, "colour");
+            _viewVectorLoc = GL.GetUniformLocation(Program, "view_vector");
 
             GL.Uniform4(_colourLoc, Colour);
         }
@@ -91,6 +95,10 @@ namespace ComputerGraphicsCoursework
         protected override void OnStartBatch()
         {
             base.OnStartBatch();
+
+            if (Camera != null) {
+                GL.Uniform3(_viewVectorLoc, Camera.ViewVector);
+            }
 
             GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.Blend); GL.Enable(EnableCap.CullFace);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
