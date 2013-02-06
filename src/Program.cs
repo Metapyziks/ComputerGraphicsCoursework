@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using OpenTK;
 using OpenTK.Input;
@@ -25,6 +26,8 @@ namespace ComputerGraphicsCoursework
         private TestShader _testShader;
         private Model _testModel;
 
+        private Stopwatch _timer;
+
         static void Main(String[] args)
         {
             var program = new Program();
@@ -32,7 +35,7 @@ namespace ComputerGraphicsCoursework
             program.Dispose();
         }
 
-        public Program() : base(800, 600)
+        public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 4))
         {
             this.Title = "Computer Graphics Coursework";
 
@@ -42,6 +45,9 @@ namespace ComputerGraphicsCoursework
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            _timer = new Stopwatch();
+            _timer.Start();
 
             _spriteShader = new SpriteShader(Width, Height);
             var texture = new BitmapTexture2D((Bitmap) Bitmap.FromFile("../../res/test.png"));
@@ -130,6 +136,9 @@ namespace ComputerGraphicsCoursework
                     _camera.UpdateViewMatrix();
                 }
             }
+
+            Matrix4 trans = Matrix4.CreateRotationY(MathHelper.Pi * _timer.ElapsedMilliseconds / 1000f);
+            _testShader.Transform = trans;
         }
     }
 }
