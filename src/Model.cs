@@ -135,9 +135,9 @@ namespace ComputerGraphicsCoursework
         public void Render(TestShader shader)
         {
             foreach (var face in _faces) {
-                shader.Render(_verts[face[0, VertData.Vertex]]);
-                shader.Render(_verts[face[1, VertData.Vertex]]);
-                shader.Render(_verts[face[2, VertData.Vertex]]);
+                shader.Render(_verts[face[0, VertData.Vertex]], _norms[face[0, VertData.Normal]]);
+                shader.Render(_verts[face[1, VertData.Vertex]], _norms[face[1, VertData.Normal]]);
+                shader.Render(_verts[face[2, VertData.Vertex]], _norms[face[2, VertData.Normal]]);
             }
         }
     }

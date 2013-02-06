@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using OpenTK;
+using OpenTK.Input;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
@@ -57,25 +58,20 @@ namespace ComputerGraphicsCoursework
 
             _captureMouse = true;
 
-            var ignoreMouse = false;
+            var lastMouseX = Cursor.Position.X;
+            var lastMouseY = Cursor.Position.Y;
             Mouse.Move += (sender, me) => {
-                if (!Focused || !_captureMouse) {
-                    return;
-                }
+                if (!Focused || !_captureMouse) return;
+                if (lastMouseX == Cursor.Position.X && lastMouseY == Cursor.Position.Y) return;
 
-                if (ignoreMouse) {
-                    ignoreMouse = false;
-                    return;
-                }
+                _camera.Yaw += (Cursor.Position.X - lastMouseX) / 360f;
+                _camera.Pitch += (Cursor.Position.Y - lastMouseY) / 360f;
+                _camera.Pitch = Tools.Clamp(_camera.Pitch, -MathHelper.PiOver2, MathHelper.PiOver2);
+                _camera.UpdateViewMatrix();
 
-                Vector2 rot = _camera.Rotation;
-
-                _camera.Yaw += me.XDelta / 180.0f;
-                _camera.Pitch += me.YDelta / 180.0f;
-                _camera.Pitch = Tools.Clamp(rot.X, -MathHelper.PiOver2, (float) MathHelper.PiOver2);
-
-                ignoreMouse = true;
                 Cursor.Position = new System.Drawing.Point(Bounds.Left + Width / 2, Bounds.Top + Height / 2);
+                lastMouseX = Cursor.Position.X;
+                lastMouseY = Cursor.Position.Y;
             };
         }
 
@@ -83,7 +79,7 @@ namespace ComputerGraphicsCoursework
         {
             base.OnRenderFrame(e);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             _spriteShader.Begin();
             _testSprite.Render(_spriteShader);
@@ -100,14 +96,39 @@ namespace ComputerGraphicsCoursework
         {
             base.OnUpdateFrame(e);
             
-            var rot = _camera.Rotation;
-            rot.X += (float) e.Time * MathHelper.PiOver2;
-            _camera.Rotation = rot;
-
             if (!Focused || !_captureMouse) {
                 Cursor.Show();
             } else {
                 Cursor.Hide();
+
+                Vector3 movement = new Vector3(0.0f, 0.0f, 0.0f);
+                float angleY = _camera.Yaw;
+                float angleX = _camera.Pitch;
+
+                if (Keyboard[Key.D]) {
+                    movement.X += (float) Math.Cos(angleY);
+                    movement.Z += (float) Math.Sin(angleY);
+                }
+                if (Keyboard[Key.A]) {
+                    movement.X -= (float) Math.Cos(angleY);
+                    movement.Z -= (float) Math.Sin(angleY);
+                }
+                if (Keyboard[Key.S]) {
+                    movement.Z += (float) Math.Cos(angleY) * (float) Math.Cos(angleX);
+                    movement.Y += (float) Math.Sin(angleX);
+                    movement.X -= (float) Math.Sin(angleY) * (float) Math.Cos(angleX);
+                }
+                if (Keyboard[Key.W]) {
+                    movement.Z -= (float) Math.Cos(angleY) * (float) Math.Cos(angleX);
+                    movement.Y -= (float) Math.Sin(angleX);
+                    movement.X += (float) Math.Sin(angleY) * (float) Math.Cos(angleX);
+                }
+
+                if (movement.Length != 0) {
+                    movement.Normalize();
+                    _camera.Position += movement / 8f;
+                    _camera.UpdateViewMatrix();
+                }
             }
         }
     }

@@ -128,14 +128,11 @@ namespace ComputerGraphicsCoursework
         public void UpdateViewMatrix()
         {
             if (_viewChanged) {
-                float rotOffset = (float) (Math.Tan(Math.PI / 2.0 - _rotation.X) * _position.Y);
-
                 Matrix4 yRot = Matrix4.CreateRotationY(_rotation.Y);
                 Matrix4 xRot = Matrix4.CreateRotationX(_rotation.X);
                 Matrix4 trns = Matrix4.CreateTranslation(-_position);
-                Matrix4 offs = Matrix4.CreateTranslation(0.0f, 0.0f, -rotOffset);
 
-                _viewMatrix = Matrix4.Mult(Matrix4.Mult(Matrix4.Mult(Matrix4.Mult(trns, yRot), offs), xRot), _perspectiveMatrix);
+                _viewMatrix = Matrix4.Mult(Matrix4.Mult(Matrix4.Mult(trns, yRot), xRot), _perspectiveMatrix);
             }
         }
     }
