@@ -118,6 +118,7 @@ namespace ComputerGraphicsCoursework
                 }
             }
 
+            model.UpdateVertices();
             return model;
         }
 
@@ -125,20 +126,39 @@ namespace ComputerGraphicsCoursework
         private readonly Vector3[] _norms;
         private readonly Face[] _faces;
 
+        private VertexBuffer _vb;
+
         private Model(Vector3[] verts, Vector3[] norms, Face[] faces)
         {
             _verts = verts;
             _norms = norms;
             _faces = faces;
+
+            _vb = new VertexBuffer(6);
+        }
+
+        public void UpdateVertices()
+        {
+            float[] raw = new float[6 * 3 * _faces.Length];
+            int i = 0;
+            foreach (var face in _faces) {
+                for (int j = 0; j < 3; ++j) {
+                    raw[i++] = _verts[face[j, VertData.Vertex]].X;
+                    raw[i++] = _verts[face[j, VertData.Vertex]].Y;
+                    raw[i++] = _verts[face[j, VertData.Vertex]].Z;
+                    raw[i++] = _norms[face[j, VertData.Normal]].X;
+                    raw[i++] = _norms[face[j, VertData.Normal]].Y;
+                    raw[i++] = _norms[face[j, VertData.Normal]].Z;
+                }
+            }
+            _vb.SetData(raw);
         }
 
         public void Render(TestShader shader)
         {
-            foreach (var face in _faces) {
-                shader.Render(_verts[face[0, VertData.Vertex]], _norms[face[0, VertData.Normal]]);
-                shader.Render(_verts[face[1, VertData.Vertex]], _norms[face[1, VertData.Normal]]);
-                shader.Render(_verts[face[2, VertData.Vertex]], _norms[face[2, VertData.Normal]]);
-            }
+            _vb.StartBatch(shader);
+            _vb.Render(shader);
+            _vb.EndBatch(shader);
         }
     }
 }

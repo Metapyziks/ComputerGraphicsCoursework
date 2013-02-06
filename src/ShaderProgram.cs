@@ -148,7 +148,7 @@ namespace ComputerGraphicsCoursework
             _sVersionChecked = true;
         }
 
-        public int VertexData_sride;
+        public int VertexDataStride;
         public int VertexDataSize;
         private List<AttributeInfo> _Attributes;
         private Dictionary<String, TextureInfo> _Textures;
@@ -176,7 +176,7 @@ namespace ComputerGraphicsCoursework
             BeginMode = BeginMode.Triangles;
             _Attributes = new List<AttributeInfo>();
             _Textures = new Dictionary<String, TextureInfo>();
-            VertexData_sride = 0;
+            VertexDataStride = 0;
             VertexDataSize = 0;
             started = false;
         }
@@ -247,10 +247,10 @@ namespace ComputerGraphicsCoursework
             if (inputOffset == -1)
                 inputOffset = VertexDataSize;
 
-            AttributeInfo info = new AttributeInfo(this, identifier, size, VertexData_sride,
+            AttributeInfo info = new AttributeInfo(this, identifier, size, VertexDataStride,
                 divisor, inputOffset - VertexDataSize, pointerType, normalize);
 
-            VertexData_sride += info.Length;
+            VertexDataStride += info.Length;
             VertexDataSize += info.Size;
             _Attributes.Add(info);
 
@@ -286,7 +286,7 @@ namespace ComputerGraphicsCoursework
 
             foreach (AttributeInfo info in _Attributes)
                 GL.VertexAttribPointer(info.Location, info.Size,
-                    info.PointerType, info.Normalize, VertexData_sride, info.Offset);
+                    info.PointerType, info.Normalize, VertexDataStride, info.Offset);
 
             ErrorCheck("begin");
             GL.Begin(BeginMode);

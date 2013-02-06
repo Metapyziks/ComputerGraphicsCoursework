@@ -27,6 +27,8 @@ namespace ComputerGraphicsCoursework
         private Model _testModel;
 
         private Stopwatch _timer;
+        private double _lastFPSUpdate;
+        private int _frameCount;
 
         static void Main(String[] args)
         {
@@ -45,6 +47,8 @@ namespace ComputerGraphicsCoursework
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            VSync = VSyncMode.Off;
 
             _timer = new Stopwatch();
             _timer.Start();
@@ -91,17 +95,24 @@ namespace ComputerGraphicsCoursework
             _testSprite.Render(_spriteShader);
             _spriteShader.End();
 
-            _testShader.Begin();
+            _testShader.StartBatch();
             _testModel.Render(_testShader);
-            _testShader.End();
+            _testShader.EndBatch();
 
             SwapBuffers();
+            ++_frameCount;
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-            
+
+            if (_timer.Elapsed.TotalSeconds - _lastFPSUpdate > 0.5) {
+                Title = string.Format("FPS: {0}", _frameCount / (_timer.Elapsed.TotalSeconds - _lastFPSUpdate));
+                _lastFPSUpdate = _timer.Elapsed.TotalSeconds;
+                _frameCount = 0;
+            }
+
             if (!Focused || !_captureMouse) {
                 Cursor.Show();
             } else {
@@ -132,14 +143,14 @@ namespace ComputerGraphicsCoursework
 
                 if (movement.Length != 0) {
                     movement.Normalize();
-                    _camera.Position += movement / 8f;
+                    _camera.Position += movement * (float) (16d * e.Time);
                     _camera.UpdateViewMatrix();
                 }
             }
 
             Matrix4 trans = Matrix4.CreateRotationY(MathHelper.Pi * _timer.ElapsedMilliseconds / 10000f);
             trans = Matrix4.Mult(Matrix4.CreateTranslation(0f, 0f, 16f), trans);
-            trans = Matrix4.Mult(Matrix4.CreateRotationX((float) Math.Sin(Math.PI * _timer.ElapsedMilliseconds / 3000d) * MathHelper.PiOver6), trans);
+            trans = Matrix4.Mult(Matrix4.CreateRotationX((float) Math.Sin(Math.PI * _timer.ElapsedMilliseconds / 1000d) * MathHelper.Pi / 16f), trans);
             _testShader.Transform = trans;
         }
     }
