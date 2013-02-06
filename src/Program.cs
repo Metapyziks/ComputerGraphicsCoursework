@@ -137,7 +137,9 @@ namespace ComputerGraphicsCoursework
                 }
             }
 
-            Matrix4 trans = Matrix4.CreateRotationY(MathHelper.Pi * _timer.ElapsedMilliseconds / 1000f);
+            Matrix4 trans = Matrix4.CreateRotationY(MathHelper.Pi * _timer.ElapsedMilliseconds / 10000f);
+            trans = Matrix4.Mult(Matrix4.CreateTranslation(0f, 0f, 16f), trans);
+            trans = Matrix4.Mult(Matrix4.CreateRotationX((float) Math.Sin(Math.PI * _timer.ElapsedMilliseconds / 3000d) * MathHelper.PiOver6), trans);
             _testShader.Transform = trans;
         }
     }
