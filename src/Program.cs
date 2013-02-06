@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Windows.Forms;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -13,6 +14,8 @@ namespace ComputerGraphicsCoursework
 {
     class Program : GameWindow
     {
+        private bool _captureMouse;
+
         private SpriteShader _spriteShader;
         private Sprite _testSprite;
 
@@ -44,11 +47,36 @@ namespace ComputerGraphicsCoursework
             _testSprite = new Sprite(texture);
 
             _camera = new Camera(Width, Height);
-            _camera.Position = new Vector3(-4f, 0f, 0f);
+            _camera.Pitch = 0.0f;
+            _camera.Yaw = 0.0f;
+            _camera.Position = new Vector3(-8f, 0f, 0f);
 
             _testShader = new TestShader();
             _testShader.Camera = _camera;
             _testModel = Model.FromFile("../../res/boat.obj");
+
+            _captureMouse = true;
+
+            var ignoreMouse = false;
+            Mouse.Move += (sender, me) => {
+                if (!Focused || !_captureMouse) {
+                    return;
+                }
+
+                if (ignoreMouse) {
+                    ignoreMouse = false;
+                    return;
+                }
+
+                Vector2 rot = _camera.Rotation;
+
+                _camera.Yaw += me.XDelta / 180.0f;
+                _camera.Pitch += me.YDelta / 180.0f;
+                _camera.Pitch = Tools.Clamp(rot.X, -MathHelper.PiOver2, (float) MathHelper.PiOver2);
+
+                ignoreMouse = true;
+                Cursor.Position = new System.Drawing.Point(Bounds.Left + Width / 2, Bounds.Top + Height / 2);
+            };
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -75,6 +103,12 @@ namespace ComputerGraphicsCoursework
             var rot = _camera.Rotation;
             rot.X += (float) e.Time * MathHelper.PiOver2;
             _camera.Rotation = rot;
+
+            if (!Focused || !_captureMouse) {
+                Cursor.Show();
+            } else {
+                Cursor.Hide();
+            }
         }
     }
 }

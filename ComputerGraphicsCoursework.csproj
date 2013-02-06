@@ -38,6 +38,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,6 +59,7 @@
     <Compile Include="src\TestShader.cs" />
     <Compile Include="src\Texture.cs" />
     <Compile Include="src\Texture2DArray.cs" />
+    <Compile Include="src\Tools.cs" />
     <Compile Include="src\VertexBuffer.cs" />
   </ItemGroup>
   <ItemGroup>

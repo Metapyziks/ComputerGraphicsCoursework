@@ -119,7 +119,7 @@ namespace ComputerGraphicsCoursework
         public void UpdatePerspectiveMatrix()
         {
             if (_perspectiveChanged) {
-                _perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(90f * MathHelper.Pi / 180f, (float) Width / Height, 1f / 64f, 64f);
+                _perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, (float) Width / Height, 1f / 64f, 64f);
 
                 UpdateViewMatrix();
             }
