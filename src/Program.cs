@@ -19,7 +19,7 @@ namespace ComputerGraphicsCoursework
         private Camera _camera;
 
         private TestShader _testShader;
-        private Vector3[] _testVerts;
+        private Model _testModel;
 
         static void Main(String[] args)
         {
@@ -48,10 +48,7 @@ namespace ComputerGraphicsCoursework
 
             _testShader = new TestShader();
             _testShader.Camera = _camera;
-            _testVerts = new Vector3[] {
-                new Vector3(-1f, -1f, 0f), new Vector3(-1f, 1f, 0f), new Vector3(1f, 1f, 0f),
-                new Vector3(-1f, -1f, 0f), new Vector3(-1f, 1f, 0f), new Vector3(1f, 1f, 0f)
-            };
+            _testModel = Model.FromFile("../../res/boat.obj");
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -65,7 +62,7 @@ namespace ComputerGraphicsCoursework
             _spriteShader.End();
 
             _testShader.Begin();
-            _testShader.Render(_testVerts);
+            _testModel.Render(_testShader);
             _testShader.End();
 
             SwapBuffers();
