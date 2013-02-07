@@ -91,6 +91,18 @@ namespace ComputerGraphicsCoursework
                 lastMouseX = Cursor.Position.X;
                 lastMouseY = Cursor.Position.Y;
             };
+
+            Keyboard.KeyDown += (sender, ke) => {
+                if (ke.Key == Key.Space) {
+                    _water.Splash(new Vector2(0f, -3f), 3f);
+                    _water.Splash(new Vector2(0f, -2f), -4f);
+                    _water.Splash(new Vector2(0f, -1f), 5f);
+                    _water.Splash(new Vector2(0f, 0f), -5f);
+                    _water.Splash(new Vector2(0f, 1f), 5f);
+                    _water.Splash(new Vector2(0f, 2f), -5f);
+                    _water.Splash(new Vector2(0f, 3f), 5f);
+                }
+            };
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

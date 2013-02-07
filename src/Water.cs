@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
+
 namespace ComputerGraphicsCoursework
 {
     class Water : IRenderable<WaterShader>
@@ -59,6 +61,17 @@ namespace ComputerGraphicsCoursework
             }
         }
 
+        public void Splash(Vector2 pos, float magnitude)
+        {
+            int x = (int) Math.Round((pos.X / Size + 0.5f) * Resolution);
+            int y = (int) Math.Round((pos.Y / Size + 0.5f) * Resolution);
+            while (x < 0) x += Resolution;
+            while (x >= Resolution) x -= Resolution;
+            while (y < 0) y += Resolution;
+            while (y >= Resolution) y -= Resolution;
+            _velocity[x, y] = -magnitude;
+        }
+
         public void SimulateWater(double time)
         {
             if (time - _lastSim < SimulationPeriod) return;
@@ -70,8 +83,9 @@ namespace ComputerGraphicsCoursework
                 for (int y = 0; y < Resolution; ++y) {
                     int t = (y - 1 < 0 ? Resolution - 1 : y - 1);
                     int b = (y + 1 == Resolution ? 0 : y + 1);
-                    float av = 0.25f * (_wavemap[l, y] + _wavemap[r, y] + _wavemap[x, t] + _wavemap[x, b]);
-                    _velocity[x, y] += (av - _wavemap[x, y]) / 32f;
+                    float av = (_wavemap[l, y] + _wavemap[r, y] + _wavemap[x, t] + _wavemap[x, b]);
+                    av += 0.7f * (_wavemap[l, t] + _wavemap[r, t] + _wavemap[l, b] + _wavemap[r, b]);
+                    _velocity[x, y] += ((av / 6.8f) - _wavemap[x, y]) / 32f;
                 }
             }
 
