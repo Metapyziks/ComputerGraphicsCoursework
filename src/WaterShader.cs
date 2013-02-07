@@ -12,6 +12,8 @@ namespace ComputerGraphicsCoursework
 {
     class WaterShader : ShaderProgram3D
     {
+        private LumTexture2D _ripplemap;
+
         private Color4 _colour = new Color4(48, 92, 120, 127);
         private int _colourLoc = -1;
 
@@ -34,7 +36,7 @@ namespace ComputerGraphicsCoursework
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, false);
             vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
             vert.AddUniform(ShaderVarType.Sampler2D, "wavemap");
-            vert.AddAttribute(ShaderVarType.Vec3, "in_vertex");
+            vert.AddAttribute(ShaderVarType.Vec2, "in_vertex");
             vert.AddVarying(ShaderVarType.Vec3, "var_normal");
             vert.Logic = @"
                 void main(void)
@@ -44,7 +46,7 @@ namespace ComputerGraphicsCoursework
                         ivec2(1, 0), ivec2(0, 1)
                     );
 
-                    vec2 tex_pos = vec2((in_vertex.z + 32.0) / 64.0, (in_vertex.x + 32.0) / 64.0);
+                    vec2 tex_pos = vec2((in_vertex.y + 32.0) / 64.0, (in_vertex.x + 32.0) / 64.0);
                     float wave = texture(wavemap, tex_pos).a;
                     float neighbours[] = float[4] (
                         textureOffset(wavemap, tex_pos, offsets[0]).a,
@@ -55,11 +57,12 @@ namespace ComputerGraphicsCoursework
                     vec3 horz = normalize(vec3(2.0, 0.0, neighbours[2] - neighbours[0]));
                     vec3 vert = normalize(vec3(0.0, 2.0, neighbours[3] - neighbours[1]));
                     var_normal = cross(horz, vert);
-                    gl_Position = view_matrix * vec4(in_vertex.x, in_vertex.y + wave, in_vertex.z, 1.0);
+                    gl_Position = view_matrix * vec4(in_vertex.x, wave, in_vertex.y, 1.0);
                 }
             ";
 
             ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false);
+            frag.AddUniform(ShaderVarType.Sampler2D, "ripplemap");
             frag.AddUniform(ShaderVarType.Vec4, "colour");
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
             frag.AddVarying(ShaderVarType.Vec3, "var_normal");
@@ -68,7 +71,7 @@ namespace ComputerGraphicsCoursework
                 {
                     const vec3 light = normalize(vec3(-3, -8, -4));
                     out_frag_colour = vec4(colour.rgb + (vec3(0.3, 0.7, 0.9) - colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 3.4), colour.a);
-                    out_frag_colour += (var_normal.y - 0.5) * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour);
+                    out_frag_colour += texture(ripplemap, vec2(0.0, 0.0)).a * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour);
                 }
             ";
 
@@ -84,8 +87,19 @@ namespace ComputerGraphicsCoursework
         {
             base.OnCreate();
 
-            AddAttribute("in_vertex", 3);
+            AddAttribute("in_vertex", 2);
             AddTexture("wavemap", TextureUnit.Texture1);
+            AddTexture("ripplemap", TextureUnit.Texture1);
+
+            var rand = new Random();
+            _ripplemap = new LumTexture2D(64, 64);
+            for (int x = 0; x < 64; ++x) {
+                for (int y = 0; y < 64; ++y) {
+                    _ripplemap[x, y] = (float) rand.NextDouble();
+                }
+            }
+
+            SetTexture("ripplemap", _ripplemap);
 
             _colourLoc = GL.GetUniformLocation(Program, "colour");
             _viewVectorLoc = GL.GetUniformLocation(Program, "view_vector");
@@ -113,9 +127,9 @@ namespace ComputerGraphicsCoursework
             GL.Disable(EnableCap.DepthTest); GL.Disable(EnableCap.Blend); GL.Disable(EnableCap.CullFace);
         }
 
-        public void Render(Vector3 vert)
+        public void Render(Vector2 vert)
         {
-            GL.VertexAttrib3(Attributes[0].Location, vert);
+            GL.VertexAttrib2(Attributes[0].Location, vert);
         }
     }
 }

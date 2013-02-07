@@ -25,25 +25,21 @@ namespace ComputerGraphicsCoursework
         {
             Size = size;
 
-            _vb = new VertexBuffer(3);
+            _vb = new VertexBuffer(2);
             Resolution = 64;
             int mid = Resolution >> 1;
 
-            float[] data = new float[4 * 3 * Resolution * Resolution];
+            float[] data = new float[4 * 2 * Resolution * Resolution];
             int i = 0;
             for (int x = 0; x < Resolution; ++x) {
                 for (int y = 0; y < Resolution; ++y) {
                     data[i++] = (x - mid) * size / 64f;
-                    data[i++] = 0f;
                     data[i++] = (y - mid) * size / 64f;
                     data[i++] = (x - mid + 1) * size / 64f;
-                    data[i++] = 0f;
                     data[i++] = (y - mid) * size / 64f;
                     data[i++] = (x - mid + 1) * size / 64f;
-                    data[i++] = 0f;
                     data[i++] = (y - mid + 1) * size / 64f;
                     data[i++] = (x - mid) * size / 64f;
-                    data[i++] = 0f;
                     data[i++] = (y - mid + 1) * size / 64f;
                 }
             }
