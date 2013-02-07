@@ -39,6 +39,7 @@ namespace ComputerGraphicsCoursework
             vert.AddAttribute(ShaderVarType.Vec2, "in_vertex");
             vert.AddVarying(ShaderVarType.Float, "var_height");
             vert.AddVarying(ShaderVarType.Vec2, "var_offset");
+            vert.AddVarying(ShaderVarType.Vec2, "var_texpos");
             vert.AddVarying(ShaderVarType.Vec3, "var_normal");
             vert.Logic = @"
                 void main(void)
@@ -50,15 +51,15 @@ namespace ComputerGraphicsCoursework
 
                     var_offset = vec2(int(in_vertex.x) & 1, int(in_vertex.y) & 1);
                     vec2 pos = vec2(int(in_vertex.x) >> 1, int(in_vertex.y) >> 1) + var_offset;
-                    var_offset = pos / 4.0;
+                    var_offset = pos;
 
-                    vec2 tex_pos = vec2((pos.y + 32.0) / 64.0, (pos.x + 32.0) / 64.0);
-                    var_height = texture(wavemap, tex_pos).a;
+                    var_texpos = vec2((pos.y + 32.0) / 64.0, (pos.x + 32.0) / 64.0);
+                    var_height = texture(wavemap, var_texpos).a;
                     float neighbours[] = float[4] (
-                        textureOffset(wavemap, tex_pos, offsets[0]).a,
-                        textureOffset(wavemap, tex_pos, offsets[1]).a,
-                        textureOffset(wavemap, tex_pos, offsets[2]).a,
-                        textureOffset(wavemap, tex_pos, offsets[3]).a
+                        textureOffset(wavemap, var_texpos, offsets[0]).a,
+                        textureOffset(wavemap, var_texpos, offsets[1]).a,
+                        textureOffset(wavemap, var_texpos, offsets[2]).a,
+                        textureOffset(wavemap, var_texpos, offsets[3]).a
                     );
                     vec3 horz = normalize(vec3(2.0, 0.0, neighbours[2] - neighbours[0]));
                     vec3 vert = normalize(vec3(0.0, 2.0, neighbours[3] - neighbours[1]));
@@ -69,17 +70,19 @@ namespace ComputerGraphicsCoursework
 
             ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false);
             frag.AddUniform(ShaderVarType.Sampler2D, "ripplemap");
+            frag.AddUniform(ShaderVarType.Sampler2D, "spraymap");
             frag.AddUniform(ShaderVarType.Vec4, "colour");
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
             frag.AddVarying(ShaderVarType.Float, "var_height");
             frag.AddVarying(ShaderVarType.Vec2, "var_offset");
+            frag.AddVarying(ShaderVarType.Vec2, "var_texpos");
             frag.AddVarying(ShaderVarType.Vec3, "var_normal");
             frag.Logic = @"
                 void main(void)
                 {
                     const vec3 light = normalize(vec3(-3, -8, -4));
                     out_frag_colour = vec4(colour.rgb + (vec3(0.3, 0.7, 0.9) - colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 3.4), colour.a);
-                    if (texture(ripplemap, var_offset).a - 1 + var_height - var_normal.y > 0.25) {
+                    if (texture(ripplemap, var_offset / 4.0).a - 1 + texture(spraymap, var_texpos).a - var_height + 0.5 > 0.25) {
                         out_frag_colour += 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour);
                     }
                 }
@@ -100,6 +103,7 @@ namespace ComputerGraphicsCoursework
             AddAttribute("in_vertex", 2);
             AddTexture("wavemap", TextureUnit.Texture1);
             AddTexture("ripplemap", TextureUnit.Texture2);
+            AddTexture("spraymap", TextureUnit.Texture3);
 
             var rand = new Random();
             _ripplemap = new LumTexture2D(64, 64);

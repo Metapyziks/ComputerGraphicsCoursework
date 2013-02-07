@@ -166,13 +166,9 @@ namespace ComputerGraphicsCoursework
 
             _ship.Update(_timer.Elapsed.TotalSeconds);
 
-            for (int i = 4; i > -5; --i) {
-                for (int j = 2; j > -3; --j) {
-                    var splashpos = _ship.Position + _ship.Forward * i + _ship.Right * j;
-                    var magnitude = (i == 4 || i == -4 || j == 2 || j == -2) ? (float) (_rand.NextDouble() * 2f - 1f) * 0.06125f : 1f;
-                    _water.Splash(new Vector2(splashpos.X, splashpos.Z), magnitude);
-                }
-            }
+            var splashPos = _ship.Position - _ship.Forward * 3f;
+            var magnitude = (float) _rand.NextDouble();
+            _water.Splash(new Vector2(splashPos.X, splashPos.Z), magnitude);
 
             //_camera.Position = _ship.Position + _ship.Up * 6f - _ship.Forward * 16f;
             //_camera.ViewVector = _ship.Forward;

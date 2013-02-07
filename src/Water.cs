@@ -17,6 +17,7 @@ namespace ComputerGraphicsCoursework
 
         private VertexBuffer _vb;
         private LumTexture2D _wavemap;
+        private LumTexture2D _spraymap;
         private float[,] _velocity;
         private Random _rand;
         private double _lastSim;
@@ -50,6 +51,7 @@ namespace ComputerGraphicsCoursework
 
             _rand = new Random();
             _wavemap = new LumTexture2D(Resolution, Resolution);
+            _spraymap = new LumTexture2D(Resolution, Resolution);
             _velocity = new float[Resolution, Resolution];
             for (int x = 0; x < Size; ++x) {
                 for (int y = 0; y < Size; ++y) {
@@ -69,6 +71,7 @@ namespace ComputerGraphicsCoursework
             while (y >= Resolution) y -= Resolution;
             //_velocity[x, y] = -magnitude;
             _wavemap[x, y] = -magnitude;
+            _spraymap[x, y] = Math.Abs(magnitude) * 8f;
         }
 
         public void SimulateWater(double time)
@@ -82,16 +85,20 @@ namespace ComputerGraphicsCoursework
                 for (int y = 0; y < Resolution; ++y) {
                     int t = (y - 1 < 0 ? Resolution - 1 : y - 1);
                     int b = (y + 1 == Resolution ? 0 : y + 1);
-                    float av = (_wavemap[l, y] + _wavemap[r, y] + _wavemap[x, t] + _wavemap[x, b]);
+                    float av = 0.5f + _wavemap[l, y] + _wavemap[r, y] + _wavemap[x, t] + _wavemap[x, b];
                     av += 0.7f * (_wavemap[l, t] + _wavemap[r, t] + _wavemap[l, b] + _wavemap[r, b]);
-                    _velocity[x, y] += ((av / 6.8f) - _wavemap[x, y]) / 32f;
+                    _velocity[x, y] += ((av / 7.8f) - _wavemap[x, y]) / 32f;
+                    av = 0.3f + _spraymap[l, y] + _spraymap[r, y] + _spraymap[x, t] + _spraymap[x, b];
+                    av += 0.7f * (_spraymap[l, t] + _spraymap[r, t] + _spraymap[l, b] + _spraymap[r, b]);
+                    _spraymap[x, y] += (av / 7.8f - _spraymap[x, y]) * 0.125f;
                 }
             }
 
             for (int x = 0; x < Resolution; ++x) {
                 for (int y = 0; y < Resolution; ++y) {
                     _wavemap[x, y] += _velocity[x, y];
-                    _velocity[x, y] *= 0.99f;
+                    _velocity[x, y] *= 0.993f;
+                    _spraymap[x, y] *= 0.997f;
                 }
             }
         }
@@ -99,6 +106,7 @@ namespace ComputerGraphicsCoursework
         public void Render(WaterShader shader)
         {
             shader.SetTexture("wavemap", _wavemap);
+            shader.SetTexture("spraymap", _spraymap);
             _vb.StartBatch(shader);
             _vb.Render(shader);
             _vb.EndBatch(shader);
