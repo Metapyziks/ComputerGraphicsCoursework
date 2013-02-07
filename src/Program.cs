@@ -23,11 +23,13 @@ namespace ComputerGraphicsCoursework
 
         private Camera _camera;
 
-        private TestShader _testShader;
-        private Model _testModel;
+        private ModelShader _modelShader;
+        private Ship _ship;
 
         private WaterShader _waterShader;
         private Water _water;
+
+        private Random _rand;
 
         private Stopwatch _timer;
         private double _lastFPSUpdate;
@@ -40,7 +42,7 @@ namespace ComputerGraphicsCoursework
             program.Dispose();
         }
 
-        public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 4))
+        public Program() : base(800, 600) //, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 4))
         {
             this.Title = "Computer Graphics Coursework";
 
@@ -52,6 +54,8 @@ namespace ComputerGraphicsCoursework
             base.OnLoad(e);
 
             VSync = VSyncMode.Off;
+
+            _rand = new Random();
 
             _timer = new Stopwatch();
             _timer.Start();
@@ -66,9 +70,9 @@ namespace ComputerGraphicsCoursework
             _camera.Position = new Vector3(-8f, 0f, 0f);
             _camera.UpdateViewMatrix();
 
-            _testShader = new TestShader();
-            _testShader.Camera = _camera;
-            _testModel = Model.FromFile("../../res/boat.obj");
+            _modelShader = new ModelShader();
+            _modelShader.Camera = _camera;
+            _ship = new Ship();
 
             _waterShader = new WaterShader();
             _waterShader.Camera = _camera;
@@ -91,18 +95,6 @@ namespace ComputerGraphicsCoursework
                 lastMouseX = Cursor.Position.X;
                 lastMouseY = Cursor.Position.Y;
             };
-
-            Keyboard.KeyDown += (sender, ke) => {
-                if (ke.Key == Key.Space) {
-                    _water.Splash(new Vector2(0f, -3f), 3f);
-                    _water.Splash(new Vector2(0f, -2f), -4f);
-                    _water.Splash(new Vector2(0f, -1f), 5f);
-                    _water.Splash(new Vector2(0f, 0f), -5f);
-                    _water.Splash(new Vector2(0f, 1f), 5f);
-                    _water.Splash(new Vector2(0f, 2f), -5f);
-                    _water.Splash(new Vector2(0f, 3f), 5f);
-                }
-            };
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -115,9 +107,9 @@ namespace ComputerGraphicsCoursework
             _testSprite.Render(_spriteShader);
             _spriteShader.End();
 
-            _testShader.StartBatch();
-            _testModel.Render(_testShader);
-            _testShader.EndBatch();
+            _modelShader.StartBatch();
+            _ship.Render(_modelShader);
+            _modelShader.EndBatch();
 
             _waterShader.StartBatch();
             _water.Render(_waterShader);
@@ -172,12 +164,17 @@ namespace ComputerGraphicsCoursework
                 }
             }
 
-            _water.SimulateWater(_timer.Elapsed.TotalSeconds);
+            _ship.Update(_timer.Elapsed.TotalSeconds);
 
-            Matrix4 trans = Matrix4.CreateRotationY(MathHelper.Pi * _timer.ElapsedMilliseconds / 10000f);
-            trans = Matrix4.Mult(Matrix4.CreateTranslation(0f, 0f, 16f), trans);
-            trans = Matrix4.Mult(Matrix4.CreateRotationX((float) Math.Sin(Math.PI * _timer.ElapsedMilliseconds / 1000d) * MathHelper.Pi / 16f), trans);
-            _testShader.Transform = trans;
+            for (int i = 4; i > -5; --i) {
+                for (int j = 2; j > -3; --j) {
+                    var splashpos = _ship.Position + _ship.Forward * i + _ship.Right * j;
+                    var magnitude = (i == 4 || i == -4 || j == 2 || j == -2) ? (float) (_rand.NextDouble() * 2f - 1f) * 0.06125f : 1f;
+                    _water.Splash(new Vector2(splashpos.X, splashpos.Z), magnitude);
+                }
+            }
+
+            _water.SimulateWater(_timer.Elapsed.TotalSeconds);
         }
     }
 }

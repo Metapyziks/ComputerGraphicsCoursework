@@ -44,7 +44,7 @@ namespace ComputerGraphicsCoursework
                         ivec2(1, 0), ivec2(0, 1)
                     );
 
-                    vec2 tex_pos = vec2((in_vertex.x + 32.0) / 64.0, (in_vertex.z + 32.0) / 64.0);
+                    vec2 tex_pos = vec2((in_vertex.z + 32.0) / 64.0, (in_vertex.x + 32.0) / 64.0);
                     float wave = texture(wavemap, tex_pos).a;
                     float neighbours[] = float[4] (
                         textureOffset(wavemap, tex_pos, offsets[0]).a,
@@ -66,8 +66,9 @@ namespace ComputerGraphicsCoursework
             frag.Logic = @"
                 void main(void)
                 {
-                    const vec3 light = normalize(vec3(-3, -4, -8));
+                    const vec3 light = normalize(vec3(-3, -8, -4));
                     out_frag_colour = vec4(colour.rgb + (vec3(0.3, 0.7, 0.9) - colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 3.4), colour.a);
+                    out_frag_colour += (var_normal.y - 0.5) * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour);
                 }
             ";
 

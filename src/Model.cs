@@ -10,7 +10,7 @@ using OpenTK;
 
 namespace ComputerGraphicsCoursework
 {
-    class Model : IRenderable<TestShader>
+    class Model : IRenderable<ModelShader>
     {
         private enum VertData : byte
         {
@@ -154,7 +154,7 @@ namespace ComputerGraphicsCoursework
             _vb.SetData(raw);
         }
 
-        public void Render(TestShader shader)
+        public void Render(ModelShader shader)
         {
             _vb.StartBatch(shader);
             _vb.Render(shader);

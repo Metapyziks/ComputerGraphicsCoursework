@@ -29,7 +29,7 @@ namespace ComputerGraphicsCoursework
             Resolution = 64;
             int mid = Resolution >> 1;
 
-            float[] data = new float[4 * 3 * 64 * 64];
+            float[] data = new float[4 * 3 * Resolution * Resolution];
             int i = 0;
             for (int x = 0; x < Resolution; ++x) {
                 for (int y = 0; y < Resolution; ++y) {
@@ -69,7 +69,8 @@ namespace ComputerGraphicsCoursework
             while (x >= Resolution) x -= Resolution;
             while (y < 0) y += Resolution;
             while (y >= Resolution) y -= Resolution;
-            _velocity[x, y] = -magnitude;
+            //_velocity[x, y] = -magnitude;
+            _wavemap[x, y] = -magnitude;
         }
 
         public void SimulateWater(double time)
