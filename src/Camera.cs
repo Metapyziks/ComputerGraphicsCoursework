@@ -105,6 +105,12 @@ namespace ComputerGraphicsCoursework
                 float sinPitch = (float) Math.Sin(Pitch);
                 return new Vector3(sinYaw * cosPitch, sinPitch, cosYaw * cosPitch);
             }
+            set
+            {
+                Yaw = (float) Math.Atan2(value.X, -value.Z);
+                Pitch = 0.0f;
+                _viewChanged = true;
+            }
         }
 
         public Camera(int width, int height, float scale = 1.0f)

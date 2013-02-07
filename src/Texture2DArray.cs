@@ -7,10 +7,9 @@ namespace ComputerGraphicsCoursework
 {
     public class Texture2DArray : Texture
     {
-        private String[] _Names;
-        private BitmapTexture2D[] _Textures;
+        private BitmapTexture2D[] _textures;
 
-        private UInt32[] _Data;
+        private UInt32[] _data;
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -22,7 +21,7 @@ namespace ComputerGraphicsCoursework
             Width = width;
             Height = height;
 
-            _Textures = textures;
+            _textures = textures;
 
             Count = 1;
             while (Count < textures.Length)
@@ -30,10 +29,10 @@ namespace ComputerGraphicsCoursework
 
             int tileLength = width * height;
 
-            _Data = new uint[tileLength * Count];
+            _data = new uint[tileLength * Count];
 
-            for (int i = 0; i < _Textures.Length; ++i) {
-                Bitmap tile = _Textures[i].Bitmap;
+            for (int i = 0; i < _textures.Length; ++i) {
+                Bitmap tile = _textures[i].Bitmap;
 
                 int xScale = tile.Width / width;
                 int yScale = tile.Height / height;
@@ -45,16 +44,11 @@ namespace ComputerGraphicsCoursework
 
                         Color clr = tile.GetPixel(tx, ty);
 
-                        _Data[i * tileLength + x + y * width]
+                        _data[i * tileLength + x + y * width]
                             = (UInt32) (clr.R << 24 | clr.G << 16 | clr.B << 08 | clr.A << 00);
                     }
                 }
             }
-        }
-
-        public ushort GetTextureIndex(String texture)
-        {
-            return (ushort) Array.IndexOf(_Names, texture);
         }
 
         protected override void Load()
@@ -68,10 +62,10 @@ namespace ComputerGraphicsCoursework
             GL.TexParameter(TextureTarget.Texture2DArray,
                 TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
             GL.TexImage3D(TextureTarget.Texture2DArray, 0, PixelInternalFormat.Rgba,
-                Width, Height, Count, 0, PixelFormat.Rgba, PixelType.UnsignedInt8888, _Data);
+                Width, Height, Count, 0, PixelFormat.Rgba, PixelType.UnsignedInt8888, _data);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
 
-            _Data = null;
+            _data = null;
         }
     }
 }

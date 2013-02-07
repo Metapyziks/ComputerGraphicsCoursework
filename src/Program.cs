@@ -174,6 +174,10 @@ namespace ComputerGraphicsCoursework
                 }
             }
 
+            //_camera.Position = _ship.Position + _ship.Up * 6f - _ship.Forward * 16f;
+            //_camera.ViewVector = _ship.Forward;
+            //_camera.UpdateViewMatrix();
+
             _water.SimulateWater(_timer.Elapsed.TotalSeconds);
         }
     }

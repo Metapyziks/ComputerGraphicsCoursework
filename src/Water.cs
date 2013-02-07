@@ -33,14 +33,16 @@ namespace ComputerGraphicsCoursework
             int i = 0;
             for (int x = 0; x < Resolution; ++x) {
                 for (int y = 0; y < Resolution; ++y) {
-                    data[i++] = (x - mid) * size / 64f;
-                    data[i++] = (y - mid) * size / 64f;
-                    data[i++] = (x - mid + 1) * size / 64f;
-                    data[i++] = (y - mid) * size / 64f;
-                    data[i++] = (x - mid + 1) * size / 64f;
-                    data[i++] = (y - mid + 1) * size / 64f;
-                    data[i++] = (x - mid) * size / 64f;
-                    data[i++] = (y - mid + 1) * size / 64f;
+                    int xv = (x - mid) << 1;
+                    int yv = (y - mid) << 1;
+                    data[i++] = xv | 0;
+                    data[i++] = yv | 0;
+                    data[i++] = xv | 1;
+                    data[i++] = yv | 0;
+                    data[i++] = xv | 1;
+                    data[i++] = yv | 1;
+                    data[i++] = xv | 0;
+                    data[i++] = yv | 1;
                 }
             }
 
