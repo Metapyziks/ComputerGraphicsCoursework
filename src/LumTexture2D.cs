@@ -11,7 +11,7 @@ namespace ComputerGraphicsCoursework
     public class LumTexture2D : Texture
     {
         private readonly int _actualSize;
-        private byte[,] _data;
+        private float[,] _data;
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -24,7 +24,7 @@ namespace ComputerGraphicsCoursework
 
             _actualSize = GetNextPOTS(Width, Height);
 
-            _data = new byte[Width, Height];
+            _data = new float[Width, Height];
         }
 
         public Vector2 GetCoords(Vector2 pos)
@@ -40,7 +40,7 @@ namespace ComputerGraphicsCoursework
             };
         }
 
-        public byte this[int x, int y]
+        public float this[int x, int y]
         {
             get { return _data[x, y]; }
             set
@@ -54,7 +54,7 @@ namespace ComputerGraphicsCoursework
         {
             GL.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int) TextureEnvMode.Modulate);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha8, _actualSize, _actualSize, 0, OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.UnsignedByte, _data);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, _actualSize, _actualSize, 0, OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.Float, _data);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Linear);

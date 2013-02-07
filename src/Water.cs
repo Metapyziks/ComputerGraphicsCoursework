@@ -8,23 +8,29 @@ namespace ComputerGraphicsCoursework
 {
     class Water : IRenderable<WaterShader>
     {
+        public const double SimulationPeriod = 1.0 / 60.0;
+
         public readonly float Size;
+        public readonly int Resolution;
 
         private VertexBuffer _vb;
         private LumTexture2D _wavemap;
+        private float[,] _velocity;
+        private Random _rand;
+        private double _lastSim;
 
         public Water(float size)
         {
             Size = size;
 
             _vb = new VertexBuffer(3);
-            int resolution = 64;
-            int mid = resolution >> 1;
+            Resolution = 64;
+            int mid = Resolution >> 1;
 
             float[] data = new float[4 * 3 * 64 * 64];
             int i = 0;
-            for (int x = 0; x < resolution; ++x) {
-                for (int y = 0; y < resolution; ++y) {
+            for (int x = 0; x < Resolution; ++x) {
+                for (int y = 0; y < Resolution; ++y) {
                     data[i++] = (x - mid) * size / 64f;
                     data[i++] = 0f;
                     data[i++] = (y - mid) * size / 64f;
@@ -42,12 +48,37 @@ namespace ComputerGraphicsCoursework
 
             _vb.SetData(data);
 
-            Random rand = new Random();
+            _rand = new Random();
+            _wavemap = new LumTexture2D(Resolution, Resolution);
+            _velocity = new float[Resolution, Resolution];
+            for (int x = 0; x < Size; ++x) {
+                for (int y = 0; y < Size; ++y) {
+                    _wavemap[x, y] = 0.5f;
+                    _velocity[x, y] = (float) (_rand.NextDouble() - 0.5) / 16f;
+                }
+            }
+        }
 
-            _wavemap = new LumTexture2D(64, 64);
-            for (int x = 0; x < 64; ++x) {
-                for (int y = 0; y < 64; ++y) {
-                    _wavemap[x, y] = (byte) rand.Next(0, 256);
+        public void SimulateWater(double time)
+        {
+            if (time - _lastSim < SimulationPeriod) return;
+            _lastSim = time;
+
+            for (int x = 0; x < Resolution; ++x) {
+                int l = (x - 1 < 0 ? Resolution - 1 : x - 1);
+                int r = (x + 1 == Resolution ? 0 : x + 1);
+                for (int y = 0; y < Resolution; ++y) {
+                    int t = (y - 1 < 0 ? Resolution - 1 : y - 1);
+                    int b = (y + 1 == Resolution ? 0 : y + 1);
+                    float av = 0.25f * (_wavemap[l, y] + _wavemap[r, y] + _wavemap[x, t] + _wavemap[x, b]);
+                    _velocity[x, y] += (av - _wavemap[x, y]) / 32f;
+                }
+            }
+
+            for (int x = 0; x < Resolution; ++x) {
+                for (int y = 0; y < Resolution; ++y) {
+                    _wavemap[x, y] += _velocity[x, y];
+                    _velocity[x, y] *= 0.99f;
                 }
             }
         }
@@ -55,7 +86,6 @@ namespace ComputerGraphicsCoursework
         public void Render(WaterShader shader)
         {
             shader.SetTexture("wavemap", _wavemap);
-
             _vb.StartBatch(shader);
             _vb.Render(shader);
             _vb.EndBatch(shader);

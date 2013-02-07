@@ -160,6 +160,8 @@ namespace ComputerGraphicsCoursework
                 }
             }
 
+            _water.SimulateWater(_timer.Elapsed.TotalSeconds);
+
             Matrix4 trans = Matrix4.CreateRotationY(MathHelper.Pi * _timer.ElapsedMilliseconds / 10000f);
             trans = Matrix4.Mult(Matrix4.CreateTranslation(0f, 0f, 16f), trans);
             trans = Matrix4.Mult(Matrix4.CreateRotationX((float) Math.Sin(Math.PI * _timer.ElapsedMilliseconds / 1000d) * MathHelper.Pi / 16f), trans);
