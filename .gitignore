@@ -52,4 +52,6 @@ Thumbs.db
 
 # Folder config file
 Desktop.ini
+
 pingme.txt
+*.blend[0-9]
