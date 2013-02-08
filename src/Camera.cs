@@ -107,9 +107,9 @@ namespace ComputerGraphicsCoursework
             }
             set
             {
+                value.Normalize();
+                Pitch = (float) Math.Asin(-value.Y);
                 Yaw = (float) Math.Atan2(value.X, -value.Z);
-                Pitch = 0.0f;
-                _viewChanged = true;
             }
         }
 
@@ -137,7 +137,7 @@ namespace ComputerGraphicsCoursework
         public void UpdatePerspectiveMatrix()
         {
             if (_perspectiveChanged) {
-                _perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, (float) Width / Height, 1f / 64f, 64f);
+                _perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, (float) Width / Height, 1f / 64f, 256f);
 
                 UpdateViewMatrix();
             }

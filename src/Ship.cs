@@ -26,9 +26,9 @@ namespace ComputerGraphicsCoursework
 
         public void Update(double time)
         {
-            _trans = Matrix4.CreateRotationY(MathHelper.Pi * (float) time / 10f);
-            _trans = Matrix4.Mult(Matrix4.CreateTranslation(0f, 0f, 16f), _trans);
-            _trans = Matrix4.Mult(Matrix4.CreateRotationX((float) Math.Sin(Math.PI * (float) time) * MathHelper.Pi / 16f), _trans);
+            _trans = Matrix4.CreateRotationY(MathHelper.Pi * (float) time / 2f);
+            _trans = Matrix4.Mult(Matrix4.CreateTranslation(0f, 0.5f, 16f), _trans);
+            _trans = Matrix4.Mult(Matrix4.CreateRotationX((float) Math.Sin(Math.PI * (float) time) * MathHelper.Pi / 24f), _trans);
 
             Position = Vector4.Transform(new Vector4(0f, 0f, 0f, 1f), _trans).Xyz;
             Forward = Vector4.Transform(new Vector4(1f, 0f, 0f, 0f), _trans).Xyz;

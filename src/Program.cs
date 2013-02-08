@@ -42,7 +42,7 @@ namespace ComputerGraphicsCoursework
             program.Dispose();
         }
 
-        public Program() : base(800, 600) //, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 4))
+        public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 2))
         {
             this.Title = "Computer Graphics Coursework";
 
@@ -167,12 +167,11 @@ namespace ComputerGraphicsCoursework
             _ship.Update(_timer.Elapsed.TotalSeconds);
 
             var splashPos = _ship.Position - _ship.Forward * 3f;
-            var magnitude = (float) _rand.NextDouble();
-            _water.Splash(new Vector2(splashPos.X, splashPos.Z), magnitude);
+            _water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
 
-            //_camera.Position = _ship.Position + _ship.Up * 6f - _ship.Forward * 16f;
-            //_camera.ViewVector = _ship.Forward;
-            //_camera.UpdateViewMatrix();
+            _camera.Position = _ship.Position + _ship.Up * 8f - _ship.Forward * 20f;
+            _camera.ViewVector = _ship.Forward * 4f - _ship.Up;
+            _camera.UpdateViewMatrix();
 
             _water.SimulateWater(_timer.Elapsed.TotalSeconds);
         }

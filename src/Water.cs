@@ -27,23 +27,23 @@ namespace ComputerGraphicsCoursework
             Size = size;
 
             _vb = new VertexBuffer(2);
-            Resolution = 64;
+            Resolution = 128;
             int mid = Resolution >> 1;
 
             float[] data = new float[4 * 2 * Resolution * Resolution];
             int i = 0;
             for (int x = 0; x < Resolution; ++x) {
                 for (int y = 0; y < Resolution; ++y) {
-                    int xv = (x - mid) << 1;
-                    int yv = (y - mid) << 1;
-                    data[i++] = xv | 0;
-                    data[i++] = yv | 0;
-                    data[i++] = xv | 1;
-                    data[i++] = yv | 0;
-                    data[i++] = xv | 1;
-                    data[i++] = yv | 1;
-                    data[i++] = xv | 0;
-                    data[i++] = yv | 1;
+                    float xv = (float) x / Resolution;
+                    float yv = (float) y / Resolution;
+                    data[i++] = xv + 0;
+                    data[i++] = yv + 0;
+                    data[i++] = xv + 1;
+                    data[i++] = yv + 0;
+                    data[i++] = xv + 1;
+                    data[i++] = yv + 1;
+                    data[i++] = xv + 0;
+                    data[i++] = yv + 1;
                 }
             }
 
@@ -87,10 +87,11 @@ namespace ComputerGraphicsCoursework
                     int b = (y + 1 == Resolution ? 0 : y + 1);
                     float av = 0.5f + _wavemap[l, y] + _wavemap[r, y] + _wavemap[x, t] + _wavemap[x, b];
                     av += 0.7f * (_wavemap[l, t] + _wavemap[r, t] + _wavemap[l, b] + _wavemap[r, b]);
-                    _velocity[x, y] += ((av / 7.8f) - _wavemap[x, y]) / 32f;
+                    _velocity[x, y] += ((av / 7.8f) - _wavemap[x, y]) / 16f;
+                    _velocity[x, y] = Tools.Clamp(_velocity[x, y], -1f / 32f, 1f / 32f);
                     av = 0.3f + _spraymap[l, y] + _spraymap[r, y] + _spraymap[x, t] + _spraymap[x, b];
                     av += 0.7f * (_spraymap[l, t] + _spraymap[r, t] + _spraymap[l, b] + _spraymap[r, b]);
-                    _spraymap[x, y] += (av / 7.8f - _spraymap[x, y]) * 0.125f;
+                    _spraymap[x, y] += Math.Max((av / 7.8f - _spraymap[x, y]), 0f);
                 }
             }
 
@@ -98,7 +99,7 @@ namespace ComputerGraphicsCoursework
                 for (int y = 0; y < Resolution; ++y) {
                     _wavemap[x, y] += _velocity[x, y];
                     _velocity[x, y] *= 0.993f;
-                    _spraymap[x, y] *= 0.997f;
+                    _spraymap[x, y] *= 0.996f;
                 }
             }
         }
