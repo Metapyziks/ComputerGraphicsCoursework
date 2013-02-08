@@ -34,16 +34,18 @@ namespace ComputerGraphicsCoursework
             int i = 0;
             for (int x = 0; x < Resolution; ++x) {
                 for (int y = 0; y < Resolution; ++y) {
-                    float xv = (float) x / Resolution;
-                    float yv = (float) y / Resolution;
-                    data[i++] = xv + 0;
-                    data[i++] = yv + 0;
-                    data[i++] = xv + 1;
-                    data[i++] = yv + 0;
-                    data[i++] = xv + 1;
-                    data[i++] = yv + 1;
-                    data[i++] = xv + 0;
-                    data[i++] = yv + 1;
+                    float x0 = (float) x / Resolution - 0.5f;
+                    float y0 = (float) y / Resolution - 0.5f;
+                    float x1 = (float) (x + 1) / Resolution - 0.5f;
+                    float y1 = (float) (y + 1) / Resolution - 0.5f;
+                    data[i++] = x0;
+                    data[i++] = y0;
+                    data[i++] = x1;
+                    data[i++] = y0;
+                    data[i++] = x1;
+                    data[i++] = y1;
+                    data[i++] = x0;
+                    data[i++] = y1;
                 }
             }
 

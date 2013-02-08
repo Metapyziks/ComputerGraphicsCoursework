@@ -164,14 +164,7 @@ namespace ComputerGraphicsCoursework
                 }
             }
 
-            _ship.Update(_timer.Elapsed.TotalSeconds);
-
-            var splashPos = _ship.Position - _ship.Forward * 3f;
-            _water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
-            splashPos -= _ship.Right;
-            _water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
-            splashPos += _ship.Right;
-            _water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
+            _ship.Update(_timer.Elapsed.TotalSeconds, _water);
 
             _camera.Position = _ship.Position + _ship.Up * 8f - _ship.Forward * 20f;
             _camera.ViewVector = _ship.Forward * 4f - _ship.Up;

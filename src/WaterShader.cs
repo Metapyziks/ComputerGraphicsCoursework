@@ -46,18 +46,16 @@ namespace ComputerGraphicsCoursework
             vert.Logic = @"
                 void main(void)
                 {
-                    const float resolution = 128.0;
+                    const float size = 256.0;
 
                     const ivec2 offsets[] = ivec2[4] (
                         ivec2(-1, 0), ivec2(0, -1),
                         ivec2(1, 0), ivec2(0, 1)
                     );
 
-                    var_offset = vec2(int(in_vertex.x), int(in_vertex.y));
-                    vec2 pos = vec2((in_vertex.x - var_offset.x - 0.5) * resolution, (in_vertex.y - var_offset.y - 0.5) * resolution) + var_offset + view_origin;
-                    var_offset = pos;
+                    var_offset = in_vertex * size + view_origin;
 
-                    var_texpos = vec2((pos.y + 32.0) / 64.0, (pos.x + 32.0) / 64.0);
+                    var_texpos = vec2((var_offset.y + 32.0) / 64.0, (var_offset.x + 32.0) / 64.0);
                     var_height = texture(wavemap, var_texpos).a;
                     float neighbours[] = float[4] (
                         textureOffset(wavemap, var_texpos, offsets[0]).a,
@@ -68,7 +66,7 @@ namespace ComputerGraphicsCoursework
                     vec3 horz = normalize(vec3(2.0, 0.0, neighbours[2] - neighbours[0]));
                     vec3 vert = normalize(vec3(0.0, 2.0, neighbours[3] - neighbours[1]));
                     var_normal = cross(horz, vert);
-                    gl_Position = view_matrix * vec4(pos.x, var_height, pos.y, 1.0);
+                    gl_Position = view_matrix * vec4(var_offset.x, var_height, var_offset.y, 1.0);
                 }
             ";
 
@@ -86,10 +84,11 @@ namespace ComputerGraphicsCoursework
                 {
                     const vec3 light = normalize(vec3(-3, -4, -6));
                     out_frag_colour = vec4(colour.rgb * max(0.0, -dot(light, var_normal)), colour.a);
+                    out_frag_colour += vec4((vec3(0.0, 0.0, 0.0) - out_frag_colour) * pow((1.0 - var_height), 0.5), 0.0);
                     out_frag_colour = vec4(out_frag_colour.rgb + (vec3(0.6, 0.7, 0.9) - out_frag_colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 10.0), out_frag_colour.a);
                     float ripple = texture(ripplemap, (var_offset / 4.0) + var_normal.xz).a;
                     float spray = texture(spraymap, var_texpos).a;
-                    if (ripple * pow(spray, 0.5) - var_height > 0.25) {
+                    if (ripple * pow(spray, 0.5) > 0.75) {
                         out_frag_colour += spray * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour);
                     }
                 }
