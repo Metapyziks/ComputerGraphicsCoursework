@@ -53,8 +53,6 @@ namespace ComputerGraphicsCoursework
         {
             GL.PopAttrib();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.DrawBuffer(DrawBufferMode.Back);
-            GL.BindTexture(Texture.TextureTarget, 0);
 
             Tools.ErrorCheck("fbo_end");
         }

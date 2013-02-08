@@ -41,7 +41,8 @@ namespace ComputerGraphicsCoursework
             frag.Logic = @"
                 void main( void )
                 {
-                    out_frag_colour = vec4(1.0, 1.0, 1.0, 1.0);
+                    float clr = sin(gl_FragCoord.x) * cos(gl_FragCoord.y);
+                    out_frag_colour = vec4(clr, clr, clr, 1.0);
                 }
             ";
 
