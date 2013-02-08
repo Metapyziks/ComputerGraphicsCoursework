@@ -11,6 +11,8 @@ namespace ComputerGraphicsCoursework
     class Ship : IRenderable<ModelShader>
     {
         private Model _hull;
+        private Model.FaceGroup _waterclipFaceGroup;
+        private Model.FaceGroup[] _visibleFaceGroups;
         private Matrix4 _trans;
 
         public Vector3 Forward { get; private set; }
@@ -21,6 +23,9 @@ namespace ComputerGraphicsCoursework
         public Ship()
         {
             _hull = Model.FromFile("../../res/boat.obj");
+            _waterclipFaceGroup = _hull.FaceGroups.First(x => x.Name == "Waterclip_waterclip");
+            _visibleFaceGroups = _hull.FaceGroups.Where(x => x != _waterclipFaceGroup).ToArray();
+
             _trans = Matrix4.Identity;
         }
 
@@ -28,7 +33,7 @@ namespace ComputerGraphicsCoursework
         {
             float offset = (float) Math.Sin(Math.PI * time) * MathHelper.Pi / 24f;
             float offset2 = (float) Math.Sin(Math.PI * (0.725 + time)) * MathHelper.Pi / 24f;
-            _trans = Matrix4.CreateTranslation(0f, 0.5f, offset2 * 16f + 128f);
+            _trans = Matrix4.CreateTranslation(0f, 0.0f, offset2 * 16f + 128f);
             _trans = Matrix4.Mult(Matrix4.CreateRotationY(-offset), _trans);
             _trans = Matrix4.Mult(Matrix4.CreateRotationX(offset), _trans);
             _trans = Matrix4.Mult(_trans, Matrix4.CreateRotationY((float) (Math.PI * time / 15f)));
@@ -49,7 +54,13 @@ namespace ComputerGraphicsCoursework
         public void Render(ModelShader shader)
         {
             shader.Transform = _trans;
-            _hull.Render(shader);
+            _hull.Render(shader, _visibleFaceGroups);
+        }
+
+        public void Render(DepthClipShader shader)
+        {
+            shader.Transform = _trans;
+            _hull.Render(shader, _waterclipFaceGroup);
         }
     }
 }

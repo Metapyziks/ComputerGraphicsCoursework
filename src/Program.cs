@@ -24,6 +24,7 @@ namespace ComputerGraphicsCoursework
         private Camera _camera;
 
         private ModelShader _modelShader;
+        private DepthClipShader _depthClipShader;
         private Ship _ship;
 
         private WaterShader _waterShader;
@@ -72,6 +73,8 @@ namespace ComputerGraphicsCoursework
 
             _modelShader = new ModelShader();
             _modelShader.Camera = _camera;
+            _depthClipShader = new DepthClipShader();
+            _depthClipShader.Camera = _camera;
             _ship = new Ship();
 
             _waterShader = new WaterShader();
@@ -110,6 +113,10 @@ namespace ComputerGraphicsCoursework
             _modelShader.StartBatch();
             _ship.Render(_modelShader);
             _modelShader.EndBatch();
+
+            _depthClipShader.StartBatch();
+            _ship.Render(_depthClipShader);
+            _depthClipShader.EndBatch();
 
             _waterShader.StartBatch();
             _water.Render(_waterShader);

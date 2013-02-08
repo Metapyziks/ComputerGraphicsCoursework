@@ -10,7 +10,7 @@ using OpenTK;
 
 namespace ComputerGraphicsCoursework
 {
-    class Model : IRenderable<ModelShader>
+    class Model : IRenderable<ModelShader>, IRenderable<DepthClipShader>
     {
         private enum VertData : byte
         {
@@ -64,7 +64,20 @@ namespace ComputerGraphicsCoursework
             }
         }
 
+        public class FaceGroup
+        {
+            public readonly String Name;
+            public int StartIndex { get; internal set; }
+            public int Length { get; internal set; }
+
+            public FaceGroup(String name)
+            {
+                Name = name;
+            }
+        }
+
         private static readonly Regex _sRENumb = new Regex("-?[0-9]+(\\.[0-9]+)?");
+        private static readonly Regex _sREObjc = new Regex("^o\\s.*$");
         private static readonly Regex _sREVert = new Regex("^v(\\s+-?[0-9]+(\\.[0-9]+)?){3}$");
         private static readonly Regex _sRENorm = new Regex("^vn(\\s+-?[0-9]+(\\.[0-9]+)?){3}$");
         private static readonly Regex _sREFace = new Regex("^f(\\s+[0-9]*(/[0-9]*){2}){3}$");
@@ -84,7 +97,17 @@ namespace ComputerGraphicsCoursework
             var lines = File.ReadAllLines(path);
             int vertCount = 0, normCount = 0, faceCount = 0;
 
+            var vertGroups = new List<FaceGroup>();
+            FaceGroup lastGroup = null;
+
             foreach (var line in lines) {
+                if (_sREObjc.IsMatch(line)) {
+                    if (lastGroup != null) {
+                        lastGroup.Length = faceCount - lastGroup.StartIndex;
+                    }
+                    lastGroup = new FaceGroup(line.Substring(line.IndexOf(' ') + 1)) { StartIndex = faceCount };
+                    vertGroups.Add(lastGroup);
+                }
                 if (_sREVert.IsMatch(line)) {
                     ++vertCount; continue;
                 }
@@ -95,12 +118,15 @@ namespace ComputerGraphicsCoursework
                     ++faceCount; continue;
                 }
             }
+            if (lastGroup != null) {
+                lastGroup.Length = faceCount - lastGroup.StartIndex;
+            }
 
             var verts = new Vector3[vertCount]; int vi = 0;
             var norms = new Vector3[normCount]; int ni = 0;
             var faces = new Face[faceCount]; int fi = 0;
 
-            var model = new Model(verts, norms, faces);
+            var model = new Model(vertGroups.ToArray(), verts, norms, faces);
 
             foreach (var line in lines) {
                 var data = line.Substring(line.IndexOf(' ') + 1);
@@ -122,14 +148,17 @@ namespace ComputerGraphicsCoursework
             return model;
         }
 
+        public readonly FaceGroup[] FaceGroups;
         private readonly Vector3[] _verts;
         private readonly Vector3[] _norms;
         private readonly Face[] _faces;
 
         private VertexBuffer _vb;
 
-        private Model(Vector3[] verts, Vector3[] norms, Face[] faces)
+        private Model(FaceGroup[] faceGroups, Vector3[] verts, Vector3[] norms, Face[] faces)
         {
+            FaceGroups = faceGroups;
+
             _verts = verts;
             _norms = norms;
             _faces = faces;
@@ -158,6 +187,31 @@ namespace ComputerGraphicsCoursework
         {
             _vb.StartBatch(shader);
             _vb.Render(shader);
+            _vb.EndBatch(shader);
+        }
+
+        public void Render(ModelShader shader, params FaceGroup[] facegroups)
+        {
+            _vb.StartBatch(shader);
+            foreach (var facegroup in facegroups) {
+                _vb.Render(shader, facegroup.StartIndex * 3, facegroup.Length * 3);
+            }
+            _vb.EndBatch(shader);
+        }
+
+        public void Render(DepthClipShader shader)
+        {
+            _vb.StartBatch(shader);
+            _vb.Render(shader);
+            _vb.EndBatch(shader);
+        }
+
+        public void Render(DepthClipShader shader, params FaceGroup[] facegroups)
+        {
+            _vb.StartBatch(shader);
+            foreach (var facegroup in facegroups) {
+                _vb.Render(shader, facegroup.StartIndex * 3, facegroup.Length * 3);
+            }
             _vb.EndBatch(shader);
         }
     }
