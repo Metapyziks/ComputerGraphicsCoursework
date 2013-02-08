@@ -84,7 +84,7 @@ namespace ComputerGraphicsCoursework
             frag.Logic = @"
                 void main(void)
                 {
-                    const vec3 light = normalize(vec3(-3, -8, -4));
+                    const vec3 light = normalize(vec3(-3, -4, -6));
                     out_frag_colour = vec4(colour.rgb * max(0.0, -dot(light, var_normal)), colour.a);
                     out_frag_colour = vec4(out_frag_colour.rgb + (vec3(0.6, 0.7, 0.9) - out_frag_colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 10.0), out_frag_colour.a);
                     float ripple = texture(ripplemap, (var_offset / 4.0) + var_normal.xz).a;
