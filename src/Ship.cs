@@ -43,12 +43,14 @@ namespace ComputerGraphicsCoursework
             Right = Vector4.Transform(new Vector4(0f, 0f, 1f, 0f), _trans).Xyz;
             Up = Vector4.Transform(new Vector4(0f, 1f, 0f, 0f), _trans).Xyz;
 
-            var splashPos = Position - Forward * 3f;
-            water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
-            splashPos -= Right;
-            water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
-            splashPos += Right;
-            water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
+            if (water != null) {
+                var splashPos = Position - Forward * 3f;
+                water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
+                splashPos -= Right;
+                water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
+                splashPos += Right;
+                water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
+            }
         }
 
         public void Render(ModelShader shader)

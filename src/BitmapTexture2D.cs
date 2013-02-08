@@ -19,30 +19,28 @@ namespace ComputerGraphicsCoursework
             Blank = new BitmapTexture2D(blankBmp);
         }
 
-        private readonly int _ActualSize;
+        private readonly int _actualSize;
 
-        public int Width { get; private set; }
-        public int Height { get; private set; }
         public Bitmap Bitmap { get; private set; }
 
         public BitmapTexture2D(Bitmap bitmap)
-            : base(TextureTarget.Texture2D)
+            : base(TextureTarget.Texture2D, bitmap.Width, bitmap.Height)
         {
-            Width = bitmap.Width;
-            Height = bitmap.Height;
+            _actualSize = GetNextPOTS(bitmap.Width, bitmap.Height);
 
-            _ActualSize = GetNextPOTS(bitmap.Width, bitmap.Height);
-
-            if (_ActualSize == bitmap.Width && _ActualSize == bitmap.Height)
+            if (_actualSize == bitmap.Width && _actualSize == bitmap.Height)
                 Bitmap = bitmap;
             else {
-                Bitmap = new Bitmap(_ActualSize, _ActualSize);
+                Bitmap = new Bitmap(_actualSize, _actualSize);
 
                 for (int x = 0; x < Width; ++x)
                     for (int y = 0; y < Height; ++y)
                         Bitmap.SetPixel(x, y, bitmap.GetPixel(x, y));
             }
         }
+
+        public BitmapTexture2D(int width, int height)
+            : this(new Bitmap(width, height)) { }
 
         public Vector2 GetCoords(Vector2 pos)
         {
@@ -52,8 +50,8 @@ namespace ComputerGraphicsCoursework
         public Vector2 GetCoords(float x, float y)
         {
             return new Vector2 {
-                X = x / _ActualSize,
-                Y = y / _ActualSize
+                X = x / _actualSize,
+                Y = y / _actualSize
             };
         }
 
@@ -69,6 +67,8 @@ namespace ComputerGraphicsCoursework
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Nearest);
+
+            Tools.ErrorCheck("loadtexture");
         }
     }
 }

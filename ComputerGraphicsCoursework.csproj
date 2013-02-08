@@ -53,6 +53,7 @@
     <Compile Include="src\BitmapTexture2D.cs" />
     <Compile Include="src\Camera.cs" />
     <Compile Include="src\DepthClipShader.cs" />
+    <Compile Include="src\FrameBuffer.cs" />
     <Compile Include="src\IRenderable.cs" />
     <Compile Include="src\LumTexture2D.cs" />
     <Compile Include="src\Model.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="src\VertexBuffer.cs" />
     <Compile Include="src\Water.cs" />
     <Compile Include="src\WaterShader.cs" />
+    <Compile Include="src\WaterSimulationShader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

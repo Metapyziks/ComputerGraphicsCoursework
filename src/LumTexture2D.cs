@@ -13,15 +13,9 @@ namespace ComputerGraphicsCoursework
         private readonly int _actualSize;
         private float[,] _data;
 
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-
         public LumTexture2D(int width, int height)
-            : base(TextureTarget.Texture2D)
+            : base(TextureTarget.Texture2D, width, height)
         {
-            Width = width;
-            Height = height;
-
             _actualSize = GetNextPOTS(Width, Height);
 
             _data = new float[Width, Height];

@@ -7,55 +7,46 @@ namespace ComputerGraphicsCoursework
 {
     public class VertexBuffer : IDisposable
     {
-        private int myStride;
+        private int _stride;
 
-        private bool myDataSet = false;
+        private bool _dataSet = false;
 
-        private int myUnitSize;
-        private int myVboID;
-        private int myLength;
+        private int _unitSize;
+        private int _vboID;
+        private int _length;
 
-        private int VboID
+        public int VboID
         {
             get
             {
-                if (myVboID == 0)
-                    GL.GenBuffers(1, out myVboID);
+                if (_vboID == 0) GL.GenBuffers(1, out _vboID);
 
-                return myVboID;
+                return _vboID;
             }
         }
 
         public int Stride
         {
-            get { return myStride; }
+            get { return _stride; }
         }
 
         public VertexBuffer(int stride)
         {
-            myStride = stride;
+            _stride = stride;
         }
 
         public void SetData<T>(T[] vertices) where T : struct
         {
-            myUnitSize = Marshal.SizeOf(typeof(T));
-            myLength = vertices.Length / myStride;
+            _unitSize = Marshal.SizeOf(typeof(T));
+            _length = vertices.Length / _stride;
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VboID);
-            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Length * myUnitSize), vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Length * _unitSize), vertices, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
-            CheckForError();
+            Tools.ErrorCheck("setdata");
 
-            myDataSet = true;
-        }
-
-        private void CheckForError()
-        {
-            ErrorCode error = GL.GetError();
-
-            if (error != ErrorCode.NoError)
-                throw new Exception("OpenGL hates your guts: " + error.ToString());
+            _dataSet = true;
         }
 
         public void StartBatch(ShaderProgram shader)
@@ -71,9 +62,9 @@ namespace ComputerGraphicsCoursework
 
         public void Render(ShaderProgram shader, int first = 0, int count = -1)
         {
-            if (myDataSet) {
+            if (_dataSet) {
                 if (count == -1)
-                    count = myLength - first;
+                    count = _length - first;
 
                 GL.DrawArrays(shader.BeginMode, first, count);
             }
@@ -89,10 +80,12 @@ namespace ComputerGraphicsCoursework
 
         public void Dispose()
         {
-            if (myDataSet)
-                GL.DeleteBuffers(1, ref myVboID);
+            if (_vboID != 0) {
+                GL.DeleteBuffers(1, ref _vboID);
+                _vboID = 0;
+            }
 
-            myDataSet = false;
+            _dataSet = false;
         }
     }
 }

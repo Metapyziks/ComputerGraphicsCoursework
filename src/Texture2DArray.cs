@@ -11,16 +11,11 @@ namespace ComputerGraphicsCoursework
 
         private UInt32[] _data;
 
-        public int Width { get; private set; }
-        public int Height { get; private set; }
         public int Count { get; private set; }
 
         public Texture2DArray(int width, int height, params BitmapTexture2D[] textures)
-            : base(TextureTarget.Texture2DArray)
+            : base(TextureTarget.Texture2DArray, width, height)
         {
-            Width = width;
-            Height = height;
-
             _textures = textures;
 
             Count = 1;

@@ -150,14 +150,14 @@ namespace ComputerGraphicsCoursework
 
         public int VertexDataStride;
         public int VertexDataSize;
-        private List<AttributeInfo> _Attributes;
-        private Dictionary<String, TextureInfo> _Textures;
+        private List<AttributeInfo> _attributes;
+        private Dictionary<String, TextureInfo> _textures;
 
         public int Program { get; private set; }
 
         public AttributeInfo[] Attributes
         {
-            get { return _Attributes.ToArray(); }
+            get { return _attributes.ToArray(); }
         }
 
         public BeginMode BeginMode;
@@ -174,21 +174,11 @@ namespace ComputerGraphicsCoursework
         public ShaderProgram()
         {
             BeginMode = BeginMode.Triangles;
-            _Attributes = new List<AttributeInfo>();
-            _Textures = new Dictionary<String, TextureInfo>();
+            _attributes = new List<AttributeInfo>();
+            _textures = new Dictionary<String, TextureInfo>();
             VertexDataStride = 0;
             VertexDataSize = 0;
             started = false;
-        }
-
-        public void ErrorCheck(String loc = "unknown")
-        {
-#if DEBUG
-            ErrorCode ec = GL.GetError();
-
-            if (ec != ErrorCode.NoError)
-                Debug.WriteLine(ec.ToString() + " at " + loc);
-#endif
         }
 
         public void Create()
@@ -204,9 +194,10 @@ namespace ComputerGraphicsCoursework
             GL.CompileShader(vert);
             GL.CompileShader(frag);
 #if DEBUG
-            Debug.WriteLine(GetType().FullName + Environment.NewLine);
-            Debug.WriteLine(GL.GetShaderInfoLog(vert));
-            Debug.WriteLine(GL.GetShaderInfoLog(frag));
+            String log;
+            Debug.WriteLine(GetType().FullName);
+            if ((log = GL.GetShaderInfoLog(vert).Trim()).Length > 0) Debug.WriteLine(log);
+            if ((log = GL.GetShaderInfoLog(frag).Trim()).Length > 0) Debug.WriteLine(log);
 #endif
 
             GL.AttachShader(Program, vert);
@@ -214,7 +205,7 @@ namespace ComputerGraphicsCoursework
 
             GL.LinkProgram(Program);
 #if DEBUG
-            Debug.WriteLine(GL.GetProgramInfoLog(Program));
+            if ((log = GL.GetProgramInfoLog(Program).Trim()).Length > 0) Debug.WriteLine(log);
             Debug.WriteLine("----------------");
 #endif
             Use();
@@ -224,7 +215,7 @@ namespace ComputerGraphicsCoursework
 
             OnCreate();
 
-            ErrorCheck("create");
+            Tools.ErrorCheck("create");
         }
 
         protected virtual void OnCreate()
@@ -252,29 +243,29 @@ namespace ComputerGraphicsCoursework
 
             VertexDataStride += info.Length;
             VertexDataSize += info.Size;
-            _Attributes.Add(info);
+            _attributes.Add(info);
 
-            ErrorCheck("addattrib:" + identifier);
+            Tools.ErrorCheck("addattrib:" + identifier);
         }
 
         public void AddTexture(String identifier, TextureUnit unit)
         {
-            _Textures.Add(identifier, new TextureInfo(this, identifier,
+            _textures.Add(identifier, new TextureInfo(this, identifier,
                 unit));
 
-            ErrorCheck("addtexture");
+            Tools.ErrorCheck("addtexture");
         }
 
         public void SetTexture(String identifier, Texture texture)
         {
             if (started) {
                 GL.End();
-                ErrorCheck("end");
+                Tools.ErrorCheck("end");
             }
 
-            _Textures[identifier].SetCurrentTexture(texture);
+            _textures[identifier].SetCurrentTexture(texture);
 
-            ErrorCheck("settexture");
+            Tools.ErrorCheck("settexture");
 
             if (started)
                 GL.Begin(BeginMode);
@@ -284,11 +275,11 @@ namespace ComputerGraphicsCoursework
         {
             StartBatch();
 
-            foreach (AttributeInfo info in _Attributes)
+            foreach (AttributeInfo info in _attributes)
                 GL.VertexAttribPointer(info.Location, info.Size,
                     info.PointerType, info.Normalize, VertexDataStride, info.Offset);
 
-            ErrorCheck("begin");
+            Tools.ErrorCheck("begin");
             GL.Begin(BeginMode);
 
             started = true;
@@ -299,6 +290,8 @@ namespace ComputerGraphicsCoursework
             Use();
 
             OnStartBatch();
+
+            Tools.ErrorCheck("startbatch");
         }
 
         protected virtual void OnStartBatch()
@@ -313,12 +306,14 @@ namespace ComputerGraphicsCoursework
 
             EndBatch();
 
-            ErrorCheck("end");
+            Tools.ErrorCheck("end");
         }
 
         public void EndBatch()
         {
             OnEndBatch();
+
+            Tools.ErrorCheck("endbatch");
         }
 
         protected virtual void OnEndBatch()
@@ -329,11 +324,11 @@ namespace ComputerGraphicsCoursework
         public virtual void Render(float[] data)
         {
             if (!started)
-                throw new Exception("Mu_s call Begin() fir_s!");
+                throw new Exception("Must call Begin() first!");
 
             int i = 0;
             while (i < data.Length) {
-                foreach (AttributeInfo attr in _Attributes) {
+                foreach (AttributeInfo attr in _attributes) {
                     int offset = attr.InputOffset;
 
                     switch (attr.Size) {
@@ -385,7 +380,7 @@ namespace ComputerGraphicsCoursework
             int loc = GL.GetUniformLocation(Program, "screen_resolution");
             GL.Uniform2(loc, (float) width, (float) height);
 
-            ErrorCheck("screensize");
+            Tools.ErrorCheck("screensize");
         }
     }
 }

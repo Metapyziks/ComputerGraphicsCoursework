@@ -4,13 +4,13 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework
 {
-    public class Texture
+    public abstract class Texture
     {
-        protected static int GetNextPOTS( int wid, int hei )
+        protected static int GetNextPOTS(int wid, int hei)
         {
             int max = wid > hei ? wid : hei;
 
-            return (int) Math.Pow( 2.0, Math.Ceiling( Math.Log( max, 2.0 ) ) );
+            return (int) Math.Pow(2.0, Math.Ceiling(Math.Log(max, 2.0)));
         }
 
         private static Texture _sCurrentLoadedTexture;
@@ -23,8 +23,8 @@ namespace ComputerGraphicsCoursework
             }
         }
 
-        private int _ID;
-        private bool _Loaded;
+        private int _id;
+        private bool _loaded;
 
         public TextureTarget TextureTarget { get; private set; }
 
@@ -32,7 +32,7 @@ namespace ComputerGraphicsCoursework
         {
             get
             {
-                return _ID > -1;
+                return _id > -1;
             }
         }
 
@@ -40,43 +40,45 @@ namespace ComputerGraphicsCoursework
         {
             get
             {
-                if ( !Ready )
-                    GL.GenTextures( 1, out _ID );
+                if (!Ready)
+                    GL.GenTextures(1, out _id);
 
-                return _ID;
+                return _id;
             }
         }
 
-        public Texture( TextureTarget target )
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+
+        public Texture(TextureTarget target, int width, int height)
         {
             TextureTarget = target;
+            Width = width;
+            Height = height;
 
-            _ID = -1;
-            _Loaded = false;
+            _id = -1;
+            _loaded = false;
         }
 
         public void Update()
         {
-            _Loaded = false;
+            _loaded = false;
         }
 
-        protected virtual void Load()
-        {
-
-        }
+        protected abstract void Load();
 
         public void Bind()
         {
-            if ( _sCurrentLoadedTexture != this )
-            {
-                GL.BindTexture( TextureTarget, ID );
+            if (_sCurrentLoadedTexture != this) {
+                GL.BindTexture(TextureTarget, ID);
                 _sCurrentLoadedTexture = this;
             }
 
-            if ( !_Loaded )
-            {
+            Tools.ErrorCheck("bindtexture");
+
+            if (!_loaded) {
                 Load();
-                _Loaded = true;
+                _loaded = true;
             }
         }
     }

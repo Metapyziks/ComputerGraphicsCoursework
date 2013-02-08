@@ -15,8 +15,10 @@ namespace ComputerGraphicsCoursework
         public readonly float Size;
         public readonly int Resolution;
 
+        private WaterSimulationShader _simShader;
+
         private VertexBuffer _vb;
-        private LumTexture2D _wavemap;
+        private FrameBuffer _wavemap;
         private LumTexture2D _spraymap;
         private float[,] _velocity;
         private Random _rand;
@@ -52,28 +54,17 @@ namespace ComputerGraphicsCoursework
             _vb.SetData(data);
 
             _rand = new Random();
-            _wavemap = new LumTexture2D(Resolution, Resolution);
+            _wavemap = new FrameBuffer(new BitmapTexture2D(Resolution, Resolution));
             _spraymap = new LumTexture2D(Resolution, Resolution);
             _velocity = new float[Resolution, Resolution];
-            for (int x = 0; x < Size; ++x) {
-                for (int y = 0; y < Size; ++y) {
-                    _wavemap[x, y] = 0.5f;
-                    _velocity[x, y] = (float) (_rand.NextDouble() - 0.5) / 16f;
-                }
-            }
+
+            _simShader = new WaterSimulationShader(Resolution, Resolution);
+            _simShader.WaveMap = _wavemap.Texture;
         }
 
         public void Splash(Vector2 pos, float magnitude)
         {
-            int x = (int) Math.Round((pos.X / Size + 0.5f) * Resolution);
-            int y = (int) Math.Round((pos.Y / Size + 0.5f) * Resolution);
-            while (x < 0) x += Resolution;
-            while (x >= Resolution) x -= Resolution;
-            while (y < 0) y += Resolution;
-            while (y >= Resolution) y -= Resolution;
-            //_velocity[x, y] = -magnitude;
-            _wavemap[x, y] = -magnitude;
-            _spraymap[x, y] = Math.Abs(magnitude) * 8f;
+
         }
 
         public void SimulateWater(double time)
@@ -81,35 +72,16 @@ namespace ComputerGraphicsCoursework
             if (time - _lastSim < SimulationPeriod) return;
             _lastSim = time;
 
-            for (int x = 0; x < Resolution; ++x) {
-                int l = (x - 1 < 0 ? Resolution - 1 : x - 1);
-                int r = (x + 1 == Resolution ? 0 : x + 1);
-                for (int y = 0; y < Resolution; ++y) {
-                    int t = (y - 1 < 0 ? Resolution - 1 : y - 1);
-                    int b = (y + 1 == Resolution ? 0 : y + 1);
-                    float av = 0.5f + _wavemap[l, y] + _wavemap[r, y] + _wavemap[x, t] + _wavemap[x, b];
-                    av += 0.7f * (_wavemap[l, t] + _wavemap[r, t] + _wavemap[l, b] + _wavemap[r, b]);
-                    _velocity[x, y] += ((av / 7.8f) - _wavemap[x, y]) / 16f;
-                    _velocity[x, y] = Tools.Clamp(_velocity[x, y], -1f / 32f, 1f / 32f);
-                    av = 0.3f + _spraymap[l, y] + _spraymap[r, y] + _spraymap[x, t] + _spraymap[x, b];
-                    av += 0.7f * (_spraymap[l, t] + _spraymap[r, t] + _spraymap[l, b] + _spraymap[r, b]);
-                    _spraymap[x, y] += Math.Max((av / 7.8f - _spraymap[x, y]), 0f);
-                }
-            }
-
-            for (int x = 0; x < Resolution; ++x) {
-                for (int y = 0; y < Resolution; ++y) {
-                    _wavemap[x, y] += _velocity[x, y];
-                    _velocity[x, y] *= 0.993f;
-                    _spraymap[x, y] *= 0.996f;
-                }
-            }
+            _wavemap.Begin();
+            _simShader.Begin();
+            _simShader.Render();
+            _simShader.End();
+            _wavemap.End();
         }
 
         public void Render(WaterShader shader)
         {
-            shader.SetTexture("wavemap", _wavemap);
-            shader.SetTexture("spraymap", _spraymap);
+            shader.SetTexture("wavemap", _wavemap.Texture);
             _vb.StartBatch(shader);
             _vb.Render(shader);
             _vb.EndBatch(shader);
