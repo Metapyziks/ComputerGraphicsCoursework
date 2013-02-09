@@ -16,6 +16,7 @@ namespace ComputerGraphicsCoursework
         public readonly int Resolution;
 
         private WaterSimulationShader _simShader;
+        private WaterSplashShader _splashShader;
 
         private VertexBuffer _vb;
         private FrameBuffer _wavemap;
@@ -29,7 +30,7 @@ namespace ComputerGraphicsCoursework
             Size = size;
 
             _vb = new VertexBuffer(2);
-            Resolution = 128;
+            Resolution = 512;
             int mid = Resolution >> 1;
 
             float[] data = new float[4 * 2 * Resolution * Resolution];
@@ -60,11 +61,21 @@ namespace ComputerGraphicsCoursework
 
             _simShader = new WaterSimulationShader(Resolution, Resolution);
             _simShader.WaveMap = _wavemap.Texture;
+
+            _splashShader = new WaterSplashShader(Resolution, Resolution);
+            _splashShader.WaveMap = _wavemap.Texture;
         }
 
         public void Splash(Vector2 pos, float magnitude)
         {
+            _splashShader.SplashPosition = pos;
+            _splashShader.SplashMagnitude = magnitude;
 
+            _wavemap.Begin();
+            _splashShader.Begin();
+            _splashShader.Render();
+            _splashShader.End();
+            _wavemap.End();
         }
 
         public void SimulateWater(double time)

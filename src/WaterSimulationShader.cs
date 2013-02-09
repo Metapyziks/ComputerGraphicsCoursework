@@ -25,24 +25,54 @@ namespace ComputerGraphicsCoursework
             }
         }
 
-        public WaterSimulationShader()
+        private WaterSimulationShader()
         {
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, true);
             vert.AddAttribute(ShaderVarType.Vec2, "in_position");
-            vert.Logic = @"
-                void main( void )
-                {
-                    gl_Position = in_position;
-                }
-            ";
+            vert.Logic = "void main( void ) { gl_Position = in_position; }";
 
             ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, true);
             frag.AddUniform(ShaderVarType.Sampler2D, "wavemap");
             frag.Logic = @"
-                void main( void )
+                const float pi = 3.1415927;
+                void main(void)
                 {
-                    float clr = sin(gl_FragCoord.x) * cos(gl_FragCoord.y);
-                    out_frag_colour = vec4(clr, clr, clr, 1.0);
+                    vec2 tex_pos = gl_FragCoord.xy / 512.0;
+                    vec3 cur = texture(wavemap, tex_pos).xyz;
+
+                    const ivec2 offsets[] = ivec2[8] (
+                        ivec2(-1, -1), ivec2( 0, -1), ivec2( 1, -1),
+                        ivec2(-1,  0),                ivec2( 1,  0),
+                        ivec2(-1,  1), ivec2( 0,  1), ivec2( 1,  1)
+                    );
+                    const float weights[] = float[8] (
+                        0.707, 1.0, 0.707, 1.0, 1.0, 0.707, 1.0, 0.707
+                    );
+
+                    /*
+                    float av = 0.25;
+                    av += textureOffset(wavemap, tex_pos, offsets[0]).x * weights[0];
+                    av += textureOffset(wavemap, tex_pos, offsets[1]).x * weights[1];
+                    av += textureOffset(wavemap, tex_pos, offsets[2]).x * weights[2];
+                    av += textureOffset(wavemap, tex_pos, offsets[3]).x * weights[3];
+                    av += textureOffset(wavemap, tex_pos, offsets[4]).x * weights[4];
+                    av += textureOffset(wavemap, tex_pos, offsets[5]).x * weights[5];
+                    av += textureOffset(wavemap, tex_pos, offsets[6]).x * weights[6];
+                    av += textureOffset(wavemap, tex_pos, offsets[7]).x * weights[7];
+                    av /= 7.828;
+                    */
+
+                    float av = 0.3;
+                    av += textureOffset(wavemap, tex_pos, offsets[0]).x * weights[0];
+                    av += textureOffset(wavemap, tex_pos, offsets[1]).x * weights[1];
+                    av += textureOffset(wavemap, tex_pos, offsets[2]).x * weights[2];
+                    av += textureOffset(wavemap, tex_pos, offsets[3]).x * weights[3];
+                    av += textureOffset(wavemap, tex_pos, offsets[4]).x * weights[4];
+                    av += textureOffset(wavemap, tex_pos, offsets[5]).x * weights[5];
+                    av += textureOffset(wavemap, tex_pos, offsets[6]).x * weights[6];
+                    av += textureOffset(wavemap, tex_pos, offsets[7]).x * weights[7];
+
+                    out_frag_colour = vec4(cur.x, cur.y, cur.z * 0.995 + max(av / 7.828 - cur.z, 0.0), 1.0);
                 }
             ";
 
@@ -70,26 +100,12 @@ namespace ComputerGraphicsCoursework
             base.OnCreate();
 
             AddAttribute("in_position", 2);
-            AddTexture("wavemap", TextureUnit.Texture0);
-        }
-
-        protected override void OnStartBatch()
-        {
-            base.OnStartBatch();
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            AddTexture("wavemap", TextureUnit.Texture1);
         }
 
         public void Render()
         {
             Render(_bounds);
-        }
-
-        protected override void OnEndBatch()
-        {
-            base.OnEndBatch();
-            GL.Disable(EnableCap.Blend);
         }
     }
 }

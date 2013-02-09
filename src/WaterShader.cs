@@ -57,7 +57,7 @@ namespace ComputerGraphicsCoursework
                     var_offset = in_vertex * size + view_origin;
                     var_dist = length(in_vertex * size);
 
-                    var_texpos = vec2((var_offset.y + 32.0) / 64.0, (var_offset.x + 32.0) / 64.0);
+                    var_texpos = vec2((var_offset.x + 32.0) / 64.0, (var_offset.y + 32.0) / 64.0);
                     var_height = texture(wavemap, var_texpos).r;
                     float neighbours[] = float[4] (
                         textureOffset(wavemap, var_texpos, offsets[0]).r,
@@ -68,7 +68,7 @@ namespace ComputerGraphicsCoursework
                     vec3 horz = normalize(vec3(2.0, 0.0, neighbours[2] - neighbours[0]));
                     vec3 vert = normalize(vec3(0.0, 2.0, neighbours[3] - neighbours[1]));
                     var_normal = cross(horz, vert);
-                    gl_Position = view_matrix * vec4(var_offset.x, var_height, var_offset.y, 1.0);
+                    gl_Position = view_matrix * vec4(var_offset.x + 0.01625, var_height, var_offset.y, 1.0);
                 }
             ";
 
@@ -115,7 +115,6 @@ namespace ComputerGraphicsCoursework
             AddAttribute("in_vertex", 2);
             AddTexture("wavemap", TextureUnit.Texture1);
             AddTexture("ripplemap", TextureUnit.Texture2);
-            AddTexture("spraymap", TextureUnit.Texture3);
 
             var rand = new Random();
             _ripplemap = new LumTexture2D(64, 64);
@@ -124,8 +123,6 @@ namespace ComputerGraphicsCoursework
                     _ripplemap[x, y] = (float) rand.NextDouble();
                 }
             }
-
-            SetTexture("ripplemap", _ripplemap);
 
             _colourLoc = GL.GetUniformLocation(Program, "colour");
             _viewVectorLoc = GL.GetUniformLocation(Program, "view_vector");
@@ -142,6 +139,8 @@ namespace ComputerGraphicsCoursework
                 GL.Uniform3(_viewVectorLoc, Camera.ViewVector);
                 GL.Uniform2(_viewOriginLoc, Camera.Position.X, Camera.Position.Z);
             }
+
+            SetTexture("ripplemap", _ripplemap);
 
             GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.Blend); GL.Enable(EnableCap.CullFace);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
