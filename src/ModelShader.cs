@@ -65,7 +65,7 @@ namespace ComputerGraphicsCoursework
                 void main(void)
                 {
                     const vec3 light = normalize(vec3(-3, -4, -8));
-                    out_frag_colour = vec4(colour.rgb * (3.0 + dot(light, var_normal)) * 0.25, colour.a);
+                    out_frag_colour = vec4(colour.rgb * (3.0 + dot(-light, var_normal)) * 0.25, colour.a);
                 }
             ";
 
@@ -95,7 +95,7 @@ namespace ComputerGraphicsCoursework
         {
             base.OnStartBatch();
 
-            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.CullFace);
             GL.UniformMatrix4(_transLoc, false, ref _trans);
             GL.Uniform4(_colourLoc, _colour);
         }
@@ -104,7 +104,7 @@ namespace ComputerGraphicsCoursework
         {
             base.OnEndBatch();
 
-            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.DepthTest); GL.Disable(EnableCap.CullFace);
         }
 
         public void Render(Vector3 vert, Vector3 norm)
