@@ -49,8 +49,6 @@ namespace ComputerGraphicsCoursework
         {
             base.OnLoad(e);
 
-            GL.ClearColor(Color4.White);
-
             VSync = VSyncMode.Off;
 
             _rand = new Random();
@@ -91,6 +89,8 @@ namespace ComputerGraphicsCoursework
                 lastMouseX = Cursor.Position.X;
                 lastMouseY = Cursor.Position.Y;
             };
+
+            GL.ClearColor(Color4.White);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -162,7 +162,7 @@ namespace ComputerGraphicsCoursework
 
             _ship.Update(_timer.Elapsed.TotalSeconds, _water);
 
-            _camera.Position = _ship.Position - _camera.ViewVector * 12f;
+            _camera.Position = _ship.Position - _camera.ViewVector * 24f;
             _camera.UpdateViewMatrix();
 
             _water.SimulateWater(_timer.Elapsed.TotalSeconds);

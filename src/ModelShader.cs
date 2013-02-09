@@ -64,7 +64,7 @@ namespace ComputerGraphicsCoursework
             frag.Logic = @"
                 void main(void)
                 {
-                    const vec3 light = normalize(vec3(-3, -4, -8));
+                    const vec3 light = normalize(vec3(-6, -14, -3));
                     out_frag_colour = vec4(colour.rgb * (3.0 + dot(-light, var_normal)) * 0.25, colour.a);
                 }
             ";

@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework
 {
-    class WaterSprayDissipationShader : WaterEffectShader
+    class WaterSimulateSprayShader : WaterEffectShader
     {
         protected override void OnAddShaderLogic(ShaderBuilder frag)
         {
@@ -50,7 +50,8 @@ namespace ComputerGraphicsCoursework
                             )
                         );
 
-                    float new = min(1.0, cur + max((mx - cur) * 0.5, 0.0)) * 0.997;
+                    float vel = pow(abs(texture(velocitymap, tex_pos).a - 0.5) / 2.0, 2.0);
+                    float new = min(1.0, cur + max((mx - cur) * 0.5, 0.0) + vel) * 0.99;
                     
                     out_frag_colour = vec4(new, new, new, new);
                 }

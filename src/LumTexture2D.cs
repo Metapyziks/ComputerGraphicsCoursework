@@ -13,12 +13,21 @@ namespace ComputerGraphicsCoursework
         private readonly int _actualSize;
         private float[,] _data;
 
-        public LumTexture2D(int width, int height)
+        public LumTexture2D(int width, int height, float clear = 0f)
             : base(TextureTarget.Texture2D, width, height)
         {
             _actualSize = GetNextPOTS(Width, Height);
 
             _data = new float[Width, Height];
+
+            if (clear != 0f) {
+                for (int x = 0; x < Width; ++x) {
+                    for (int y = 0; y < Height; ++y) {
+                        _data[x, y] = clear;
+                    }
+                }
+                Update();
+            }
         }
 
         public Vector2 GetCoords(Vector2 pos)

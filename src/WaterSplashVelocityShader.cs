@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework
 {
-    abstract class WaterSplashEffectShader : WaterEffectShader
+    class WaterSplashVelocityShader : WaterEffectShader
     {
         private Vector3 _splash;
         private int _splashLoc;
@@ -59,9 +59,11 @@ namespace ComputerGraphicsCoursework
                 void main(void)
                 {
                     vec2 diff = vec2(diff(splash.x, tex_pos.x), diff(splash.y, tex_pos.y));
-                    float scale = (1.0 - (length(diff) * 128.0)) * abs(splash.z);
-                    if (scale > 0.0) {
-                        float mag = " + GetMagnitudeCalculation() + @";
+                    float dist = length(diff) * 128.0;
+                    if (dist < 1.0) {
+                        float scale = (1.0 - dist) * splash.z;
+                        float cur = texture(heightmap, tex_pos).a;
+                        float mag = (scale >= 0.5) ? max(cur, scale) : min(cur, scale);
                         out_frag_colour = vec4(mag, mag, mag, mag);
                     } else {
                         discard;
@@ -69,8 +71,6 @@ namespace ComputerGraphicsCoursework
                 }
             ";
         }
-
-        public abstract String GetMagnitudeCalculation();
 
         protected override void OnCreate()
         {

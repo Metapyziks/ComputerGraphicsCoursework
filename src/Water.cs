@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework
 {
@@ -13,18 +14,22 @@ namespace ComputerGraphicsCoursework
         public const int Resolution = 512;
         public const double SimulationPeriod = 1.0 / 60.0;
 
-        private static readonly WaterSprayDissipationShader _sSimSprayShader;
-        private static readonly WaterSplashSprayShader _sSplashSprayShader;
-        private static readonly WaterSplashHeightShader _sSplashHeightShader;
+        private static readonly WaterSimulateSprayShader _sSimSprayShader;
+        private static readonly WaterSimulateVelocityShader _sSimVelocityShader;
+        private static readonly WaterSimulateHeightShader _sSimHeightShader;
+
+        private static readonly WaterSplashVelocityShader _sSplashVelocityShader;
 
         private static readonly float[] _sVerts;
         private static readonly VertexBuffer _sVB;
 
         static Water()
         {
-            _sSimSprayShader = new WaterSprayDissipationShader();
-            _sSplashSprayShader = new WaterSplashSprayShader();
-            _sSplashHeightShader = new WaterSplashHeightShader();
+            _sSimSprayShader = new WaterSimulateSprayShader();
+            _sSimVelocityShader = new WaterSimulateVelocityShader();
+            _sSimHeightShader = new WaterSimulateHeightShader();
+
+            _sSplashVelocityShader = new WaterSplashVelocityShader();
 
             // TODO: Improve so is more detailed near centre and uses less verts
             _sVerts = new float[4 * 2 * Resolution * Resolution];
@@ -65,32 +70,22 @@ namespace ComputerGraphicsCoursework
             _rand = new Random();
             _heightmapBuffer = new FrameBuffer(new BitmapTexture2D(Resolution, Resolution));
 
-            _heightmapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution));
-            _velocitymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution));
-            _spraymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution));
+            _heightmapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.5f));
+            _velocitymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.5f));
+            _spraymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.0f));
         }
 
         public void Splash(Vector2 pos, float magnitude)
         {
-            _sSplashSprayShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
-            _sSplashSprayShader.SplashPosition = pos;
-            _sSplashSprayShader.SplashMagnitude = magnitude;
+            _sSplashVelocityShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
+            _sSplashVelocityShader.SplashPosition = pos;
+            _sSplashVelocityShader.SplashMagnitude = magnitude;
 
-            _spraymapBuffer.Begin();
-            _sSplashSprayShader.Begin();
-            _sSplashSprayShader.Render();
-            _sSplashSprayShader.End();
-            _spraymapBuffer.End();
-
-            _sSplashHeightShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
-            _sSplashHeightShader.SplashPosition = pos;
-            _sSplashHeightShader.SplashMagnitude = magnitude;
-
-            _heightmapBuffer.Begin();
-            _sSplashHeightShader.Begin();
-            _sSplashHeightShader.Render();
-            _sSplashHeightShader.End();
-            _heightmapBuffer.End();
+            _velocitymapBuffer.Begin();
+            _sSplashVelocityShader.Begin();
+            _sSplashVelocityShader.Render();
+            _sSplashVelocityShader.End();
+            _velocitymapBuffer.End();
         }
 
         public void SimulateWater(double time)
@@ -98,11 +93,29 @@ namespace ComputerGraphicsCoursework
             if (time - _lastSim < SimulationPeriod) return;
             _lastSim = time;
 
+            _sSimSprayShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
+            
             _spraymapBuffer.Begin();
             _sSimSprayShader.Begin();
             _sSimSprayShader.Render();
             _sSimSprayShader.End();
             _spraymapBuffer.End();
+
+            _sSimVelocityShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
+
+            _velocitymapBuffer.Begin();
+            _sSimVelocityShader.Begin();
+            _sSimVelocityShader.Render();
+            _sSimVelocityShader.End();
+            _velocitymapBuffer.End();
+
+            _sSimHeightShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
+
+            _heightmapBuffer.Begin();
+            _sSimHeightShader.Begin();
+            _sSimHeightShader.Render();
+            _sSimHeightShader.End();
+            _heightmapBuffer.End();
         }
 
         public void Render(WaterShader shader)
