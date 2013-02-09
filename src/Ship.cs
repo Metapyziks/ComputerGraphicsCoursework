@@ -63,13 +63,16 @@ namespace ComputerGraphicsCoursework
         public void Render(ModelShader shader)
         {
             shader.Transform = _trans;
+            shader.Shinyness = 0f;
             shader.Colour = Color4.BurlyWood;
             _model.Render(shader, _innerHull);
             shader.Colour = Color4.LightGray;
+            shader.Shinyness = 8f;
             _model.Render(shader, _outerHull);
             shader.Colour = Color4.Gray;
             _model.Render(shader, _trim);
             shader.Colour = new Color4(32, 32, 32, 255);
+            shader.Shinyness = 4f;
             _model.Render(shader, _motor);
         }
 

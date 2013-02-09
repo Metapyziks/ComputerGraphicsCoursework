@@ -136,23 +136,21 @@ namespace ComputerGraphicsCoursework
         {
             base.OnStartBatch();
 
-            if (Camera != null) {
-                GL.Uniform3(_viewVectorLoc, Camera.ViewVector);
-                GL.Uniform2(_viewOriginLoc, Camera.Position.X, Camera.Position.Z);
-            }
+            GL.Uniform3(_viewVectorLoc, Camera.ViewVector);
+            GL.Uniform2(_viewOriginLoc, Camera.Position.X, Camera.Position.Z);
 
             SetTexture("ripplemap", _ripplemap);
 
             GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.Blend); //GL.Enable(EnableCap.CullFace);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-           // GL.CullFace(CullFaceMode.Front);
+            // GL.CullFace(CullFaceMode.Front);
         }
 
         protected override void OnEndBatch()
         {
             base.OnEndBatch();
 
-            GL.Disable(EnableCap.DepthTest); GL.Disable(EnableCap.Blend); GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.DepthTest); GL.Disable(EnableCap.Blend); //GL.Disable(EnableCap.CullFace);
         }
 
         public void Render(Vector2 vert)
