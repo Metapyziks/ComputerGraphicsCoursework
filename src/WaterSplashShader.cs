@@ -58,11 +58,11 @@ namespace ComputerGraphicsCoursework
 
                 void main(void)
                 {
-                    float cur = texture(spraymap, tex_pos).a;
                     vec2 diff = vec2(diff(splash.x, tex_pos.x), diff(splash.y, tex_pos.y));
                     float dist = length(diff);
                     if (dist < 1.0 / 64.0) {
-                        out_frag_colour = vec4(1.0, 1.0, 1.0, 1.0);
+                        float mag = max((1.0 - (dist * 64.0)) * abs(splash.z), texture(spraymap, tex_pos).a);
+                        out_frag_colour = vec4(mag, mag, mag, mag);
                     } else {
                         discard;
                     }

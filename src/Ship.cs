@@ -44,12 +44,12 @@ namespace ComputerGraphicsCoursework
             Up = Vector4.Transform(new Vector4(0f, 1f, 0f, 0f), _trans).Xyz;
 
             if (water != null) {
-                var splashPos = Position - Forward * 3f;
-                water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
-                splashPos -= Right;
+                var splashPos = Position + Forward * 2f;
                 water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
-                splashPos += Right;
-                water.Splash(new Vector2(splashPos.X, splashPos.Z), 0.25f);
+                splashPos += -Forward * 6f - Right;
+                water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
+                splashPos += Right * 2f;
+                water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
             }
         }
 

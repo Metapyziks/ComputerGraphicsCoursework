@@ -87,7 +87,7 @@ namespace ComputerGraphicsCoursework
                 {
                     const vec3 light = normalize(vec3(-3, -4, -6));
                     out_frag_colour = vec4(colour.rgb * max(0.0, -dot(light, var_normal)), colour.a);
-                    out_frag_colour += vec4((vec3(0.0, 0.0, 0.0) - out_frag_colour.rgb) * pow((1.0 - var_height), 0.5), 0.0);
+                    //out_frag_colour += vec4((vec3(0.0, 0.0, 0.0) - out_frag_colour.rgb) * pow((1.0 - var_height), 0.5), 0.0);
                     out_frag_colour = vec4(out_frag_colour.rgb + (vec3(0.6, 0.7, 0.9) - out_frag_colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 10.0), out_frag_colour.a);
                     
                     if (var_dist < 64.0) {
@@ -143,9 +143,9 @@ namespace ComputerGraphicsCoursework
 
             SetTexture("ripplemap", _ripplemap);
 
-            GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.Blend); GL.Enable(EnableCap.CullFace);
+            GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.Blend); //GL.Enable(EnableCap.CullFace);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            GL.CullFace(CullFaceMode.Front);
+           // GL.CullFace(CullFaceMode.Front);
         }
 
         protected override void OnEndBatch()

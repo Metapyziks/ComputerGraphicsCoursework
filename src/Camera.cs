@@ -103,7 +103,7 @@ namespace ComputerGraphicsCoursework
                 float sinYaw = (float) Math.Sin(Yaw);
                 float cosPitch = (float) Math.Cos(Pitch);
                 float sinPitch = (float) Math.Sin(Pitch);
-                return new Vector3(sinYaw * cosPitch, sinPitch, cosYaw * cosPitch);
+                return new Vector3(sinYaw * cosPitch, -sinPitch, -cosYaw * cosPitch);
             }
             set
             {

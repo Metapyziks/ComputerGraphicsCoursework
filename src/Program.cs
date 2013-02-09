@@ -46,13 +46,13 @@ namespace ComputerGraphicsCoursework
         public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 2))
         {
             this.Title = "Computer Graphics Coursework";
-
-            GL.ClearColor(Color4.CornflowerBlue);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            GL.ClearColor(Color4.White);
 
             VSync = VSyncMode.Off;
 
@@ -174,9 +174,8 @@ namespace ComputerGraphicsCoursework
 
             _ship.Update(_timer.Elapsed.TotalSeconds, _water);
 
-            //_camera.Position = _ship.Position + _ship.Up * 8f - _ship.Forward * 20f;
-            //_camera.ViewVector = _ship.Forward * 4f - _ship.Up;
-            //_camera.UpdateViewMatrix();
+            _camera.Position = _ship.Position - _camera.ViewVector * 12f;
+            _camera.UpdateViewMatrix();
 
             _water.SimulateWater(_timer.Elapsed.TotalSeconds);
         }
