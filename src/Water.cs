@@ -13,16 +13,18 @@ namespace ComputerGraphicsCoursework
         public const int Resolution = 512;
         public const double SimulationPeriod = 1.0 / 60.0;
 
-        private static readonly WaterSprayDissipationShader _sSimShader;
-        private static readonly WaterSplashShader _sSplashShader;
+        private static readonly WaterSprayDissipationShader _sSimSprayShader;
+        private static readonly WaterSplashSprayShader _sSplashSprayShader;
+        private static readonly WaterSplashHeightShader _sSplashHeightShader;
 
         private static readonly float[] _sVerts;
         private static readonly VertexBuffer _sVB;
 
         static Water()
         {
-            _sSimShader = new WaterSprayDissipationShader();
-            _sSplashShader = new WaterSplashShader();
+            _sSimSprayShader = new WaterSprayDissipationShader();
+            _sSplashSprayShader = new WaterSplashSprayShader();
+            _sSplashHeightShader = new WaterSplashHeightShader();
 
             // TODO: Improve so is more detailed near centre and uses less verts
             _sVerts = new float[4 * 2 * Resolution * Resolution];
@@ -70,15 +72,25 @@ namespace ComputerGraphicsCoursework
 
         public void Splash(Vector2 pos, float magnitude)
         {
-            _sSplashShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
-            _sSplashShader.SplashPosition = pos;
-            _sSplashShader.SplashMagnitude = magnitude;
+            _sSplashSprayShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
+            _sSplashSprayShader.SplashPosition = pos;
+            _sSplashSprayShader.SplashMagnitude = magnitude;
 
             _spraymapBuffer.Begin();
-            _sSplashShader.Begin();
-            _sSplashShader.Render();
-            _sSplashShader.End();
+            _sSplashSprayShader.Begin();
+            _sSplashSprayShader.Render();
+            _sSplashSprayShader.End();
             _spraymapBuffer.End();
+
+            _sSplashHeightShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
+            _sSplashHeightShader.SplashPosition = pos;
+            _sSplashHeightShader.SplashMagnitude = magnitude;
+
+            _heightmapBuffer.Begin();
+            _sSplashHeightShader.Begin();
+            _sSplashHeightShader.Render();
+            _sSplashHeightShader.End();
+            _heightmapBuffer.End();
         }
 
         public void SimulateWater(double time)
@@ -87,9 +99,9 @@ namespace ComputerGraphicsCoursework
             _lastSim = time;
 
             _spraymapBuffer.Begin();
-            _sSimShader.Begin();
-            _sSimShader.Render();
-            _sSimShader.End();
+            _sSimSprayShader.Begin();
+            _sSimSprayShader.Render();
+            _sSimSprayShader.End();
             _spraymapBuffer.End();
         }
 

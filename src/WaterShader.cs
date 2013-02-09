@@ -57,7 +57,7 @@ namespace ComputerGraphicsCoursework
                     var_offset = in_vertex * size + view_origin;
                     var_dist = length(in_vertex * size);
 
-                    var_texpos = vec2((var_offset.x + 32.0) / 64.0, (var_offset.y + 32.0) / 64.0);
+                    var_texpos = vec2((var_offset.x + 64.0) / 128.0, (var_offset.y + 64.0) / 128.0);
                     var_height = texture(heightmap, var_texpos).a;
                     float neighbours[] = float[4] (
                         textureOffset(heightmap, var_texpos, offsets[0]).a,
@@ -85,10 +85,9 @@ namespace ComputerGraphicsCoursework
             frag.Logic = @"
                 void main(void)
                 {
-                    const vec3 light = normalize(vec3(-3, -4, -6));
-                    out_frag_colour = vec4(colour.rgb * max(0.0, -dot(light, var_normal)), colour.a);
-                    //out_frag_colour += vec4((vec3(0.0, 0.0, 0.0) - out_frag_colour.rgb) * pow((1.0 - var_height), 0.5), 0.0);
-                    out_frag_colour = vec4(out_frag_colour.rgb + (vec3(0.6, 0.7, 0.9) - out_frag_colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 10.0), out_frag_colour.a);
+                    const vec3 light = normalize(vec3(-3, -8, -5));
+                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light, var_normal)), colour.a);
+                    out_frag_colour = vec4(out_frag_colour.rgb + (vec3(1.0, 1.0, 1.0) - out_frag_colour.rgb) * 0.25 * pow(dot(reflect(light, var_normal), view_vector) * 0.5 + 0.5, 4.0), out_frag_colour.a);
                     
                     float scale = (2.0 - max(1.0, var_dist / 32.0));
                     if (scale > 0.0) {

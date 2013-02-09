@@ -18,9 +18,6 @@ namespace ComputerGraphicsCoursework
     {
         private bool _captureMouse;
 
-        private SpriteShader _spriteShader;
-        private Sprite _testSprite;
-
         private Camera _camera;
 
         private ModelShader _modelShader;
@@ -60,10 +57,6 @@ namespace ComputerGraphicsCoursework
 
             _timer = new Stopwatch();
             _timer.Start();
-
-            _spriteShader = new SpriteShader(Width, Height);
-            var texture = new BitmapTexture2D((Bitmap) Bitmap.FromFile("../../res/test.png"));
-            _testSprite = new Sprite(texture);
 
             _camera = new Camera(Width, Height);
             _camera.Pitch = 0.0f;
@@ -105,12 +98,7 @@ namespace ComputerGraphicsCoursework
             base.OnRenderFrame(e);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            _spriteShader.Begin();
-            _testSprite.Render(_spriteShader);
-            _spriteShader.End();
-
-
+            
             _modelShader.StartBatch();
             _ship.Render(_modelShader);
             _modelShader.EndBatch();

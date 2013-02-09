@@ -50,7 +50,7 @@ namespace ComputerGraphicsCoursework
                             )
                         );
 
-                    float new = min(1.0, cur + max((mx - cur), 0.0)) * 0.997;
+                    float new = min(1.0, cur + max((mx - cur) * 0.5, 0.0)) * 0.997;
                     
                     out_frag_colour = vec4(new, new, new, new);
                 }
