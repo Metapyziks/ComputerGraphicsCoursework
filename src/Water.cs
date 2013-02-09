@@ -31,15 +31,19 @@ namespace ComputerGraphicsCoursework
 
             _sSplashVelocityShader = new WaterSplashVelocityShader();
 
-            Func<double, int> sizeCalc = x => Math.Max(1, (int) Math.Floor((x - 16.0) / 16.0));
-            int length = FindWaterDataLength(512, -256, -256, sizeCalc);
+            Func<double, int> sizeCalc = x => Math.Max(1, (int) Math.Floor((x - 64.0) / 16.0));
+            int length = FindWaterDataLength(1024, sizeCalc);
 
-            int i = 0;
             _sVerts = new float[4 * 2 * length];
-            FindWaterData(512, 512, -256, -256, sizeCalc, _sVerts, ref i);
+            FindWaterData(1024, sizeCalc, _sVerts);
 
             _sVB = new VertexBuffer(2);
             _sVB.SetData(_sVerts);
+        }
+
+        private static int FindWaterDataLength(int size, Func<double, int> sizeCalc)
+        {
+            return FindWaterDataLength(size, -(size >> 1), -(size >> 1), sizeCalc);
         }
 
         private static int FindWaterDataLength(int size, int x, int y, Func<double, int> sizeCalc)
@@ -55,6 +59,12 @@ namespace ComputerGraphicsCoursework
             }
 
             return 1;
+        }
+
+        private static void FindWaterData(int size, Func<double, int> sizeCalc, float[] buffer)
+        {
+            int i = 0;
+            FindWaterData(size, size, -(size >> 1), -(size >> 1), sizeCalc, buffer, ref i);
         }
 
         private static void FindWaterData(int totalSize, int size, int x, int y, Func<double, int> sizeCalc, float[] buffer, ref int i)
@@ -116,6 +126,10 @@ namespace ComputerGraphicsCoursework
         {
             if (time - _lastSim < SimulationPeriod) return;
             _lastSim = time;
+
+            for (int i = 0; i < 16; ++i) {
+                Splash(new Vector2((float) _rand.NextDouble() * 512f, (float) _rand.NextDouble() * 512f), (float) _rand.NextDouble() / 8f);
+            }         
 
             _sSimSprayShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
             

@@ -47,7 +47,7 @@ namespace ComputerGraphicsCoursework
             vert.Logic = @"
                 void main(void)
                 {
-                    const float size = 256.0;
+                    const float size = 512.0;
 
                     const ivec2 offsets[] = ivec2[4] (
                         ivec2(-1, 0), ivec2(0, -1),

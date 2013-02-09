@@ -62,8 +62,8 @@ namespace ComputerGraphicsCoursework
                     float dist = length(diff) * 128.0;
                     if (dist < 1.0) {
                         float scale = (1.0 - dist) * splash.z;
-                        float cur = texture(heightmap, tex_pos).a;
-                        float mag = (scale >= 0.5) ? max(cur, scale) : min(cur, scale);
+                        float cur = texture(velocitymap, tex_pos).a;
+                        float mag = cur - scale;
                         out_frag_colour = vec4(mag, mag, mag, mag);
                     } else {
                         discard;
