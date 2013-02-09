@@ -14,7 +14,7 @@ namespace ComputerGraphicsCoursework
     {
         private LumTexture2D _ripplemap;
 
-        private Color4 _colour = new Color4(48, 92, 120, 127);
+        private Color4 _colour = new Color4(48, 92, 120, 191);
         private int _colourLoc = -1;
 
         private int _viewVectorLoc = -1;
@@ -90,11 +90,12 @@ namespace ComputerGraphicsCoursework
                     //out_frag_colour += vec4((vec3(0.0, 0.0, 0.0) - out_frag_colour.rgb) * pow((1.0 - var_height), 0.5), 0.0);
                     out_frag_colour = vec4(out_frag_colour.rgb + (vec3(0.6, 0.7, 0.9) - out_frag_colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 10.0), out_frag_colour.a);
                     
-                    if (var_dist < 64.0) {
-                        float ripple = texture(ripplemap, (var_offset / 8.0) + var_normal.xz).a;
+                    float scale = (2.0 - max(1.0, var_dist / 32.0));
+                    if (scale > 0.0) {
+                        float ripple = texture(ripplemap, (var_offset / 32.0) + var_normal.xz).a;
                         float spray = texture(spraymap, var_texpos).a;
-                        if (ripple * pow(spray, 0.5) > 0.75) {
-                            out_frag_colour += spray * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * (2.0 - max(1.0, var_dist / 32.0));
+                        if (ripple * pow(spray, 1.0) > 0.75) {
+                            out_frag_colour += spray * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * scale;
                         }
                     }  
                 }
@@ -118,10 +119,10 @@ namespace ComputerGraphicsCoursework
             AddTexture("ripplemap", TextureUnit.Texture4);
 
             var rand = new Random();
-            _ripplemap = new LumTexture2D(64, 64);
-            for (int x = 0; x < 64; ++x) {
-                for (int y = 0; y < 64; ++y) {
-                    _ripplemap[x, y] = (float) rand.NextDouble();
+            _ripplemap = new LumTexture2D(128, 128);
+            for (int x = 0; x < 128; ++x) {
+                for (int y = 0; y < 128; ++y) {
+                    _ripplemap[x, y] = (float) rand.NextDouble() * 0.5f + 0.5f;
                 }
             }
 

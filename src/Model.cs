@@ -183,6 +183,12 @@ namespace ComputerGraphicsCoursework
             _vb.SetData(raw);
         }
 
+        public FaceGroup[] GetFaceGroups(String prefix)
+        {
+            prefix = prefix + "_";
+            return FaceGroups.Where(x => x.Name.StartsWith(prefix)).ToArray();
+        }
+
         public void Render(ModelShader shader)
         {
             _vb.StartBatch(shader);

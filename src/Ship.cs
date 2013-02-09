@@ -5,14 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OpenTK;
+using OpenTK.Graphics;
 
 namespace ComputerGraphicsCoursework
 {
     class Ship : IRenderable<ModelShader>
     {
-        private Model _hull;
-        private Model.FaceGroup _waterclipFaceGroup;
-        private Model.FaceGroup[] _visibleFaceGroups;
+        private Model _model;
+        private Model.FaceGroup[] _waterclip;
+        private Model.FaceGroup[] _innerHull;
+        private Model.FaceGroup[] _outerHull;
+        private Model.FaceGroup[] _trim;
+        private Model.FaceGroup[] _motor;
         private Matrix4 _trans;
 
         public Vector3 Forward { get; private set; }
@@ -22,9 +26,12 @@ namespace ComputerGraphicsCoursework
 
         public Ship()
         {
-            _hull = Model.FromFile("../../res/boat.obj");
-            _waterclipFaceGroup = _hull.FaceGroups.First(x => x.Name == "Waterclip_waterclip");
-            _visibleFaceGroups = _hull.FaceGroups.Where(x => x != _waterclipFaceGroup).ToArray();
+            _model = Model.FromFile("../../res/boat.obj");
+            _waterclip = _model.GetFaceGroups("Waterclip");
+            _innerHull = _model.GetFaceGroups("InnerHull");
+            _outerHull = _model.GetFaceGroups("OuterHull");
+            _trim = _model.GetFaceGroups("Trim");
+            _motor = _model.GetFaceGroups("Motor");
 
             _trans = Matrix4.Identity;
         }
@@ -44,9 +51,9 @@ namespace ComputerGraphicsCoursework
             Up = Vector4.Transform(new Vector4(0f, 1f, 0f, 0f), _trans).Xyz;
 
             if (water != null) {
-                var splashPos = Position + Forward * 2f;
+                var splashPos = Position + Forward * 3.5f;
                 water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
-                splashPos += -Forward * 6f - Right;
+                splashPos += -Forward * 7.5f - Right;
                 water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
                 splashPos += Right * 2f;
                 water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
@@ -56,13 +63,20 @@ namespace ComputerGraphicsCoursework
         public void Render(ModelShader shader)
         {
             shader.Transform = _trans;
-            _hull.Render(shader, _visibleFaceGroups);
+            shader.Colour = Color4.BurlyWood;
+            _model.Render(shader, _innerHull);
+            shader.Colour = Color4.LightGray;
+            _model.Render(shader, _outerHull);
+            shader.Colour = Color4.Gray;
+            _model.Render(shader, _trim);
+            shader.Colour = new Color4(32, 32, 32, 255);
+            _model.Render(shader, _motor);
         }
 
         public void Render(DepthClipShader shader)
         {
             shader.Transform = _trans;
-            _hull.Render(shader, _waterclipFaceGroup);
+            _model.Render(shader, _waterclip);
         }
     }
 }
