@@ -31,28 +31,52 @@ namespace ComputerGraphicsCoursework
 
             _sSplashVelocityShader = new WaterSplashVelocityShader();
 
-            // TODO: Improve so is more detailed near centre and uses less verts
-            _sVerts = new float[4 * 2 * Resolution * Resolution];
+            Func<double, int> sizeCalc = x => Math.Max(1, (int) Math.Floor((x - 16.0) / 16.0));
+            int length = FindWaterDataLength(512, -256, -256, sizeCalc);
+
             int i = 0;
-            for (int x = 0; x < Resolution; ++x) {
-                float x0 = (float) x / Resolution - 0.5f;
-                float x1 = (float) (x + 1) / Resolution - 0.5f;
-                for (int y = 0; y < Resolution; ++y) {
-                    float y0 = (float) y / Resolution - 0.5f;
-                    float y1 = (float) (y + 1) / Resolution - 0.5f;
-                    _sVerts[i++] = x0;
-                    _sVerts[i++] = y0;
-                    _sVerts[i++] = x1;
-                    _sVerts[i++] = y0;
-                    _sVerts[i++] = x1;
-                    _sVerts[i++] = y1;
-                    _sVerts[i++] = x0;
-                    _sVerts[i++] = y1;
-                }
-            }
+            _sVerts = new float[4 * 2 * length];
+            FindWaterData(512, 512, -256, -256, sizeCalc, _sVerts, ref i);
 
             _sVB = new VertexBuffer(2);
             _sVB.SetData(_sVerts);
+        }
+
+        private static int FindWaterDataLength(int size, int x, int y, Func<double, int> sizeCalc)
+        {
+            int half = size >> 1;
+            double dist = Math.Sqrt((x + half) * (x + half) + (y + half) * (y + half));
+            int desired = sizeCalc(dist);
+            if (size > 1 && size > desired) {
+                return FindWaterDataLength(half, x, y, sizeCalc)
+                    + FindWaterDataLength(half, x + half, y, sizeCalc)
+                    + FindWaterDataLength(half, x + half, y + half, sizeCalc)
+                    + FindWaterDataLength(half, x, y + half, sizeCalc);
+            }
+
+            return 1;
+        }
+
+        private static void FindWaterData(int totalSize, int size, int x, int y, Func<double, int> sizeCalc, float[] buffer, ref int i)
+        {
+            int half = size >> 1;
+            double dist = Math.Sqrt((x + half) * (x + half) + (y + half) * (y + half));
+            int desired = sizeCalc(dist);
+            if (size > 1 && size > desired) {
+                FindWaterData(totalSize, half, x, y, sizeCalc, buffer, ref i);
+                FindWaterData(totalSize, half, x + half, y, sizeCalc, buffer, ref i);
+                FindWaterData(totalSize, half, x + half, y + half, sizeCalc, buffer, ref i);
+                FindWaterData(totalSize, half, x, y + half, sizeCalc, buffer, ref i);
+            } else {
+                buffer[i++] = (float) (x + 0000) / totalSize;
+                buffer[i++] = (float) (y + 0000) / totalSize;
+                buffer[i++] = (float) (x + size) / totalSize;
+                buffer[i++] = (float) (y + 0000) / totalSize;
+                buffer[i++] = (float) (x + size) / totalSize;
+                buffer[i++] = (float) (y + size) / totalSize;
+                buffer[i++] = (float) (x + 0000) / totalSize;
+                buffer[i++] = (float) (y + size) / totalSize;
+            }
         }
 
         public readonly float Size;

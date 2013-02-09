@@ -98,7 +98,8 @@ namespace ComputerGraphicsCoursework
             base.OnRenderFrame(e);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
+
+            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             _modelShader.StartBatch();
             _ship.Render(_modelShader);
             _modelShader.EndBatch();
@@ -110,6 +111,7 @@ namespace ComputerGraphicsCoursework
             _waterShader.StartBatch();
             _water.Render(_waterShader);
             _waterShader.EndBatch();
+            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             SwapBuffers();
             ++_frameCount;
