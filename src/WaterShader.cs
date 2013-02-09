@@ -91,7 +91,7 @@ namespace ComputerGraphicsCoursework
                     out_frag_colour = vec4(out_frag_colour.rgb + (vec3(0.6, 0.7, 0.9) - out_frag_colour.rgb) * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), 10.0), out_frag_colour.a);
                     
                     if (var_dist < 64.0) {
-                        float ripple = texture(ripplemap, (var_offset / 4.0) + var_normal.xz).a;
+                        float ripple = texture(ripplemap, (var_offset / 8.0) + var_normal.xz).a;
                         float spray = texture(spraymap, var_texpos).a;
                         if (ripple * pow(spray, 0.5) > 0.75) {
                             out_frag_colour += spray * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * (2.0 - max(1.0, var_dist / 32.0));

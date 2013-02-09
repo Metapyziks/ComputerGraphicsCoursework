@@ -58,7 +58,6 @@ namespace ComputerGraphicsCoursework
 
                 void main(void)
                 {
-                    vec2 tex_pos = gl_FragCoord.xy / 512.0;
                     float cur = texture(spraymap, tex_pos).a;
                     vec2 diff = vec2(diff(splash.x, tex_pos.x), diff(splash.y, tex_pos.y));
                     float dist = length(diff);

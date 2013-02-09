@@ -63,7 +63,7 @@ namespace ComputerGraphicsCoursework
             vert.Logic = @"
                 void main( void )
                 {
-                    tex_pos = in_position / resolution;
+                    tex_pos = in_position.xy * vec2(1.0, -1.0) / resolution;
                     gl_Position = in_position;
                 }
             ";

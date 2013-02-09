@@ -72,7 +72,7 @@
     <Compile Include="src\Water.cs" />
     <Compile Include="src\WaterEffectShader.cs" />
     <Compile Include="src\WaterShader.cs" />
-    <Compile Include="src\WaterSprayDisipationShader.cs" />
+    <Compile Include="src\WaterSprayDissipationShader.cs" />
     <Compile Include="src\WaterSplashShader.cs" />
   </ItemGroup>
   <ItemGroup>
