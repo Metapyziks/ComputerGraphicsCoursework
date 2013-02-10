@@ -9,7 +9,7 @@ using OpenTK.Graphics;
 
 namespace ComputerGraphicsCoursework
 {
-    class Ship : IRenderable<ModelShader>, IUpdateable
+    class Ship : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IUpdateable
     {
         private static Model _sModel;
 

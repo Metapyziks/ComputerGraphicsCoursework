@@ -101,12 +101,6 @@ namespace ComputerGraphicsCoursework
             _depthClipShader.Camera = _camera;
             _ship = AddToScene(new Ship());
 
-            for (int x = -2; x < 3; ++x) {
-                for (int z = -2; z < 3; ++z) {
-                    AddToScene(new Floater(new Vector3(x << 1, 32f, z << 1)));
-                }
-            }
-
             _waterShader = new WaterShader();
             _waterShader.Camera = _camera;
             _water = new Water(64f);
@@ -218,8 +212,8 @@ namespace ComputerGraphicsCoursework
                 foreach (var obj in _updateables) obj.Update(time, _water);
             }
 
-            //_camera.Position = _ship.Position - _camera.ViewVector * 24f;
-            //_camera.UpdateViewMatrix();
+            _camera.Position = _ship.Position - _camera.ViewVector * 24f;
+            _camera.UpdateViewMatrix();
 
             _water.SimulateWater(_timer.Elapsed.TotalSeconds);
         }
