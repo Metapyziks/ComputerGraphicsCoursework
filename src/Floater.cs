@@ -39,11 +39,13 @@ namespace ComputerGraphicsCoursework
             Vector3 info = water.GetSurfaceInfo(Position);
             Vector3 accel = new Vector3();
             if (info.Y > Position.Y) {
-                accel.X += info.X / 4f;
-                accel.Y += 1f / 64f;
-                accel.Z += info.Z / 4f;
+                float depth = Math.Min(1.0f, info.Y - Position.Y);
+
+                accel.X += info.X * depth / 8f;
+                accel.Y += depth / 64f;
+                accel.Z += info.Z * depth / 8f;
                 
-                Velocity *= 0.93f;
+                Velocity *= 1f - depth * 0.12f;
             } else {
                 accel.Y -= 1f / 128f;
                 Velocity *= 0.97f;

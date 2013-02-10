@@ -91,7 +91,7 @@ namespace ComputerGraphicsCoursework
                     
                     float scale = 1.0; //(2.0 - max(1.0, var_dist / 32.0));
                     if (scale > 0.0) {
-                        float ripple = texture(ripplemap, (var_offset / 32.0) + normal.xz).a;
+                        float ripple = texture(ripplemap, (var_texpos * 8.0) + normal.xz).a;
                         float spray = texture(spraymap, var_texpos).a;
                         if (ripple * pow(spray, 2.0) > 0.75) {
                             out_frag_colour += spray * 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * scale;

@@ -101,9 +101,9 @@ namespace ComputerGraphicsCoursework
             _depthClipShader.Camera = _camera;
             _ship = AddToScene(new Ship());
 
-            for (int x = -4; x < 5; ++x) {
-                for (int z = -4; z < 5; ++z) {
-                    AddToScene(new Floater(new Vector3(x, 0f, z)));
+            for (int x = -2; x < 3; ++x) {
+                for (int z = -2; z < 3; ++z) {
+                    AddToScene(new Floater(new Vector3(x << 1, 0f, z << 1)));
                 }
             }
 

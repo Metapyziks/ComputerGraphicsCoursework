@@ -151,24 +151,38 @@ namespace ComputerGraphicsCoursework
             return GetSurfaceInfo(pos.X, pos.Y);
         }
 
+        private float InterpolateHeight(float[,] heights, float x, float z)
+        {
+            int xi = (int) Math.Floor(x), zi = (int) Math.Floor(z);
+            x -= xi; z -= zi;
+
+            float l = (1f - z) * heights[xi, zi] + z * heights[xi, zi + 1];
+            float t = (1f - x) * heights[xi, zi] + x * heights[xi + 1, zi];
+            float r = (1f - z) * heights[xi + 1, zi] + z * heights[xi + 1, zi + 1];
+            float b = (1f - x) * heights[xi, zi + 1] + x * heights[xi + 1, zi + 1];
+
+            return ((1f - x) * l + x * r) * 2f - 1f;
+        }
+
+        private float[,] heightBuffer = new float[4, 4];
         public Vector3 GetSurfaceInfo(float x, float z)
         {
             NormalizePosition(ref x, ref z);
 
-            float[,] pixels = new float[2, 2];
             _heightmapBuffer.Begin();
-            GL.ReadPixels((int) x, (int) z, 2, 2, PixelFormat.Alpha, PixelType.Float, pixels);
+            GL.ReadPixels((int) x - 1, (int) z - 1, 4, 4, PixelFormat.Alpha, PixelType.Float, heightBuffer);
             _heightmapBuffer.End();
 
-            x -= (float) Math.Floor(x);
-            z -= (float) Math.Floor(z);
+            x -= (float) Math.Floor(x) - 1f;
+            z -= (float) Math.Floor(z) - 1f;
 
-            float l = (1f - z) * pixels[0, 0] + z * pixels[0, 1];
-            float t = (1f - x) * pixels[0, 0] + x * pixels[1, 0];
-            float r = (1f - z) * pixels[1, 0] + z * pixels[1, 1];
-            float b = (1f - x) * pixels[0, 1] + x * pixels[1, 1];
+            float c = InterpolateHeight(heightBuffer, x, z);
+            float l = InterpolateHeight(heightBuffer, x - 1f, z);
+            float t = InterpolateHeight(heightBuffer, x, z - 1f);
+            float r = InterpolateHeight(heightBuffer, x + 1f, z);
+            float b = InterpolateHeight(heightBuffer, x, z + 1f);
 
-            return new Vector3(r - l, ((1f - x) * l + x * r) * 2f - 1f, b - t);
+            return new Vector3(t - b, c, l - r);
         }
 
         public void Splash(Vector2 pos, float magnitude)
