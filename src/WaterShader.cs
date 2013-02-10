@@ -37,6 +37,7 @@ namespace ComputerGraphicsCoursework
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, false);
             vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
             vert.AddUniform(ShaderVarType.Vec2, "view_origin");
+            vert.AddUniform(ShaderVarType.Vec3, "view_vector");
             vert.AddUniform(ShaderVarType.Sampler2D, "heightmap");
             vert.AddAttribute(ShaderVarType.Vec2, "in_vertex");
             vert.AddVarying(ShaderVarType.Float, "var_height");
@@ -54,7 +55,10 @@ namespace ComputerGraphicsCoursework
                         ivec2(1, 0), ivec2(0, 1)
                     );
 
-                    var_offset = in_vertex * size + view_origin;
+                    float rot = -atan(view_vector.z, view_vector.x);
+                    mat2 rmat = mat2(cos(rot), -sin(rot), sin(rot), cos(rot));
+
+                    var_offset = rmat * (in_vertex * size) + view_origin;
                     var_dist = length(in_vertex * size);
 
                     var_texpos = vec2((var_offset.x + 64.0) / 128.0, (var_offset.y + 64.0) / 128.0);

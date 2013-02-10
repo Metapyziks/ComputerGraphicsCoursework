@@ -33,6 +33,8 @@ namespace ComputerGraphicsCoursework
         private double _lastFPSUpdate;
         private int _frameCount;
 
+        private bool _wireframe;
+
         static void Main(String[] args)
         {
             var program = new Program();
@@ -55,6 +57,8 @@ namespace ComputerGraphicsCoursework
 
             _timer = new Stopwatch();
             _timer.Start();
+
+            _wireframe = false;
 
             _camera = new Camera(Width, Height);
             _camera.Pitch = 0.0f;
@@ -90,6 +94,12 @@ namespace ComputerGraphicsCoursework
                 lastMouseY = Cursor.Position.Y;
             };
 
+            Keyboard.KeyDown += (sender, ke) => {
+                if (ke.Key == Key.L) {
+                    _wireframe = !_wireframe;
+                }
+            };
+
             GL.ClearColor(Color4.White);
         }
 
@@ -99,7 +109,7 @@ namespace ComputerGraphicsCoursework
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             _modelShader.StartBatch();
             _ship.Render(_modelShader);
             _modelShader.EndBatch();
@@ -111,7 +121,7 @@ namespace ComputerGraphicsCoursework
             _waterShader.StartBatch();
             _water.Render(_waterShader);
             _waterShader.EndBatch();
-            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             SwapBuffers();
             ++_frameCount;

@@ -64,7 +64,7 @@ namespace ComputerGraphicsCoursework
         {
             shader.Transform = _trans;
             shader.Shinyness = 0f;
-            shader.Colour = Color4.BurlyWood;
+            shader.Colour = new Color4(121, 78, 47, 255);
             _model.Render(shader, _innerHull);
             shader.Colour = Color4.LightGray;
             shader.Shinyness = 8f;

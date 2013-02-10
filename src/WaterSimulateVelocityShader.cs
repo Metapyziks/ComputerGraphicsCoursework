@@ -36,7 +36,7 @@ namespace ComputerGraphicsCoursework
                         + textureOffset(heightmap, tex_pos, offsets[6]).a * weights[6]
                         + textureOffset(heightmap, tex_pos, offsets[7]).a * weights[7]) / 7.828;
 
-                    float new = min(1.0, max(0.0, texture(velocitymap, tex_pos).a + (avg - cur)));
+                    float new = min(1.0, max(0.0, texture(velocitymap, tex_pos).a + (avg - cur) * 2.0));
                     
                     out_frag_colour = vec4(new, new, new, new);
                 }
