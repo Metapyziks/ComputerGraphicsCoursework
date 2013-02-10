@@ -103,7 +103,7 @@ namespace ComputerGraphicsCoursework
 
             for (int x = -2; x < 3; ++x) {
                 for (int z = -2; z < 3; ++z) {
-                    AddToScene(new Floater(new Vector3(x << 1, 0f, z << 1)));
+                    AddToScene(new Floater(new Vector3(x << 1, 32f, z << 1)));
                 }
             }
 
