@@ -44,16 +44,10 @@ namespace ComputerGraphicsCoursework
             vert.AddVarying(ShaderVarType.Float, "var_dist");
             vert.AddVarying(ShaderVarType.Vec2, "var_offset");
             vert.AddVarying(ShaderVarType.Vec2, "var_texpos");
-            vert.AddVarying(ShaderVarType.Vec3, "var_normal");
             vert.Logic = @"
                 void main(void)
                 {
                     const float size = 512.0;
-
-                    const ivec2 offsets[] = ivec2[4] (
-                        ivec2(-1, 0), ivec2(0, -1),
-                        ivec2(1, 0), ivec2(0, 1)
-                    );
 
                     float rot = -atan(view_vector.z, view_vector.x);
                     mat2 rmat = mat2(cos(rot), -sin(rot), sin(rot), cos(rot));
@@ -61,22 +55,15 @@ namespace ComputerGraphicsCoursework
                     var_offset = rmat * (in_vertex * size) + view_origin;
                     var_dist = length(in_vertex * size);
 
-                    var_texpos = vec2((var_offset.x + 64.0) / 128.0, (var_offset.y + 64.0) / 128.0);
-                    var_height = texture(heightmap, var_texpos).a;
-                    float neighbours[] = float[4] (
-                        textureOffset(heightmap, var_texpos, offsets[0]).a,
-                        textureOffset(heightmap, var_texpos, offsets[1]).a,
-                        textureOffset(heightmap, var_texpos, offsets[2]).a,
-                        textureOffset(heightmap, var_texpos, offsets[3]).a
-                    );
-                    vec3 horz = normalize(vec3(2.0, 0.0, neighbours[2] - neighbours[0]));
-                    vec3 vert = normalize(vec3(0.0, 2.0, neighbours[3] - neighbours[1]));
-                    var_normal = cross(horz, vert);
-                    gl_Position = view_matrix * vec4(var_offset.x + 0.01625, var_height, var_offset.y, 1.0);
+                    var_texpos = vec2(var_offset.x / 128.0 + 0.5, var_offset.y / 128.0 + 0.5);
+                    var_height = texture(heightmap, var_texpos).a * 2.0;
+
+                    gl_Position = view_matrix * vec4(var_offset.x + 0.01625, var_height - 1.0, var_offset.y, 1.0);
                 }
             ";
 
             ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false);
+            frag.AddUniform(ShaderVarType.Sampler2D, "heightmap");
             frag.AddUniform(ShaderVarType.Sampler2D, "ripplemap");
             frag.AddUniform(ShaderVarType.Sampler2D, "spraymap");
             frag.AddUniform(ShaderVarType.Vec4, "colour");
@@ -85,17 +72,26 @@ namespace ComputerGraphicsCoursework
             frag.AddVarying(ShaderVarType.Float, "var_dist");
             frag.AddVarying(ShaderVarType.Vec2, "var_offset");
             frag.AddVarying(ShaderVarType.Vec2, "var_texpos");
-            frag.AddVarying(ShaderVarType.Vec3, "var_normal");
             frag.Logic = @"
                 void main(void)
                 {
+                    float l = textureOffset(heightmap, var_texpos, ivec2(-1,  0 )).a * 2.0;
+                    float t = textureOffset(heightmap, var_texpos, ivec2( 0, -1 )).a * 2.0;
+                    float r = textureOffset(heightmap, var_texpos, ivec2( 1,  0 )).a * 2.0;
+                    float b = textureOffset(heightmap, var_texpos, ivec2( 0,  1 )).a * 2.0;
+
+                    vec3 horz = normalize(vec3(1.0, 0.0, r - l));
+                    vec3 vert = normalize(vec3(0.0, 1.0, b - t));
+                    vec3 normal = cross(horz, vert);
+
                     const vec3 light = normalize(vec3(-6, -14, -3));
-                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light, var_normal)), colour.a);
-                    out_frag_colour = vec4(out_frag_colour.rgb + (vec3(1.0, 1.0, 1.0) - out_frag_colour.rgb) * 0.75 * pow(dot(reflect(light, var_normal), view_vector) * 0.5 + 0.5, 4.0), out_frag_colour.a);
+                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light, normal)), colour.a);
+                    float shinys = 0.75 * pow(dot(reflect(light, normal), view_vector) * 0.5 + 0.5, 4.0);
+                    out_frag_colour += vec4((vec3(1.0, 1.0, 1.0) - out_frag_colour.rgb) * shinys, 0.0);
                     
                     float scale = 1.0; //(2.0 - max(1.0, var_dist / 32.0));
                     if (scale > 0.0) {
-                        float ripple = texture(ripplemap, (var_offset / 32.0) + var_normal.xz).a;
+                        float ripple = texture(ripplemap, (var_offset / 32.0) + normal.xz).a;
                         float spray = texture(spraymap, var_texpos).a;
                         if (ripple * pow(spray, 2.0) > 0.75) {
                             out_frag_colour += spray * 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * scale;

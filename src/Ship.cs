@@ -40,7 +40,7 @@ namespace ComputerGraphicsCoursework
         {
             float offset = (float) Math.Sin(Math.PI * time) * MathHelper.Pi / 24f;
             float offset2 = (float) Math.Sin(Math.PI * (0.725 + time)) * MathHelper.Pi / 24f;
-            _trans = Matrix4.CreateTranslation(0f, 0.0f, offset2 * 16f + 128f);
+            _trans = Matrix4.CreateTranslation(0f, -0.5f, offset2 * 16f + 128f);
             _trans = Matrix4.Mult(Matrix4.CreateRotationY(-offset), _trans);
             _trans = Matrix4.Mult(Matrix4.CreateRotationX(offset), _trans);
             _trans = Matrix4.Mult(_trans, Matrix4.CreateRotationY((float) (Math.PI * time / 15f)));

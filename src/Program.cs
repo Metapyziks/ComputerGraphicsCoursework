@@ -34,6 +34,7 @@ namespace ComputerGraphicsCoursework
         private int _frameCount;
 
         private bool _wireframe;
+        private bool _drawShip;
 
         static void Main(String[] args)
         {
@@ -59,6 +60,7 @@ namespace ComputerGraphicsCoursework
             _timer.Start();
 
             _wireframe = false;
+            _drawShip = true;
 
             _camera = new Camera(Width, Height);
             _camera.Pitch = 0.0f;
@@ -95,8 +97,11 @@ namespace ComputerGraphicsCoursework
             };
 
             Keyboard.KeyDown += (sender, ke) => {
-                if (ke.Key == Key.L) {
-                    _wireframe = !_wireframe;
+                switch (ke.Key) {
+                    case Key.L:
+                        _wireframe = !_wireframe; break;
+                    case Key.B:
+                        _drawShip = !_drawShip; break;
                 }
             };
 
@@ -110,13 +115,15 @@ namespace ComputerGraphicsCoursework
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            _modelShader.StartBatch();
-            _ship.Render(_modelShader);
-            _modelShader.EndBatch();
+            if (_drawShip) {
+                _modelShader.StartBatch();
+                _ship.Render(_modelShader);
+                _modelShader.EndBatch();
 
-            _depthClipShader.StartBatch();
-            _ship.Render(_depthClipShader);
-            _depthClipShader.EndBatch();
+                _depthClipShader.StartBatch();
+                _ship.Render(_depthClipShader);
+                _depthClipShader.EndBatch();
+            }
 
             _waterShader.StartBatch();
             _water.Render(_waterShader);

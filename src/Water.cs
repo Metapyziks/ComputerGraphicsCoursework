@@ -36,9 +36,9 @@ namespace ComputerGraphicsCoursework
                 if (x > 32) {
                     int dx = x + 24, dy = y;
                     if (Math.Abs(Math.Atan2(dy, dx)) > Math.PI / 4.0) return 0;
+                    return Math.Max(1, ((x - 32) * (x - 32)) >> 11);
                 }
-                double dist = Math.Sqrt(x * x + y * y);
-                return Math.Max(1, (int) Math.Floor((dist - 64.0) / 16.0));
+                return 1;
             };
             int length = FindWaterDataLength(1024, sizeCalc);
 
@@ -82,17 +82,29 @@ namespace ComputerGraphicsCoursework
             int half = size >> 1;
             int desired = sizeCalc(x + half, y + half);
             if (size > 1 && size > desired) {
-                FindWaterData(totalSize, half, x, y, sizeCalc, buffer, ref i);
                 FindWaterData(totalSize, half, x + half, y, sizeCalc, buffer, ref i);
                 FindWaterData(totalSize, half, x + half, y + half, sizeCalc, buffer, ref i);
+                FindWaterData(totalSize, half, x, y, sizeCalc, buffer, ref i);
                 FindWaterData(totalSize, half, x, y + half, sizeCalc, buffer, ref i);
             } else if (desired > 0) {
                 buffer[i++] = (float) (x + 0000) / totalSize;
                 buffer[i++] = (float) (y + 0000) / totalSize;
-                buffer[i++] = (float) (x + size) / totalSize;
-                buffer[i++] = (float) (y + 0000) / totalSize;
-                buffer[i++] = (float) (x + size) / totalSize;
-                buffer[i++] = (float) (y + size) / totalSize;
+                if ((x & size) == 0 || sizeCalc(x + size * 3, y) <= size << 1) {
+                    buffer[i++] = (float) (x + size) / totalSize;
+                    buffer[i++] = (float) (y + 0000) / totalSize;
+
+                    buffer[i++] = (float) (x + size) / totalSize;
+                    buffer[i++] = (float) (y + size) / totalSize;
+                } else {
+                    int join = y & size;
+
+                    buffer[i++] = (float) (x + size) / totalSize;
+                    buffer[i++] = (float) (y - join) / totalSize;
+
+                    buffer[i++] = (float) (x + size) / totalSize;
+                    buffer[i++] = (float) (y + join) / totalSize;
+                }
+
                 buffer[i++] = (float) (x + 0000) / totalSize;
                 buffer[i++] = (float) (y + size) / totalSize;
             }
@@ -116,6 +128,11 @@ namespace ComputerGraphicsCoursework
             _heightmapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.5f));
             _velocitymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.5f));
             _spraymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.0f));
+        }
+
+        public float GetHeight(Vector2 pos)
+        {
+            return 0f;
         }
 
         public void Splash(Vector2 pos, float magnitude)
