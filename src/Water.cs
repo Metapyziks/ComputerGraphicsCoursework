@@ -40,10 +40,12 @@ namespace ComputerGraphicsCoursework
                 }
                 return 1;
             };
-            int length = FindWaterDataLength(1024, sizeCalc);
+
+            int meshDetail = 1024;
+            int length = FindWaterDataLength(meshDetail, sizeCalc);
 
             _sVerts = new float[4 * 2 * length];
-            FindWaterData(1024, sizeCalc, _sVerts);
+            FindWaterData(meshDetail, sizeCalc, _sVerts);
 
             _sVB = new VertexBuffer(2);
             _sVB.SetData(_sVerts);
@@ -57,7 +59,7 @@ namespace ComputerGraphicsCoursework
         private static int FindWaterDataLength(int size, int x, int y, Func<int, int, int> sizeCalc)
         {
             int half = size >> 1;
-            int desired = sizeCalc(x + half, y + half);
+            int desired = sizeCalc(x < 0 ? x + size : x, y < 0 ? y + size : y);
             if (size > 1 && size > desired) {
                 return FindWaterDataLength(half, x, y, sizeCalc)
                     + FindWaterDataLength(half, x + half, y, sizeCalc)
@@ -80,7 +82,7 @@ namespace ComputerGraphicsCoursework
         private static void FindWaterData(int totalSize, int size, int x, int y, Func<int, int, int> sizeCalc, float[] buffer, ref int i)
         {
             int half = size >> 1;
-            int desired = sizeCalc(x + half, y + half);
+            int desired = sizeCalc(x < 0 ? x + size : x, y < 0 ? y + size : y);
             if (size > 1 && size > desired) {
                 FindWaterData(totalSize, half, x + half, y, sizeCalc, buffer, ref i);
                 FindWaterData(totalSize, half, x + half, y + half, sizeCalc, buffer, ref i);
@@ -89,21 +91,21 @@ namespace ComputerGraphicsCoursework
             } else if (desired > 0) {
                 buffer[i++] = (float) (x + 0000) / totalSize;
                 buffer[i++] = (float) (y + 0000) / totalSize;
-                if ((x & size) == 0 || sizeCalc(x + size * 3, y) <= size << 1) {
+                //if ((x & (size << 1)) == 0 || sizeCalc(x + size, y) < (size << 1)) {
                     buffer[i++] = (float) (x + size) / totalSize;
                     buffer[i++] = (float) (y + 0000) / totalSize;
 
                     buffer[i++] = (float) (x + size) / totalSize;
                     buffer[i++] = (float) (y + size) / totalSize;
-                } else {
-                    int join = y & size;
+                //} else {
+                //    int join = y & size;
 
-                    buffer[i++] = (float) (x + size) / totalSize;
-                    buffer[i++] = (float) (y - join) / totalSize;
+                //    buffer[i++] = (float) (x + size) / totalSize;
+                //    buffer[i++] = (float) (y - join) / totalSize;
 
-                    buffer[i++] = (float) (x + size) / totalSize;
-                    buffer[i++] = (float) (y + join) / totalSize;
-                }
+                //    buffer[i++] = (float) (x + size) / totalSize;
+                //    buffer[i++] = (float) (y + join) / totalSize;
+                //}
 
                 buffer[i++] = (float) (x + 0000) / totalSize;
                 buffer[i++] = (float) (y + size) / totalSize;
@@ -130,9 +132,41 @@ namespace ComputerGraphicsCoursework
             _spraymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.0f));
         }
 
+        public float GetHeight(Vector3 pos)
+        {
+            return GetHeight(pos.X, pos.Z);
+        }
+
         public float GetHeight(Vector2 pos)
         {
-            return 0f;
+            return GetHeight(pos.X, pos.Y);
+        }
+
+        private void NormalizePosition(ref float x, ref float z)
+        {
+            x = (x / 128f + 0.5f) * Resolution;
+            z = (z / 128f + 0.5f) * Resolution;
+
+            x -= (float) (Math.Floor(x / Resolution) * Resolution);
+            z -= (float) (Math.Floor(z / Resolution) * Resolution);
+        }
+
+        public float GetHeight(float x, float z)
+        {
+            NormalizePosition(ref x, ref z);
+
+            float[,] pixels = new float[2, 2];
+            _heightmapBuffer.Begin();
+            GL.ReadPixels((int) x, (int) z, 2, 2, PixelFormat.Alpha, PixelType.Float, pixels);
+            _heightmapBuffer.End();
+
+            x -= (float) Math.Floor(x);
+            z -= (float) Math.Floor(z);
+
+            float val = (1f - z) * ((1f - x) * pixels[0, 0] + x * pixels[1, 0])
+                + z * ((1f - x) * pixels[0, 1] + x * pixels[1, 1]);
+
+            return (val - 0.5f) * 2f;
         }
 
         public void Splash(Vector2 pos, float magnitude)

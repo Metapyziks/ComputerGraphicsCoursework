@@ -22,6 +22,13 @@ namespace ComputerGraphicsCoursework
 
         private ModelShader _modelShader;
         private DepthClipShader _depthClipShader;
+        
+        private List<IRenderable<ModelShader>> _modelRenderables;
+        private List<IRenderable<DepthClipShader>> _dcRenderables;
+        
+        private List<IUpdateable> _updateables;
+        private double _lastUpdate;
+
         private Ship _ship;
 
         private WaterShader _waterShader;
@@ -48,6 +55,20 @@ namespace ComputerGraphicsCoursework
             this.Title = "Computer Graphics Coursework";
         }
 
+        private T AddToScene<T>(T obj)
+        {
+            if (obj is IRenderable<ModelShader>) {
+                _modelRenderables.Add((IRenderable<ModelShader>) obj);
+            }
+            if (obj is IRenderable<DepthClipShader>) {
+                _dcRenderables.Add((IRenderable<DepthClipShader>) obj);
+            }
+            if (obj is IUpdateable) {
+                _updateables.Add((IUpdateable) obj);
+            }
+            return obj;
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -68,11 +89,23 @@ namespace ComputerGraphicsCoursework
             _camera.Position = new Vector3(-8f, 0f, 0f);
             _camera.UpdateViewMatrix();
 
+            _modelRenderables = new List<IRenderable<ModelShader>>();
+            _dcRenderables = new List<IRenderable<DepthClipShader>>();
+
+            _updateables = new List<IUpdateable>();
+            _lastUpdate = 0d;
+
             _modelShader = new ModelShader();
             _modelShader.Camera = _camera;
             _depthClipShader = new DepthClipShader();
             _depthClipShader.Camera = _camera;
-            _ship = new Ship();
+            _ship = AddToScene(new Ship());
+
+            for (int x = -4; x < 5; ++x) {
+                for (int z = -4; z < 5; ++z) {
+                    AddToScene(new Floater(new Vector3(x, 0f, z)));
+                }
+            }
 
             _waterShader = new WaterShader();
             _waterShader.Camera = _camera;
@@ -117,11 +150,11 @@ namespace ComputerGraphicsCoursework
             if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             if (_drawShip) {
                 _modelShader.StartBatch();
-                _ship.Render(_modelShader);
+                foreach (var obj in _modelRenderables) obj.Render(_modelShader);
                 _modelShader.EndBatch();
 
                 _depthClipShader.StartBatch();
-                _ship.Render(_depthClipShader);
+                foreach (var obj in _dcRenderables) obj.Render(_depthClipShader);
                 _depthClipShader.EndBatch();
             }
 
@@ -179,10 +212,14 @@ namespace ComputerGraphicsCoursework
                 }
             }
 
-            _ship.Update(_timer.Elapsed.TotalSeconds, _water);
+            double time = _timer.Elapsed.TotalSeconds;
+            if (time - _lastUpdate > 1.0 / 60.0) {
+                _lastUpdate = time;
+                foreach (var obj in _updateables) obj.Update(time, _water);
+            }
 
-            _camera.Position = _ship.Position - _camera.ViewVector * 24f;
-            _camera.UpdateViewMatrix();
+            //_camera.Position = _ship.Position - _camera.ViewVector * 24f;
+            //_camera.UpdateViewMatrix();
 
             _water.SimulateWater(_timer.Elapsed.TotalSeconds);
         }

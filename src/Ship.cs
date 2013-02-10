@@ -9,9 +9,10 @@ using OpenTK.Graphics;
 
 namespace ComputerGraphicsCoursework
 {
-    class Ship : IRenderable<ModelShader>
+    class Ship : IRenderable<ModelShader>, IUpdateable
     {
-        private Model _model;
+        private static Model _sModel;
+
         private Model.FaceGroup[] _waterclip;
         private Model.FaceGroup[] _innerHull;
         private Model.FaceGroup[] _outerHull;
@@ -26,12 +27,15 @@ namespace ComputerGraphicsCoursework
 
         public Ship()
         {
-            _model = Model.FromFile("../../res/boat.obj");
-            _waterclip = _model.GetFaceGroups("Waterclip");
-            _innerHull = _model.GetFaceGroups("InnerHull");
-            _outerHull = _model.GetFaceGroups("OuterHull");
-            _trim = _model.GetFaceGroups("Trim");
-            _motor = _model.GetFaceGroups("Motor");
+            if (_sModel == null) {
+                _sModel = Model.FromFile("../../res/boat.obj");
+            }
+
+            _waterclip = _sModel.GetFaceGroups("Waterclip");
+            _innerHull = _sModel.GetFaceGroups("InnerHull");
+            _outerHull = _sModel.GetFaceGroups("OuterHull");
+            _trim = _sModel.GetFaceGroups("Trim");
+            _motor = _sModel.GetFaceGroups("Motor");
 
             _trans = Matrix4.Identity;
         }
@@ -65,21 +69,21 @@ namespace ComputerGraphicsCoursework
             shader.Transform = _trans;
             shader.Shinyness = 0f;
             shader.Colour = new Color4(121, 78, 47, 255);
-            _model.Render(shader, _innerHull);
+            _sModel.Render(shader, _innerHull);
             shader.Colour = Color4.LightGray;
             shader.Shinyness = 8f;
-            _model.Render(shader, _outerHull);
+            _sModel.Render(shader, _outerHull);
             shader.Colour = Color4.Gray;
-            _model.Render(shader, _trim);
+            _sModel.Render(shader, _trim);
             shader.Colour = new Color4(32, 32, 32, 255);
             shader.Shinyness = 4f;
-            _model.Render(shader, _motor);
+            _sModel.Render(shader, _motor);
         }
 
         public void Render(DepthClipShader shader)
         {
             shader.Transform = _trans;
-            _model.Render(shader, _waterclip);
+            _sModel.Render(shader, _waterclip);
         }
     }
 }
