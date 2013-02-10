@@ -36,11 +36,14 @@ namespace ComputerGraphicsCoursework
 
         public void Update(double time, Water water)
         {
-            float height = water.GetHeight(Position);
+            Vector3 info = water.GetSurfaceInfo(Position);
             Vector3 accel = new Vector3();
-            if (height > Position.Y) {
+            if (info.Y > Position.Y) {
+                accel.X += info.X / 4f;
                 accel.Y += 1f / 64f;
-                Velocity *= 0.84f;
+                accel.Z += info.Z / 4f;
+                
+                Velocity *= 0.93f;
             } else {
                 accel.Y -= 1f / 128f;
                 Velocity *= 0.97f;

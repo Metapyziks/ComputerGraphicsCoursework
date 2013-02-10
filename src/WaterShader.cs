@@ -80,8 +80,8 @@ namespace ComputerGraphicsCoursework
                     float r = textureOffset(heightmap, var_texpos, ivec2( 1,  0 )).a * 2.0;
                     float b = textureOffset(heightmap, var_texpos, ivec2( 0,  1 )).a * 2.0;
 
-                    vec3 horz = normalize(vec3(1.0, 0.0, r - l));
-                    vec3 vert = normalize(vec3(0.0, 1.0, b - t));
+                    vec3 horz = normalize(vec3(2.0, 0.0, r - l));
+                    vec3 vert = normalize(vec3(0.0, 2.0, b - t));
                     vec3 normal = cross(horz, vert);
 
                     const vec3 light = normalize(vec3(-6, -14, -3));

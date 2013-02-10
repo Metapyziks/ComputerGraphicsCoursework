@@ -132,16 +132,6 @@ namespace ComputerGraphicsCoursework
             _spraymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.0f));
         }
 
-        public float GetHeight(Vector3 pos)
-        {
-            return GetHeight(pos.X, pos.Z);
-        }
-
-        public float GetHeight(Vector2 pos)
-        {
-            return GetHeight(pos.X, pos.Y);
-        }
-
         private void NormalizePosition(ref float x, ref float z)
         {
             x = (x / 128f + 0.5f) * Resolution;
@@ -151,7 +141,17 @@ namespace ComputerGraphicsCoursework
             z -= (float) (Math.Floor(z / Resolution) * Resolution);
         }
 
-        public float GetHeight(float x, float z)
+        public Vector3 GetSurfaceInfo(Vector3 pos)
+        {
+            return GetSurfaceInfo(pos.X, pos.Z);
+        }
+
+        public Vector3 GetSurfaceInfo(Vector2 pos)
+        {
+            return GetSurfaceInfo(pos.X, pos.Y);
+        }
+
+        public Vector3 GetSurfaceInfo(float x, float z)
         {
             NormalizePosition(ref x, ref z);
 
@@ -163,10 +163,12 @@ namespace ComputerGraphicsCoursework
             x -= (float) Math.Floor(x);
             z -= (float) Math.Floor(z);
 
-            float val = (1f - z) * ((1f - x) * pixels[0, 0] + x * pixels[1, 0])
-                + z * ((1f - x) * pixels[0, 1] + x * pixels[1, 1]);
+            float l = (1f - z) * pixels[0, 0] + z * pixels[0, 1];
+            float t = (1f - x) * pixels[0, 0] + x * pixels[1, 0];
+            float r = (1f - z) * pixels[1, 0] + z * pixels[1, 1];
+            float b = (1f - x) * pixels[0, 1] + x * pixels[1, 1];
 
-            return (val - 0.5f) * 2f;
+            return new Vector3(r - l, ((1f - x) * l + x * r) * 2f - 1f, b - t);
         }
 
         public void Splash(Vector2 pos, float magnitude)
