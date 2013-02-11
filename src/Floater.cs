@@ -13,8 +13,8 @@ namespace ComputerGraphicsCoursework
     {
         private static Model _sModel;
 
-        private static bool _inWater;
-
+        private bool _inWater;
+        
         public Vector3 Position { get; private set; }
         public Vector3 Velocity { get; private set; }
 
@@ -49,7 +49,7 @@ namespace ComputerGraphicsCoursework
                 accel.Y += depth / 64f;
                 accel.Z += info.Z * depth / 8f;
                 
-                Velocity *= 1f - depth * 0.24f;
+                Velocity *= 1f - depth * 0.12f;
 
                 if (!_inWater) {
                     water.Splash(new Vector2(Position.X, Position.Z), Math.Min(1.0f, Math.Abs(Velocity.Y) / 4f + 1f / 16f));
