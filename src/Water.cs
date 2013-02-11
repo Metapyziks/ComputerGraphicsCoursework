@@ -91,21 +91,21 @@ namespace ComputerGraphicsCoursework
             } else if (desired > 0) {
                 buffer[i++] = (float) (x + 0000) / totalSize;
                 buffer[i++] = (float) (y + 0000) / totalSize;
-                //if ((x & (size << 1)) == 0 || sizeCalc(x + size, y) < (size << 1)) {
+                if ((x & (size << 1)) == 0 || sizeCalc(x + size, y) < (size << 1)) {
                     buffer[i++] = (float) (x + size) / totalSize;
                     buffer[i++] = (float) (y + 0000) / totalSize;
 
                     buffer[i++] = (float) (x + size) / totalSize;
                     buffer[i++] = (float) (y + size) / totalSize;
-                //} else {
-                //    int join = y & size;
+                } else {
+                    int join = y & size;
 
-                //    buffer[i++] = (float) (x + size) / totalSize;
-                //    buffer[i++] = (float) (y - join) / totalSize;
+                    buffer[i++] = (float) (x + size) / totalSize;
+                    buffer[i++] = (float) (y - join) / totalSize;
 
-                //    buffer[i++] = (float) (x + size) / totalSize;
-                //    buffer[i++] = (float) (y + join) / totalSize;
-                //}
+                    buffer[i++] = (float) (x + size) / totalSize;
+                    buffer[i++] = (float) (y + join) / totalSize;
+                }
 
                 buffer[i++] = (float) (x + 0000) / totalSize;
                 buffer[i++] = (float) (y + size) / totalSize;
