@@ -34,10 +34,10 @@ namespace ComputerGraphicsCoursework
             Func<int, int, int> sizeCalc = (x, y) => {
                 if (x < -32) return 0;
                 if (x > 32) {
-                    int dx = x + 24, dy = y;
-                    if (Math.Abs(Math.Atan2(dy, dx)) > Math.PI / 4.0) return 0;
+                    if (Math.Abs(Math.Atan2(y, x + 24)) > Math.PI / 4.0) return 0;
                     return Math.Max(1, ((x - 32) * (x - 32)) >> 11);
                 }
+                if (Math.Abs(Math.Atan2(y, 32 + 24)) > Math.PI / 4.0) return 0;
                 return 1;
             };
 
