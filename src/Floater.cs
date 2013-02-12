@@ -12,10 +12,8 @@ namespace ComputerGraphicsCoursework
     class Floater : IRenderable<ModelShader>, IUpdateable
     {
         private static Model _sModel;
-
-        private bool _inWater;
         
-        public Vector3 Position { get; private set; }
+        public Vector3 Position { get; set; }
         public Vector3 Velocity { get; private set; }
 
         public Floater(Vector3 position)
@@ -24,10 +22,13 @@ namespace ComputerGraphicsCoursework
                 _sModel = Model.FromFile("../../res/sphere.obj");
             }
 
-            _inWater = false;
-
             Position = position;
             Velocity = new Vector3();
+        }
+
+        public void Accelerate(Vector3 accel)
+        {
+            Velocity += accel;
         }
 
         public void Render(ModelShader shader)
@@ -45,23 +46,16 @@ namespace ComputerGraphicsCoursework
             if (info.Y > Position.Y) {
                 float depth = Math.Min(1.0f, info.Y - Position.Y);
 
-                accel.X += info.X * depth / 8f;
-                accel.Y += depth / 64f;
-                accel.Z += info.Z * depth / 8f;
+                accel.X += info.X * depth / 64f;
+                accel.Y += depth / 128f;
+                accel.Z += info.Z * depth / 64f;
                 
-                Velocity *= 1f - depth * 0.12f;
-
-                if (!_inWater) {
-                    water.Splash(new Vector2(Position.X, Position.Z), Math.Min(1.0f, Math.Abs(Velocity.Y) / 4f + 1f / 16f));
-                }
-                _inWater = true;
+                Velocity *= 1f - depth * 0.03f;
             } else {
                 accel.Y -= 1f / 128f;
                 Velocity *= 0.99f;
-
-                _inWater = false;
             }
-            Velocity += accel;
+            Accelerate(accel);
 
             Position += Velocity;
         }

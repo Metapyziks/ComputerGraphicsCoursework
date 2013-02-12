@@ -35,7 +35,7 @@ namespace ComputerGraphicsCoursework
                 if (x < -32) return 0;
                 if (x > 32) {
                     if (Math.Abs(Math.Atan2(y, x + 24)) > Math.PI / 4.0) return 0;
-                    return Math.Max(1, ((x - 32) * (x - 32)) >> 11);
+                    return 1; // Math.Max(1, ((x - 32) * (x - 32)) >> 11);
                 }
                 if (Math.Abs(Math.Atan2(y, 32 + 24)) > Math.PI / 4.0) return 0;
                 return 1;
@@ -183,6 +183,11 @@ namespace ComputerGraphicsCoursework
             float b = InterpolateHeight(heightBuffer, x, z + 1f);
 
             return new Vector3(t - b, c, l - r);
+        }
+
+        public void Splash(Vector3 pos, float magnitude)
+        {
+            Splash(new Vector2(pos.X, pos.Z), magnitude);
         }
 
         public void Splash(Vector2 pos, float magnitude)

@@ -25,8 +25,9 @@ namespace ComputerGraphicsCoursework
         
         private List<IRenderable<ModelShader>> _modelRenderables;
         private List<IRenderable<DepthClipShader>> _dcRenderables;
-        
+
         private List<IUpdateable> _updateables;
+        private List<IKeyControllable> _keyControllables;
         private double _lastUpdate;
 
         private Ship _ship;
@@ -66,6 +67,9 @@ namespace ComputerGraphicsCoursework
             if (obj is IUpdateable) {
                 _updateables.Add((IUpdateable) obj);
             }
+            if (obj is IKeyControllable) {
+                _keyControllables.Add((IKeyControllable) obj);
+            }
             return obj;
         }
 
@@ -93,6 +97,7 @@ namespace ComputerGraphicsCoursework
             _dcRenderables = new List<IRenderable<DepthClipShader>>();
 
             _updateables = new List<IUpdateable>();
+            _keyControllables = new List<IKeyControllable>();
             _lastUpdate = 0d;
 
             _modelShader = new ModelShader();
@@ -129,6 +134,17 @@ namespace ComputerGraphicsCoursework
                         _wireframe = !_wireframe; break;
                     case Key.B:
                         _drawShip = !_drawShip; break;
+                    default:
+                        foreach (var obj in _keyControllables) {
+                            obj.KeyDown(ke.Key);
+                        }
+                        break;
+                }
+            };
+
+            Keyboard.KeyUp += (sender, ke) => {
+                foreach (var obj in _keyControllables) {
+                    obj.KeyUp(ke.Key);
                 }
             };
 
@@ -210,6 +226,7 @@ namespace ComputerGraphicsCoursework
             if (time - _lastUpdate > 1.0 / 60.0) {
                 _lastUpdate = time;
                 foreach (var obj in _updateables) obj.Update(time, _water);
+                foreach (var obj in _keyControllables) obj.UpdateKeys(Keyboard);
             }
 
             _camera.Position = _ship.Position - _camera.ViewVector * 24f;

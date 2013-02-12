@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Input;
 
 namespace ComputerGraphicsCoursework
 {
-    class Ship : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IUpdateable
+    class Ship : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IUpdateable, IKeyControllable
     {
         private static Model _sModel;
 
@@ -19,6 +20,10 @@ namespace ComputerGraphicsCoursework
         private Model.FaceGroup[] _trim;
         private Model.FaceGroup[] _motor;
         private Matrix4 _trans;
+
+        private Floater _frontFloat;
+        private Floater _leftFloat;
+        private Floater _rightFloat;
 
         public Vector3 Forward { get; private set; }
         public Vector3 Right { get; private set; }
@@ -37,31 +42,52 @@ namespace ComputerGraphicsCoursework
             _trim = _sModel.GetFaceGroups("Trim");
             _motor = _sModel.GetFaceGroups("Motor");
 
+            _frontFloat = new Floater(new Vector3(6f, 0f, 0f));
+            _leftFloat = new Floater(new Vector3(-6f, 0f, -4f));
+            _rightFloat = new Floater(new Vector3(-6f, 0f, 4f));
+
             _trans = Matrix4.Identity;
         }
 
         public void Update(double time, Water water)
         {
-            float offset = (float) Math.Sin(Math.PI * time) * MathHelper.Pi / 24f;
-            float offset2 = (float) Math.Sin(Math.PI * (0.725 + time)) * MathHelper.Pi / 24f;
-            _trans = Matrix4.CreateTranslation(0f, -0.5f, offset2 * 16f + 128f);
-            _trans = Matrix4.Mult(Matrix4.CreateRotationY(-offset), _trans);
-            _trans = Matrix4.Mult(Matrix4.CreateRotationX(offset), _trans);
-            _trans = Matrix4.Mult(_trans, Matrix4.CreateRotationY((float) (Math.PI * time / 15f)));
+            _frontFloat.Update(time, water);
+            _leftFloat.Update(time, water);
+            _rightFloat.Update(time, water);
 
-            Position = Vector4.Transform(new Vector4(0f, 0f, 0f, 1f), _trans).Xyz;
+            Vector3 aft = (_leftFloat.Position + _rightFloat.Position) / 2f;
+            Position = (aft + _frontFloat.Position) / 2f;
+
+            Vector3 diff = Position - aft;
+            float pitch = (float) Math.Atan2(diff.Y, Math.Sqrt(diff.X * diff.X + diff.Z * diff.Z));
+
+            diff = _rightFloat.Position - _leftFloat.Position;
+            float roll = (float) Math.Atan2(diff.Y, Math.Sqrt(diff.X * diff.X + diff.Z * diff.Z));
+
+            diff = _frontFloat.Position - aft;
+            float yaw = (float) -Math.Atan2(diff.Z, diff.X);
+
+            _trans = Matrix4.CreateTranslation(Position);
+            _trans = Matrix4.Mult(Matrix4.CreateRotationY(yaw), _trans);
+            _trans = Matrix4.Mult(Matrix4.CreateRotationX(roll), _trans);
+            _trans = Matrix4.Mult(Matrix4.CreateRotationZ(pitch), _trans);
+
             Forward = Vector4.Transform(new Vector4(1f, 0f, 0f, 0f), _trans).Xyz;
             Right = Vector4.Transform(new Vector4(0f, 0f, 1f, 0f), _trans).Xyz;
             Up = Vector4.Transform(new Vector4(0f, 1f, 0f, 0f), _trans).Xyz;
 
-            if (water != null) {
-                var splashPos = Position + Forward * 3.5f;
-                water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
-                splashPos += -Forward * 7.5f - Right;
-                water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
-                splashPos += Right * 2f;
-                water.Splash(new Vector2(splashPos.X, splashPos.Z), 1f);
-            }
+            _frontFloat.Accelerate((Position + Forward * 6f - _frontFloat.Position) / 128f);
+            _leftFloat.Accelerate((Position - Forward * 6f - Right * 4f - _leftFloat.Position) / 128f);
+            _rightFloat.Accelerate((Position - Forward * 6f + Right * 4f - _rightFloat.Position) / 128f);
+
+            float mag = Math.Min(1f, (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 6f);
+
+            var splashPos = Position + Forward * 3.5f;
+            water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
+            splashPos += -Forward * 7.5f - Right;
+            water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
+            splashPos += Right * 2f;
+            water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
         }
 
         public void Render(ModelShader shader)
@@ -78,12 +104,37 @@ namespace ComputerGraphicsCoursework
             shader.Colour = new Color4(32, 32, 32, 255);
             shader.Shinyness = 4f;
             _sModel.Render(shader, _motor);
+
+            /*
+            _frontFloat.Render(shader);
+            _leftFloat.Render(shader);
+            _rightFloat.Render(shader);
+            */
         }
 
         public void Render(DepthClipShader shader)
         {
             shader.Transform = _trans;
             _sModel.Render(shader, _waterclip);
+        }
+
+        public void KeyDown(Key key) { }
+
+        public void KeyUp(Key key) { }
+
+        public void UpdateKeys(KeyboardDevice keyboard)
+        {
+            if (keyboard[Key.W]) {
+                _frontFloat.Accelerate(Forward / 64f);
+            }
+
+            float vel = (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 3f;
+            if (keyboard[Key.A]) {
+                _leftFloat.Accelerate(Right * vel / 64f);
+            }
+            if (keyboard[Key.D]) {
+                _rightFloat.Accelerate(-Right * vel / 64f);
+            }
         }
     }
 }
