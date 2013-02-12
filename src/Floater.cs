@@ -31,6 +31,13 @@ namespace ComputerGraphicsCoursework
             Velocity += accel;
         }
 
+        public void Streamline(Vector3 direction, float weight)
+        {
+            Vector3 normal = Velocity;
+            normal.Normalize();
+            Velocity *= (1f - weight) + weight * Math.Abs(Vector3.Dot(normal, direction));
+        }
+
         public void Render(ModelShader shader)
         {
             shader.Transform = Matrix4.CreateTranslation(Position);

@@ -80,6 +80,10 @@ namespace ComputerGraphicsCoursework
             _leftFloat.Accelerate((Position - Forward * 6f - Right * 4f - _leftFloat.Position) / 128f);
             _rightFloat.Accelerate((Position - Forward * 6f + Right * 4f - _rightFloat.Position) / 128f);
 
+            _frontFloat.Streamline(Forward, 0.02f);
+            _leftFloat.Streamline(Forward, 0.01f);
+            _rightFloat.Streamline(Forward, 0.01f);
+
             float mag = Math.Min(1f, (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 6f);
 
             var splashPos = Position + Forward * 3.5f;
