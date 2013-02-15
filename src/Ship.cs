@@ -80,6 +80,13 @@ namespace ComputerGraphicsCoursework
             Right = Vector4.Transform(new Vector4(0f, 0f, 1f, 0f), _trans).Xyz;
             Up = Vector4.Transform(new Vector4(0f, 1f, 0f, 0f), _trans).Xyz;
 
+            float vel = (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 3f;
+            if (_rudderAng < 0) {
+                _leftFloat.Accelerate(Right * vel * (-_rudderAng / MathHelper.PiOver4) / 64f);
+            } else if (_rudderAng > 0) {
+                _rightFloat.Accelerate(-Right * vel * (_rudderAng / MathHelper.PiOver4) / 64f);
+            }
+
             _frontFloat.Accelerate((Position + Forward * 6f - _frontFloat.Position) / 128f);
             _leftFloat.Accelerate((Position - Forward * 6f - Right * 4f - _leftFloat.Position) / 128f);
             _rightFloat.Accelerate((Position - Forward * 6f + Right * 4f - _rightFloat.Position) / 128f);
@@ -134,17 +141,21 @@ namespace ComputerGraphicsCoursework
         public void UpdateKeys(KeyboardDevice keyboard)
         {
             if (keyboard[Key.W]) {
-                _frontFloat.Accelerate(Forward / 64f);
+                _leftFloat.Accelerate(Forward / 128f);
+                _rightFloat.Accelerate(Forward / 128f);
+            }
+
+            if (keyboard[Key.S]) {
+                _leftFloat.Accelerate(-Forward / 256f);
+                _rightFloat.Accelerate(-Forward / 256f);
             }
 
             float vel = (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 3f;
-            float rudderVel = -_rudderAng / 30f;
+            float rudderVel = -_rudderAng * vel / 8f;
             if (keyboard[Key.A]) {
-                _leftFloat.Accelerate(Right * vel / 64f);
                 rudderVel -= RudderMoveSpeed;
             }
             if (keyboard[Key.D]) {
-                _rightFloat.Accelerate(-Right * vel / 64f);
                 rudderVel += RudderMoveSpeed;
             }
 
