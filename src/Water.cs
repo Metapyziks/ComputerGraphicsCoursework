@@ -35,7 +35,7 @@ namespace ComputerGraphicsCoursework
                 if (x < -32) return 0;
                 if (x > 32) {
                     if (Math.Abs(Math.Atan2(y, x + 24)) > Math.PI / 4.0) return 0;
-                    return 1; // Math.Max(1, ((x - 32) * (x - 32)) >> 11);
+                    return Math.Max(1, ((x - 32) * (x - 32)) >> 11);
                 }
                 if (Math.Abs(Math.Atan2(y, 32 + 24)) > Math.PI / 4.0) return 0;
                 return 1;
@@ -43,7 +43,7 @@ namespace ComputerGraphicsCoursework
 
             int meshDetail = 1024;
             int length = FindWaterDataLength(meshDetail, sizeCalc);
-
+            
             _sVerts = new float[4 * 2 * length];
             FindWaterData(meshDetail, sizeCalc, _sVerts);
 
@@ -91,7 +91,7 @@ namespace ComputerGraphicsCoursework
             } else if (desired > 0) {
                 buffer[i++] = (float) (x + 0000) / totalSize;
                 buffer[i++] = (float) (y + 0000) / totalSize;
-                if ((x & (size << 1)) == 0 || sizeCalc(x + size, y) < (size << 1)) {
+                if ((x & size) == 0 || sizeCalc(x + size, y) < (size << 1)) {
                     buffer[i++] = (float) (x + size) / totalSize;
                     buffer[i++] = (float) (y + 0000) / totalSize;
 

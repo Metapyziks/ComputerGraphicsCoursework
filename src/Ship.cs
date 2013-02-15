@@ -12,6 +12,8 @@ namespace ComputerGraphicsCoursework
 {
     class Ship : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IUpdateable, IKeyControllable
     {
+        private const float RudderMoveSpeed = MathHelper.Pi / 120f;
+
         private static Model _sModel;
 
         private Model.FaceGroup[] _waterclip;
@@ -24,6 +26,8 @@ namespace ComputerGraphicsCoursework
         private Floater _frontFloat;
         private Floater _leftFloat;
         private Floater _rightFloat;
+
+        private float _rudderAng;
 
         public Vector3 Forward { get; private set; }
         public Vector3 Right { get; private set; }
@@ -40,7 +44,7 @@ namespace ComputerGraphicsCoursework
             _innerHull = _sModel.GetFaceGroups("InnerHull");
             _outerHull = _sModel.GetFaceGroups("OuterHull");
             _trim = _sModel.GetFaceGroups("Trim");
-            _motor = _sModel.GetFaceGroups("Motor");
+            _motor = _sModel.GetFaceGroups("Motor").Union(_sModel.GetFaceGroups("Tiller")).ToArray();
 
             _frontFloat = new Floater(new Vector3(6f, 0f, 0f));
             _leftFloat = new Floater(new Vector3(-6f, 0f, -4f));
@@ -97,7 +101,7 @@ namespace ComputerGraphicsCoursework
         public void Render(ModelShader shader)
         {
             shader.Transform = _trans;
-            shader.Shinyness = 0f;
+            shader.Shinyness = 1f;
             shader.Colour = new Color4(121, 78, 47, 255);
             _sModel.Render(shader, _innerHull);
             shader.Colour = Color4.LightGray;
@@ -106,6 +110,7 @@ namespace ComputerGraphicsCoursework
             shader.Colour = Color4.Gray;
             _sModel.Render(shader, _trim);
             shader.Colour = new Color4(32, 32, 32, 255);
+            shader.Transform = Matrix4.Mult(Matrix4.Mult(Matrix4.CreateRotationY(_rudderAng), Matrix4.CreateTranslation(-4f, 0f, 0f)), _trans);
             shader.Shinyness = 4f;
             _sModel.Render(shader, _motor);
 
@@ -133,12 +138,17 @@ namespace ComputerGraphicsCoursework
             }
 
             float vel = (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 3f;
+            float rudderVel = -_rudderAng / 30f;
             if (keyboard[Key.A]) {
                 _leftFloat.Accelerate(Right * vel / 64f);
+                rudderVel -= RudderMoveSpeed;
             }
             if (keyboard[Key.D]) {
                 _rightFloat.Accelerate(-Right * vel / 64f);
+                rudderVel += RudderMoveSpeed;
             }
+
+            _rudderAng = Tools.Clamp(_rudderAng + rudderVel, -MathHelper.PiOver4, MathHelper.PiOver4);
         }
     }
 }
