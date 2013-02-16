@@ -68,7 +68,7 @@ namespace ComputerGraphicsCoursework
                 }
             ";
 
-            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, true);
+            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, true, vert);
             OnAddShaderVariables(frag);
             OnAddShaderLogic(frag);
             
@@ -92,7 +92,6 @@ namespace ComputerGraphicsCoursework
             frag.AddUniform(ShaderVarType.Sampler2D, "heightmap");
             frag.AddUniform(ShaderVarType.Sampler2D, "velocitymap");
             frag.AddUniform(ShaderVarType.Sampler2D, "spraymap");
-            frag.AddVarying(ShaderVarType.Vec2, "tex_pos");
         }
 
         protected virtual void OnAddShaderLogic(ShaderBuilder frag)

@@ -40,7 +40,7 @@ namespace ComputerGraphicsCoursework
                 }
             ";
 
-            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false);
+            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false, vert);
             frag.Logic = @"
                 void main(void)
                 {

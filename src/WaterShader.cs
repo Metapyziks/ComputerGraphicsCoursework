@@ -62,16 +62,12 @@ namespace ComputerGraphicsCoursework
                 }
             ";
 
-            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false);
+            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false, vert);
             frag.AddUniform(ShaderVarType.Sampler2D, "heightmap");
             frag.AddUniform(ShaderVarType.Sampler2D, "ripplemap");
             frag.AddUniform(ShaderVarType.Sampler2D, "spraymap");
             frag.AddUniform(ShaderVarType.Vec4, "colour");
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
-            frag.AddVarying(ShaderVarType.Float, "var_height");
-            frag.AddVarying(ShaderVarType.Float, "var_scale");
-            frag.AddVarying(ShaderVarType.Vec2, "var_offset");
-            frag.AddVarying(ShaderVarType.Vec2, "var_texpos");
             frag.Logic = @"
                 void main(void)
                 {

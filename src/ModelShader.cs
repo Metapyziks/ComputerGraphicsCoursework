@@ -90,13 +90,11 @@ namespace ComputerGraphicsCoursework
                 }
             ";
 
-            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false);
+            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, false, vert);
             frag.AddUniform(ShaderVarType.Vec4, "colour");
             frag.AddUniform(ShaderVarType.Sampler2D, "tex");
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
             frag.AddUniform(ShaderVarType.Float, "shinyness");
-            frag.AddVarying(ShaderVarType.Vec3, "var_normal");
-            frag.AddVarying(ShaderVarType.Vec2, "var_textuv");
             frag.Logic = @"
                 void main(void)
                 {

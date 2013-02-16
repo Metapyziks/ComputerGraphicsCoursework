@@ -39,10 +39,8 @@ namespace ComputerGraphicsCoursework
                 }
             ";
 
-            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, true);
+            ShaderBuilder frag = new ShaderBuilder(ShaderType.FragmentShader, true, vert);
             frag.AddUniform(ShaderVarType.Sampler2D, "texture0");
-            frag.AddVarying(ShaderVarType.Vec2, "var_texture");
-            frag.AddVarying(ShaderVarType.Vec4, "var_colour");
             frag.Logic = @"
                 void main( void )
                 {
