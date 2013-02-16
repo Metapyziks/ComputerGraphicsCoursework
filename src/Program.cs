@@ -232,9 +232,10 @@ namespace ComputerGraphicsCoursework
                 if (movement.Length != 0) {
                     movement.Normalize();
                     _camera.Position += movement * (float) (16d * e.Time);
-                    _camera.UpdateViewMatrix();
                 }
             }
+
+            _camera.Rotation += new Vector2(_ship.Pitch, _ship.Yaw);
 
             double time = _timer.Elapsed.TotalSeconds;
             if (time - _lastUpdate > 1.0 / 60.0) {
@@ -242,6 +243,8 @@ namespace ComputerGraphicsCoursework
                 foreach (var obj in _updateables) obj.Update(time, _water);
                 foreach (var obj in _keyControllables) obj.UpdateKeys(Keyboard);
             }
+
+            _camera.Rotation -= new Vector2(_ship.Pitch, _ship.Yaw);
 
             if (_firstPerson) {
                 _camera.Position = _ship.Position + _ship.Up * 3f - _ship.Forward * 2f;

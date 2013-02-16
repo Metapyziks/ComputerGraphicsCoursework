@@ -32,6 +32,9 @@ namespace ComputerGraphicsCoursework
 
         private float _rudderAng;
 
+        public float Pitch { get; private set; }
+        public float Yaw { get; private set; }
+        public float Roll { get; private set; }
         public Vector3 Forward { get; private set; }
         public Vector3 Right { get; private set; }
         public Vector3 Up { get; private set; }
@@ -68,18 +71,18 @@ namespace ComputerGraphicsCoursework
             Position = (aft + _frontFloat.Position) / 2f;
 
             Vector3 diff = Position - aft;
-            float pitch = (float) Math.Atan2(diff.Y, Math.Sqrt(diff.X * diff.X + diff.Z * diff.Z));
+            Pitch = (float) Math.Atan2(diff.Y, Math.Sqrt(diff.X * diff.X + diff.Z * diff.Z));
 
             diff = _rightFloat.Position - _leftFloat.Position;
-            float roll = (float) Math.Atan2(diff.Y, Math.Sqrt(diff.X * diff.X + diff.Z * diff.Z));
+            Roll = (float) Math.Atan2(diff.Y, Math.Sqrt(diff.X * diff.X + diff.Z * diff.Z));
 
             diff = _frontFloat.Position - aft;
-            float yaw = (float) -Math.Atan2(diff.Z, diff.X);
+            Yaw = (float) -Math.Atan2(diff.Z, diff.X);
 
             _trans = Matrix4.CreateTranslation(Position);
-            _trans = Matrix4.Mult(Matrix4.CreateRotationY(yaw), _trans);
-            _trans = Matrix4.Mult(Matrix4.CreateRotationX(roll), _trans);
-            _trans = Matrix4.Mult(Matrix4.CreateRotationZ(pitch), _trans);
+            _trans = Matrix4.Mult(Matrix4.CreateRotationY(Yaw), _trans);
+            _trans = Matrix4.Mult(Matrix4.CreateRotationX(Roll), _trans);
+            _trans = Matrix4.Mult(Matrix4.CreateRotationZ(Pitch), _trans);
 
             Forward = Vector4.Transform(new Vector4(1f, 0f, 0f, 0f), _trans).Xyz;
             Right = Vector4.Transform(new Vector4(0f, 0f, 1f, 0f), _trans).Xyz;
