@@ -17,6 +17,7 @@ namespace ComputerGraphicsCoursework
 
         private static Model _sModel;
         private static BitmapTexture2D _sPlanksTexture;
+        private static BitmapTexture2D _sFiberglassTexture;
 
         private Model.FaceGroup[] _waterclip;
         private Model.FaceGroup[] _innerHull;
@@ -41,6 +42,7 @@ namespace ComputerGraphicsCoursework
             if (_sModel == null) {
                 _sModel = Model.FromFile("../../res/boat.obj");
                 _sPlanksTexture = new BitmapTexture2D((Bitmap) Bitmap.FromFile("../../res/planks.png"));
+                _sFiberglassTexture = new BitmapTexture2D((Bitmap) Bitmap.FromFile("../../res/fiberglass.png"));
             }
 
             _waterclip = _sModel.GetFaceGroups("Waterclip");
@@ -115,13 +117,14 @@ namespace ComputerGraphicsCoursework
         {
             shader.Texture = _sPlanksTexture;
             shader.Transform = _trans;
-            shader.Shinyness = 1f;
+            shader.Shinyness = 2f;
             shader.Colour = Color4.White;
             _sModel.Render(shader, _innerHull);
-            shader.Texture = BitmapTexture2D.Blank;
-            shader.Colour = Color4.LightGray;
+            //shader.Texture = _sFiberglassTexture;
+            //shader.Colour = Color4.LightGray;
             shader.Shinyness = 8f;
             _sModel.Render(shader, _outerHull);
+            shader.Texture = _sFiberglassTexture;
             shader.Colour = Color4.Gray;
             _sModel.Render(shader, _trim);
             shader.Colour = new Color4(32, 32, 32, 255);

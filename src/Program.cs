@@ -45,6 +45,8 @@ namespace ComputerGraphicsCoursework
         private bool _drawShip;
         private bool _firstPerson;
 
+        private float _cameraDist;
+
         static void Main(String[] args)
         {
             var program = new Program();
@@ -89,6 +91,8 @@ namespace ComputerGraphicsCoursework
             _drawShip = true;
             _firstPerson = false;
 
+            _cameraDist = 24f;
+
             _camera = new Camera(Width, Height);
             _camera.Pitch = 0.0f;
             _camera.Yaw = 0.0f;
@@ -128,6 +132,12 @@ namespace ComputerGraphicsCoursework
                 Cursor.Position = new System.Drawing.Point(Bounds.Left + Width / 2, Bounds.Top + Height / 2);
                 lastMouseX = Cursor.Position.X;
                 lastMouseY = Cursor.Position.Y;
+            };
+
+            Mouse.WheelChanged += (sender, mwe) => {
+                if (!_firstPerson) {
+                    _cameraDist -= mwe.DeltaPrecise;
+                }
             };
 
             Keyboard.KeyDown += (sender, ke) => {
@@ -236,7 +246,7 @@ namespace ComputerGraphicsCoursework
             if (_firstPerson) {
                 _camera.Position = _ship.Position + _ship.Up * 3f - _ship.Forward * 2f;
             } else {
-                _camera.Position = _ship.Position - _camera.ViewVector * 24f;
+                _camera.Position = _ship.Position - _camera.ViewVector * _cameraDist;
             }
             _camera.UpdateViewMatrix();
 
