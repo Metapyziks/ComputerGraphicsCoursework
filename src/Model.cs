@@ -199,8 +199,8 @@ namespace ComputerGraphicsCoursework
                     raw[i++] = _verts[face[j, VertData.Vertex]].Y;
                     raw[i++] = _verts[face[j, VertData.Vertex]].Z;
                     if (face[j, VertData.TextUV] > -1) {
-                        raw[i++] = _verts[face[j, VertData.TextUV]].X;
-                        raw[i++] = _verts[face[j, VertData.TextUV]].Y;
+                        raw[i++] = _txuvs[face[j, VertData.TextUV]].X;
+                        raw[i++] = _txuvs[face[j, VertData.TextUV]].Y;
                     } else {
                         raw[i++] = 0f;
                         raw[i++] = 0f;

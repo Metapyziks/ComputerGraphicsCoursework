@@ -43,6 +43,7 @@ namespace ComputerGraphicsCoursework
 
         private bool _wireframe;
         private bool _drawShip;
+        private bool _firstPerson;
 
         static void Main(String[] args)
         {
@@ -86,6 +87,7 @@ namespace ComputerGraphicsCoursework
 
             _wireframe = false;
             _drawShip = true;
+            _firstPerson = false;
 
             _camera = new Camera(Width, Height);
             _camera.Pitch = 0.0f;
@@ -134,6 +136,8 @@ namespace ComputerGraphicsCoursework
                         _wireframe = !_wireframe; break;
                     case Key.B:
                         _drawShip = !_drawShip; break;
+                    case Key.V:
+                        _firstPerson = !_firstPerson; break;
                     default:
                         foreach (var obj in _keyControllables) {
                             obj.KeyDown(ke.Key);
@@ -229,7 +233,11 @@ namespace ComputerGraphicsCoursework
                 foreach (var obj in _keyControllables) obj.UpdateKeys(Keyboard);
             }
 
-            _camera.Position = _ship.Position - _camera.ViewVector * 24f;
+            if (_firstPerson) {
+                _camera.Position = _ship.Position + _ship.Up * 3f - _ship.Forward * 2f;
+            } else {
+                _camera.Position = _ship.Position - _camera.ViewVector * 24f;
+            }
             _camera.UpdateViewMatrix();
 
             _water.SimulateWater(_timer.Elapsed.TotalSeconds);
