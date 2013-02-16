@@ -65,12 +65,15 @@ namespace ComputerGraphicsCoursework
             vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
             vert.AddUniform(ShaderVarType.Mat4, "transform");
             vert.AddAttribute(ShaderVarType.Vec3, "in_vertex");
+            vert.AddAttribute(ShaderVarType.Vec2, "in_textuv");
             vert.AddAttribute(ShaderVarType.Vec3, "in_normal");
             vert.AddVarying(ShaderVarType.Vec3, "var_normal");
+            vert.AddVarying(ShaderVarType.Vec2, "var_textuv");
             vert.Logic = @"
                 void main(void)
                 {
                     var_normal = (transform * vec4(in_normal, 0.0)).xyz;
+                    var_textuv = in_textuv;
                     gl_Position = view_matrix * (transform * vec4(in_vertex, 1.0));
                 }
             ";
@@ -80,6 +83,7 @@ namespace ComputerGraphicsCoursework
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
             frag.AddUniform(ShaderVarType.Float, "shinyness");
             frag.AddVarying(ShaderVarType.Vec3, "var_normal");
+            frag.AddVarying(ShaderVarType.Vec2, "var_textuv");
             frag.Logic = @"
                 void main(void)
                 {
@@ -104,6 +108,7 @@ namespace ComputerGraphicsCoursework
             base.OnCreate();
 
             AddAttribute("in_vertex", 3);
+            AddAttribute("in_textuv", 2);
             AddAttribute("in_normal", 3);
 
             _colourLoc = GL.GetUniformLocation(Program, "colour");

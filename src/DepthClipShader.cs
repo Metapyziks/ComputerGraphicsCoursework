@@ -33,11 +33,10 @@ namespace ComputerGraphicsCoursework
             vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
             vert.AddUniform(ShaderVarType.Mat4, "transform");
             vert.AddAttribute(ShaderVarType.Vec3, "in_vertex");
-            vert.AddAttribute(ShaderVarType.Vec3, "in_normal");
             vert.Logic = @"
                 void main(void)
                 {
-                    gl_Position = view_matrix * (transform * vec4(in_vertex + in_normal * 0.0, 1.0));
+                    gl_Position = view_matrix * (transform * vec4(in_vertex, 1.0));
                 }
             ";
 
@@ -62,7 +61,7 @@ namespace ComputerGraphicsCoursework
             base.OnCreate();
 
             AddAttribute("in_vertex", 3);
-            AddAttribute("in_normal", 3);
+            AddUnusedAttribute(5);
 
             _transLoc = GL.GetUniformLocation(Program, "transform");
             GL.UniformMatrix4(_transLoc, false, ref _trans);

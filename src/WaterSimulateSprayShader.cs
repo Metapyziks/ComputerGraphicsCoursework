@@ -50,8 +50,8 @@ namespace ComputerGraphicsCoursework
                             )
                         );
 
-                    float vel = pow(abs(texture(velocitymap, tex_pos).a - 0.5), 3.0);
-                    float new = min(1.0, cur + max((mx - cur) * 0.5, 0.0) + vel) * 0.98;
+                    float vel = pow(abs(texture(velocitymap, tex_pos).a - 0.5), 2.5);
+                    float new = min(1.0, cur + max((mx - cur) * 0.5, 0.0) + vel) * 0.99;
                     
                     out_frag_colour = vec4(new, new, new, new);
                 }

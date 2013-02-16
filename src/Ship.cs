@@ -95,11 +95,14 @@ namespace ComputerGraphicsCoursework
             _leftFloat.Streamline(Forward, 0.01f);
             _rightFloat.Streamline(Forward, 0.01f);
 
-            float mag = Math.Min(1f, (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 6f);
+            float mag = Math.Min(1f, (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 12f);
 
             var splashPos = Position + Forward * 3.5f;
-            water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
-            splashPos += -Forward * 7.5f - Right;
+            for (int i = 0; i < 8; ++i) {
+                splashPos = Position + Forward * (3.5f - i);
+                water.Splash(new Vector2(splashPos.X, splashPos.Z), mag / 2f);
+            }
+            splashPos = Position - Forward * 3.5f - Right;
             water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
             splashPos += Right * 2f;
             water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
@@ -121,11 +124,9 @@ namespace ComputerGraphicsCoursework
             shader.Shinyness = 4f;
             _sModel.Render(shader, _motor);
 
-            /*
-            _frontFloat.Render(shader);
-            _leftFloat.Render(shader);
-            _rightFloat.Render(shader);
-            */
+            //_frontFloat.Render(shader);
+            //_leftFloat.Render(shader);
+            //_rightFloat.Render(shader);
         }
 
         public void Render(DepthClipShader shader)

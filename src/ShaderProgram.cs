@@ -248,6 +248,15 @@ namespace ComputerGraphicsCoursework
             Tools.ErrorCheck("addattrib:" + identifier);
         }
 
+        public void AddUnusedAttribute(int size, VertexAttribPointerType pointerType = VertexAttribPointerType.Float)
+        {
+            AttributeInfo info = new AttributeInfo(this, String.Empty, size, VertexDataStride,
+                0, 0, pointerType, false);
+
+            VertexDataStride += info.Length;
+            VertexDataSize += info.Size;
+        }
+
         public void AddTexture(String identifier, TextureUnit unit)
         {
             _textures.Add(identifier, new TextureInfo(this, identifier,
