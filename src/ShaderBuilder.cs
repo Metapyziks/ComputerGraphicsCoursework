@@ -97,7 +97,7 @@ namespace ComputerGraphicsCoursework
             String nl = Environment.NewLine;
 
             String output = 
-                "#version 1" + (gl3 ? "3" : "2") + "0" + nl + nl;
+                "#version 1" + (gl3 ? "5" : "2") + "0" + nl + nl;
 
             if (_extensions.Count != 0) {
                 foreach (String ext in _extensions)

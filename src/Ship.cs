@@ -24,6 +24,7 @@ namespace ComputerGraphicsCoursework
         private Model.FaceGroup[] _outerHull;
         private Model.FaceGroup[] _trim;
         private Model.FaceGroup[] _motor;
+        private Model.FaceGroup[] _prop;
         private Matrix4 _trans;
 
         private Floater _frontFloat;
@@ -31,6 +32,8 @@ namespace ComputerGraphicsCoursework
         private Floater _rightFloat;
 
         private float _rudderAng;
+        private float _propSpeed;
+        private float _propAng;
 
         public float Pitch { get; private set; }
         public float Yaw { get; private set; }
@@ -53,6 +56,7 @@ namespace ComputerGraphicsCoursework
             _outerHull = _sModel.GetFaceGroups("OuterHull");
             _trim = _sModel.GetFaceGroups("Trim");
             _motor = _sModel.GetFaceGroups("Motor").Union(_sModel.GetFaceGroups("Tiller")).ToArray();
+            _prop = _sModel.GetFaceGroups("Prop");
 
             _frontFloat = new Floater(new Vector3(6f, 0f, 0f));
             _leftFloat = new Floater(new Vector3(-6f, 0f, -4f));
@@ -103,6 +107,8 @@ namespace ComputerGraphicsCoursework
             _leftFloat.Streamline(Forward, 0.01f);
             _rightFloat.Streamline(Forward, 0.01f);
 
+            _propAng += _propSpeed / 60f;
+
             float mag = Math.Min(1f, (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 12f);
 
             var splashPos = Position + Forward * 3.5f;
@@ -125,15 +131,20 @@ namespace ComputerGraphicsCoursework
             _sModel.Render(shader, _innerHull);
             //shader.Texture = _sFiberglassTexture;
             //shader.Colour = Color4.LightGray;
+            shader.Colour = Color.CornflowerBlue;
             shader.Shinyness = 8f;
             _sModel.Render(shader, _outerHull);
             shader.Texture = _sFiberglassTexture;
-            shader.Colour = Color4.Gray;
+            shader.Colour = Color4.White; // new Color4(64, 64, 64, 255);
             _sModel.Render(shader, _trim);
             shader.Colour = new Color4(32, 32, 32, 255);
             shader.Transform = Matrix4.Mult(Matrix4.Mult(Matrix4.CreateRotationY(_rudderAng), Matrix4.CreateTranslation(-4f, 0f, 0f)), _trans);
             shader.Shinyness = 4f;
             _sModel.Render(shader, _motor);
+            shader.Colour = Color4.Gray;
+            shader.Transform = Matrix4.Mult(Matrix4.CreateRotationX(_propAng), shader.Transform);
+            shader.Shinyness = 4f;
+            _sModel.Render(shader, _prop);
 
             //_frontFloat.Render(shader);
             //_leftFloat.Render(shader);
@@ -152,14 +163,18 @@ namespace ComputerGraphicsCoursework
 
         public void UpdateKeys(KeyboardDevice keyboard)
         {
+            _propSpeed *= 0.99f;
+
             if (keyboard[Key.W]) {
                 _leftFloat.Accelerate(Forward / 128f);
                 _rightFloat.Accelerate(Forward / 128f);
+                _propSpeed += 1f / 4f;
             }
 
             if (keyboard[Key.S]) {
                 _leftFloat.Accelerate(-Forward / 256f);
                 _rightFloat.Accelerate(-Forward / 256f);
+                _propSpeed -= 1f / 8f;
             }
 
             float vel = (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 3f;
