@@ -3,6 +3,8 @@ using System;
 using OpenTK;
 using OpenTK.Graphics;
 
+using ComputerGraphicsCoursework.Shaders;
+
 namespace ComputerGraphicsCoursework
 {
     public class Sprite : IRenderable<SpriteShader>

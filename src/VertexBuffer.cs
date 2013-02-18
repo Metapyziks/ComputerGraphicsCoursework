@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Shaders;
+
 namespace ComputerGraphicsCoursework
 {
     public class VertexBuffer : IDisposable

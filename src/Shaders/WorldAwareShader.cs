@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL;
 
-namespace ComputerGraphicsCoursework.src
+namespace ComputerGraphicsCoursework.Shaders
 {
     class WorldAwareShader : ShaderProgram3D
     {

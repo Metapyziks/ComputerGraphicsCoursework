@@ -8,7 +8,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Shaders
 {
     class SkyShader : ShaderProgram3D
     {

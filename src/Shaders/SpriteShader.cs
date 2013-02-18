@@ -1,6 +1,6 @@
 using OpenTK.Graphics.OpenGL;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Shaders
 {
     public class SpriteShader : ShaderProgram2D
     {

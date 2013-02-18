@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Shaders;
+
 namespace ComputerGraphicsCoursework
 {
     class Water : IRenderable<WaterShader>
