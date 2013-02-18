@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class ModelShader : ShaderProgram3D
+    class ModelShader : WorldAwareShader
     {
         private Color4 _colour = Color4.White;
         private int _colourLoc = -1;
@@ -88,14 +88,14 @@ namespace ComputerGraphicsCoursework.Shaders
             frag.AddUniform(ShaderVarType.Vec4, "colour");
             frag.AddUniform(ShaderVarType.Sampler2D, "tex");
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
+            frag.AddUniform(ShaderVarType.Vec3, "light_vector");
             frag.AddUniform(ShaderVarType.Float, "shinyness");
             frag.Logic = @"
                 void main(void)
                 {
-                    const vec3 light = normalize(vec3(-6, -14, -3));
-                    out_frag_colour = vec4(colour.rgb * texture(tex, var_textuv + vec2(0.5, 0.5)).rgb * (3.0 + dot(-light, var_normal)) * 0.25, colour.a);
+                    out_frag_colour = vec4(colour.rgb * texture(tex, var_textuv + vec2(0.5, 0.5)).rgb * (3.0 + dot(-light_vector, var_normal)) * 0.25, colour.a);
                     if (shinyness > 0.0) {
-                        out_frag_colour = vec4(out_frag_colour.rgb + (vec3(1.0, 1.0, 1.0) - out_frag_colour.rgb) * 0.5 * pow(max(0.0, dot(reflect(-light, var_normal), view_vector)), shinyness), out_frag_colour.a);
+                        out_frag_colour = vec4(out_frag_colour.rgb + (vec3(1.0, 1.0, 1.0) - out_frag_colour.rgb) * 0.5 * pow(max(0.0, dot(reflect(-light_vector, var_normal), view_vector)), shinyness), out_frag_colour.a);
                     }
                 }
             ";

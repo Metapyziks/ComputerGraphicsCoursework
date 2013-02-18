@@ -108,10 +108,11 @@ namespace ComputerGraphicsCoursework
 
             _world = new World();
 
-            _modelShader = new ModelShader();
-            _modelShader.Camera = _camera;
             _depthClipShader = new DepthClipShader();
             _depthClipShader.Camera = _camera;
+            _modelShader = new ModelShader();
+            _modelShader.Camera = _camera;
+            _modelShader.World = _world;
             _waterShader = new WaterShader();
             _waterShader.Camera = _camera;
             _waterShader.World = _world;
