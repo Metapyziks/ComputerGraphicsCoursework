@@ -104,9 +104,9 @@ namespace ComputerGraphicsCoursework
             base.OnCreate();
 
             AddAttribute("in_position", 2);
-            AddTexture("heightmap", TextureUnit.Texture1);
-            AddTexture("velocitymap", TextureUnit.Texture2);
-            AddTexture("spraymap", TextureUnit.Texture3);
+            AddTexture("heightmap");
+            AddTexture("velocitymap");
+            AddTexture("spraymap");
 
             _resolutionLoc = GL.GetUniformLocation(Program, "resolution");
             GL.Uniform1(_resolutionLoc, Water.Resolution);
@@ -117,6 +117,15 @@ namespace ComputerGraphicsCoursework
             HeightMap = heightmap;
             VelocityMap = velocitymap;
             SprayMap = spraymap;
+        }
+
+        protected override void OnStartBatch()
+        {
+            base.OnStartBatch();
+
+            SetTexture("heightmap", HeightMap);
+            SetTexture("velocitymap", VelocityMap);
+            SetTexture("spraymap", SprayMap);
         }
 
         public void Render()

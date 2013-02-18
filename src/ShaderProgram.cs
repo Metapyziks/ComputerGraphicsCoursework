@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using OpenTK.Graphics.OpenGL;
@@ -257,10 +258,11 @@ namespace ComputerGraphicsCoursework
             VertexDataSize += info.Size;
         }
 
-        public void AddTexture(String identifier, TextureUnit unit)
+        public void AddTexture(String identifier)
         {
             _textures.Add(identifier, new TextureInfo(this, identifier,
-                unit));
+                (TextureUnit) Enumerable.Range((int) TextureUnit.Texture0, 16).First(x =>
+                    _textures.Count(y => y.Value.TextureUnit == (TextureUnit) x) == 0)));
 
             Tools.ErrorCheck("addtexture");
         }

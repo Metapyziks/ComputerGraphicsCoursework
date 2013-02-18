@@ -12,5 +12,6 @@ namespace ComputerGraphicsCoursework
 {
     class SkyShader : ShaderProgram3D
     {
+
     }
 }

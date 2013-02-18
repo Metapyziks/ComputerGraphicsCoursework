@@ -122,7 +122,7 @@ namespace ComputerGraphicsCoursework
             AddAttribute("in_textuv", 2);
             AddAttribute("in_normal", 3);
 
-            AddTexture("tex", TextureUnit.Texture0);
+            AddTexture("tex");
 
             _colourLoc = GL.GetUniformLocation(Program, "colour");
             _transLoc = GL.GetUniformLocation(Program, "transform");

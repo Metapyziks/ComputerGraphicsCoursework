@@ -80,7 +80,7 @@ namespace ComputerGraphicsCoursework
                 AddAttribute("in_colour", 4);
             }
 
-            AddTexture("texture0", TextureUnit.Texture0);
+            AddTexture("texture0");
         }
 
         protected override void OnStartBatch()

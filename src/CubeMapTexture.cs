@@ -13,17 +13,21 @@ namespace ComputerGraphicsCoursework
     public class CubeMapTexture : Texture
     {
         private static readonly String[] _sSuffixes = new String[] {
-            "_rt", "_lf", "_up", "_dn", "_bk", "_ft"
+            "rt", "lf", "up", "dn", "bk", "ft"
         };
 
         private static readonly TextureTarget[] _sTargets = new TextureTarget[] {
             TextureTarget.TextureCubeMapPositiveX,
             TextureTarget.TextureCubeMapPositiveX,
+            TextureTarget.TextureCubeMapPositiveY,
+            TextureTarget.TextureCubeMapNegativeY,
+            TextureTarget.TextureCubeMapPositiveZ,
+            TextureTarget.TextureCubeMapNegativeZ
         };
 
-        public static CubeMapTexture FromFiles(String pathPrefix)
+        public static CubeMapTexture FromFiles(String pathFormat)
         {
-            var bmps = _sSuffixes.Select(x => (Bitmap) Bitmap.FromFile(pathPrefix + x)).ToArray();
+            var bmps = _sSuffixes.Select(x => (Bitmap) Bitmap.FromFile(String.Format(pathFormat, x))).ToArray();
             return new CubeMapTexture(bmps[0], bmps[1], bmps[2], bmps[3], bmps[4], bmps[5]);
         }
 

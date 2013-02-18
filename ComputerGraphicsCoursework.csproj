@@ -81,6 +81,8 @@
     <Compile Include="src\WaterEffectShader.cs" />
     <Compile Include="src\WaterShader.cs" />
     <Compile Include="src\WaterSimulateSprayShader.cs" />
+    <Compile Include="src\World.cs" />
+    <Compile Include="src\WorldAwareShader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

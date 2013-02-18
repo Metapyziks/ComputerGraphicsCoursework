@@ -108,9 +108,9 @@ namespace ComputerGraphicsCoursework
             base.OnCreate();
 
             AddAttribute("in_vertex", 2);
-            AddTexture("heightmap", TextureUnit.Texture1);
-            AddTexture("spraymap", TextureUnit.Texture3);
-            AddTexture("ripplemap", TextureUnit.Texture4);
+            AddTexture("heightmap");
+            AddTexture("spraymap");
+            AddTexture("ripplemap");
 
             var rand = new Random();
             _ripplemap = new LumTexture2D(128, 128);
