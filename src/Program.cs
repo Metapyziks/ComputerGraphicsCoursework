@@ -28,6 +28,8 @@ namespace ComputerGraphicsCoursework
         private List<IKeyControllable> _keyControllables;
         private double _lastUpdate;
 
+        private World _world;
+
         private Ship _ship;
 
         private WaterShader _waterShader;
@@ -91,12 +93,6 @@ namespace ComputerGraphicsCoursework
 
             _cameraDist = 24f;
 
-            _camera = new Camera(Width, Height);
-            _camera.Pitch = 0.0f;
-            _camera.Yaw = 0.0f;
-            _camera.Position = new Vector3(-8f, 0f, 0f);
-            _camera.UpdateViewMatrix();
-
             _modelRenderables = new List<IRenderable<ModelShader>>();
             _dcRenderables = new List<IRenderable<DepthClipShader>>();
 
@@ -104,14 +100,23 @@ namespace ComputerGraphicsCoursework
             _keyControllables = new List<IKeyControllable>();
             _lastUpdate = 0d;
 
+            _camera = new Camera(Width, Height);
+            _camera.Pitch = 0.0f;
+            _camera.Yaw = 0.0f;
+            _camera.Position = new Vector3(-8f, 0f, 0f);
+            _camera.UpdateViewMatrix();
+
+            _world = new World();
+
             _modelShader = new ModelShader();
             _modelShader.Camera = _camera;
             _depthClipShader = new DepthClipShader();
             _depthClipShader.Camera = _camera;
-            _ship = AddToScene(new Ship());
-
             _waterShader = new WaterShader();
             _waterShader.Camera = _camera;
+            _waterShader.World = _world;
+
+            _ship = AddToScene(new Ship());
             _water = new Water(64f);
 
             _captureMouse = true;

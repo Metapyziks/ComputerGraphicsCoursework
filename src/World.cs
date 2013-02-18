@@ -18,7 +18,7 @@ namespace ComputerGraphicsCoursework
         public World()
         {
             LightDirection = new Vector3(-6f, -14f, -3f);
-            LightDirection.Normalize();
+            LightDirection /= LightDirection.Length;
 
             Skybox = _sDefaultSkyCubeMap = _sDefaultSkyCubeMap ?? CubeMapTexture.FromFiles("../../res/sky_{0}.png");
         }

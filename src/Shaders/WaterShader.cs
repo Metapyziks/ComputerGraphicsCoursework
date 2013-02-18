@@ -6,7 +6,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class WaterShader : ShaderProgram3D
+    class WaterShader : WorldAwareShader
     {
         private LumTexture2D _ripplemap;
 
@@ -64,6 +64,7 @@ namespace ComputerGraphicsCoursework.Shaders
             frag.AddUniform(ShaderVarType.Sampler2D, "spraymap");
             frag.AddUniform(ShaderVarType.Vec4, "colour");
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
+            frag.AddUniform(ShaderVarType.Vec3, "light_vector");
             frag.Logic = @"
                 void main(void)
                 {
@@ -76,9 +77,8 @@ namespace ComputerGraphicsCoursework.Shaders
                     vec3 vert = normalize(vec3(0.0, 1.0, b - t));
                     vec3 normal = cross(horz, vert);
 
-                    const vec3 light = normalize(vec3(-6, -14, -3));
-                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light, normal)), colour.a);
-                    float shinys = 0.75 * pow(dot(reflect(light, normal), view_vector) * 0.5 + 0.5, 4.0);
+                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light_vector, normal)), colour.a);
+                    float shinys = 0.75 * pow(dot(reflect(light_vector, normal), view_vector) * 0.5 + 0.5, 4.0);
                     out_frag_colour += vec4((vec3(1.0, 1.0, 1.0) - out_frag_colour.rgb) * shinys, 0.0);
 
                     if (var_scale > 0.0) {

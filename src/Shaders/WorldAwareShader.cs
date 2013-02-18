@@ -22,5 +22,16 @@ namespace ComputerGraphicsCoursework.Shaders
 
             AddTexture("skybox");
         }
+
+        protected override void OnStartBatch()
+        {
+            base.OnStartBatch();
+
+            if (_lightDirLoc != -1) {
+                GL.Uniform3(_lightDirLoc, World.LightDirection);
+            }
+
+            SetTexture("skybox", World.Skybox);
+        }
     }
 }
