@@ -56,6 +56,7 @@
     <Compile Include="src\Floater.cs" />
     <Compile Include="src\IKeyControllable.cs" />
     <Compile Include="src\IUpdateable.cs" />
+    <Compile Include="src\SkyShader.cs" />
     <Compile Include="src\WaterSimulateHeightShader.cs" />
     <Compile Include="src\WaterSimulateVelocityShader.cs" />
     <Compile Include="src\WaterSplashVelocityShader.cs" />
