@@ -12,7 +12,7 @@ namespace ComputerGraphicsCoursework.Shaders
 {
     class SkyShader : WorldAwareShader
     {
-        private const float BoxSize = 64f;
+        private const float BoxSize = 1f;
 
         private static readonly float[] _sVerts = new float[] {
             -BoxSize, -BoxSize, -BoxSize, /**/ -BoxSize, +BoxSize, -BoxSize, /**/ -BoxSize, +BoxSize, +BoxSize, /**/ -BoxSize, -BoxSize, +BoxSize, // Left

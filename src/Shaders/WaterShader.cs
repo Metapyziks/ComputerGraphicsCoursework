@@ -62,8 +62,10 @@ namespace ComputerGraphicsCoursework.Shaders
             frag.AddUniform(ShaderVarType.Sampler2D, "heightmap");
             frag.AddUniform(ShaderVarType.Sampler2D, "ripplemap");
             frag.AddUniform(ShaderVarType.Sampler2D, "spraymap");
+            frag.AddUniform(ShaderVarType.SamplerCube, "skybox");
             frag.AddUniform(ShaderVarType.Vec4, "colour");
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
+            frag.AddUniform(ShaderVarType.Vec2, "view_origin");
             frag.AddUniform(ShaderVarType.Vec3, "light_vector");
             frag.Logic = @"
                 void main(void)
@@ -77,9 +79,11 @@ namespace ComputerGraphicsCoursework.Shaders
                     vec3 vert = normalize(vec3(0.0, 1.0, b - t));
                     vec3 normal = cross(horz, vert);
 
+                    vec3 offset = vec3(var_offset.x - view_origin.x, -view_vector.y * 512.0, var_offset.y - view_origin.y) / 512.0;
+
                     out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light_vector, normal)), colour.a);
-                    float shinys = 0.75 * pow(dot(reflect(light_vector, normal), view_vector) * 0.5 + 0.5, 4.0);
-                    out_frag_colour += vec4((vec3(1.0, 1.0, 1.0) - out_frag_colour.rgb) * shinys, 0.0);
+                    //float shinys = 0.75 * pow(dot(reflect(light_vector, normal), view_vector) * 0.5 + 0.5, 4.0);
+                    out_frag_colour += vec4((texture(skybox, reflect(offset, normal)).rgb - out_frag_colour.rgb) * 0.5, 0.0);
 
                     if (var_scale > 0.0) {
                         float ripple = texture(ripplemap, (var_texpos * 8.0) + normal.xz).a;
