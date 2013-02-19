@@ -17,7 +17,11 @@ namespace ComputerGraphicsCoursework
 
         public World()
         {
-            LightDirection = new Vector3(-6f, -14f, -3f);
+            float sunPitch = 35f;
+            float sunYaw = 165f;
+
+            LightDirection = new Vector3((float) (Math.Cos(sunPitch) * Math.Cos(sunYaw)),
+                (float) Math.Sin(sunPitch), (float) (Math.Cos(sunPitch) *(float)  Math.Sin(sunYaw)));
             LightDirection /= LightDirection.Length;
 
             Skybox = _sDefaultSkyCubeMap = _sDefaultSkyCubeMap ?? CubeMapTexture.FromFiles("../../res/sky_{0}.png");

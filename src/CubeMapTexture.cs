@@ -17,12 +17,12 @@ namespace ComputerGraphicsCoursework
         };
 
         private static readonly TextureTarget[] _sTargets = new TextureTarget[] {
-            TextureTarget.TextureCubeMapPositiveX,
-            TextureTarget.TextureCubeMapNegativeX,
+            TextureTarget.TextureCubeMapPositiveZ,
+            TextureTarget.TextureCubeMapNegativeZ,
             TextureTarget.TextureCubeMapPositiveY,
             TextureTarget.TextureCubeMapNegativeY,
-            TextureTarget.TextureCubeMapPositiveZ,
-            TextureTarget.TextureCubeMapNegativeZ
+            TextureTarget.TextureCubeMapNegativeX,
+            TextureTarget.TextureCubeMapPositiveX
         };
 
         public static CubeMapTexture FromFiles(String pathFormat)

@@ -36,7 +36,7 @@ namespace ComputerGraphicsCoursework.Shaders
                 {
                     vec4 pos = view_matrix * vec4(in_vertex, 0.0);
                     gl_Position = pos.xyww;
-                    var_texcoord = (normalize(in_vertex) + vec3(1.0, 1.0, 1.0)) * 0.5;
+                    var_texcoord = in_vertex;
                 }
             ";
 
