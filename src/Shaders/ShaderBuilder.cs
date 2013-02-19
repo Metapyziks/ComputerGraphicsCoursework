@@ -4,7 +4,7 @@ using System.Linq;
 
 using OpenTK.Graphics.OpenGL;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Shaders
 {
     public enum ShaderVarType
     {
@@ -14,6 +14,7 @@ namespace ComputerGraphicsCoursework
         Vec3,
         Vec4,
         Sampler2D,
+        SamplerCube,
         Sampler2DArray,
         Mat4
     }
@@ -97,7 +98,7 @@ namespace ComputerGraphicsCoursework
             String nl = Environment.NewLine;
 
             String output = 
-                "#version 1" + (gl3 ? "5" : "2") + "0" + nl + nl;
+                "#version " + (gl3 ? "13" : "12") + "0" + nl + nl;
 
             if (_extensions.Count != 0) {
                 foreach (String ext in _extensions)

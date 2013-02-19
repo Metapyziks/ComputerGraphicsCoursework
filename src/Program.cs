@@ -20,6 +20,8 @@ namespace ComputerGraphicsCoursework
 
         private ModelShader _modelShader;
         private DepthClipShader _depthClipShader;
+        private WaterShader _waterShader;
+        private SkyShader _skyShader;
         
         private List<IRenderable<ModelShader>> _modelRenderables;
         private List<IRenderable<DepthClipShader>> _dcRenderables;
@@ -29,10 +31,7 @@ namespace ComputerGraphicsCoursework
         private double _lastUpdate;
 
         private World _world;
-
         private Ship _ship;
-
-        private WaterShader _waterShader;
         private Water _water;
 
         private Random _rand;
@@ -116,6 +115,9 @@ namespace ComputerGraphicsCoursework
             _waterShader = new WaterShader();
             _waterShader.Camera = _camera;
             _waterShader.World = _world;
+            _skyShader = new SkyShader();
+            _skyShader.Camera = _camera;
+            _skyShader.World = _world;
 
             _ship = AddToScene(new Ship());
             _water = new Water(64f);
@@ -176,6 +178,9 @@ namespace ComputerGraphicsCoursework
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+
+            _skyShader.Render();
+
             if (_drawShip) {
                 _modelShader.StartBatch();
                 foreach (var obj in _modelRenderables) obj.Render(_modelShader);
