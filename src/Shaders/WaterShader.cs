@@ -34,13 +34,14 @@ namespace ComputerGraphicsCoursework.Shaders
         {
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, false);
             vert.AddUniform(ShaderVarType.Mat4, "vp_matrix");
-            vert.AddUniform(ShaderVarType.Vec2, "view_origin");
+            vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
+            vert.AddUniform(ShaderVarType.Vec3, "view_origin");
             vert.AddUniform(ShaderVarType.Vec3, "view_vector");
             vert.AddUniform(ShaderVarType.Sampler2D, "heightmap");
             vert.AddAttribute(ShaderVarType.Vec2, "in_vertex");
             vert.AddVarying(ShaderVarType.Float, "var_height");
             vert.AddVarying(ShaderVarType.Float, "var_scale");
-            vert.AddVarying(ShaderVarType.Vec4, "var_position");
+            vert.AddVarying(ShaderVarType.Vec3, "var_position");
             vert.AddVarying(ShaderVarType.Vec2, "var_texpos");
             vert.Logic = @"
                 void main(void)
@@ -52,12 +53,14 @@ namespace ComputerGraphicsCoursework.Shaders
 
                     var_scale = max(0.0, 2.0 - max(1.0, length(in_vertex * size) / 48.0));
 
-                    vec2 offset = rmat * (in_vertex * size) + view_origin;
+                    vec2 offset = rmat * (in_vertex * size) + view_origin.xz;
                     var_texpos = offset / 128.0 + vec2(0.5, 0.5);
                     var_height = texture(heightmap, var_texpos).a * 2.0 * var_scale;
                     
-                    var_position = vp_matrix * vec4(offset.x + 0.01625, var_height - 1.0, offset.y, 1.0);
-                    gl_Position = var_position;
+                    vec4 pos = vec4(offset.x, var_height - 1.0, offset.y, 1.0);
+
+                    var_position = pos.xyz;
+                    gl_Position = vp_matrix * pos;
                 }
             ";
 
@@ -70,7 +73,7 @@ namespace ComputerGraphicsCoursework.Shaders
             frag.AddUniform(ShaderVarType.Mat4, "view_matrix");
             frag.AddUniform(ShaderVarType.Mat4, "view_inv_matrix");
             frag.AddUniform(ShaderVarType.Vec3, "view_vector");
-            frag.AddUniform(ShaderVarType.Vec2, "view_origin");
+            frag.AddUniform(ShaderVarType.Vec3, "view_origin");
             frag.AddUniform(ShaderVarType.Vec3, "light_vector");
             frag.Logic = @"
                 void main(void)
@@ -84,17 +87,16 @@ namespace ComputerGraphicsCoursework.Shaders
                     vec3 vert = normalize(vec3(2.0, (b - t) * 2.0 * var_scale, 0.0));
                     vec3 normal = cross(horz, vert);
                     
-                    vec3 eye_normal = (view_matrix * vec4(normal, 0.0)).xyz;
-                    vec3 eye_pos = normalize(var_position.xyz / var_position.w);
+                    vec3 cam_dir = normalize(var_position - view_origin);
 
-                    vec4 reflected = view_inv_matrix * vec4(reflect(eye_pos, eye_normal), 0.0);
+                    vec3 reflected = normalize(reflect(cam_dir, normal));
 
                     out_frag_colour = texture(skybox, normalize(reflected.xyz));
 
                     //out_frag_colour = vec4(normal * 0.5 + vec3(0.5, 0.5, 0.5), 1.0);
 
                     //out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light_vector, normal)), colour.a);
-                    //out_frag_colour += vec4((texture(skybox, normalize(reflected.xyz)).rgb - out_frag_colour.rgb) * 0.5, 0.0);
+                    //out_frag_colour += vec4((texture(skybox, reflected).rgb - out_frag_colour.rgb) * 0.5, 0.0);
 
                     //if (var_scale > 0.0) {
                     //    float ripple = texture(ripplemap, (var_texpos * 8.0) + normal.xz * 0.125).a;
@@ -146,7 +148,7 @@ namespace ComputerGraphicsCoursework.Shaders
             base.OnStartBatch();
 
             GL.Uniform3(_viewVectorLoc, Camera.ViewVector);
-            GL.Uniform2(_viewOriginLoc, Camera.Position.X, Camera.Position.Z);
+            GL.Uniform3(_viewOriginLoc, Camera.Position);
 
             Matrix4 viewMatrix = Camera.InvViewmatrix;
             Matrix4 invViewMatrix = Camera.InvViewmatrix;

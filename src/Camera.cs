@@ -152,8 +152,9 @@ namespace ComputerGraphicsCoursework
                 Matrix4 xRot = Matrix4.CreateRotationX(_rotation.X);
                 Matrix4 trns = Matrix4.CreateTranslation(-_position);
 
-                _viewMatrix = Matrix4.Mult(Matrix4.Mult(trns, yRot), xRot);
+                _viewMatrix = Matrix4.Mult(yRot, xRot);
                 _iViewMatrix = Matrix4.Invert(_viewMatrix);
+                _viewMatrix = Matrix4.Mult(trns, _viewMatrix);
                 _combinedMatrix = Matrix4.Mult(_viewMatrix, _perspectiveMatrix);
             }
         }
