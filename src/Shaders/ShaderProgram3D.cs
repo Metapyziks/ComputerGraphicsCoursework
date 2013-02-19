@@ -21,13 +21,13 @@ namespace ComputerGraphicsCoursework.Shaders
         {
             base.OnCreate();
 
-            _viewMatrixLoc = GL.GetUniformLocation(Program, "view_matrix");
+            _viewMatrixLoc = GL.GetUniformLocation(Program, "vp_matrix");
         }
 
         protected override void OnStartBatch()
         {
             if (Camera != null) {
-                Matrix4 viewMat = Camera.ViewMatrix;
+                Matrix4 viewMat = Camera.CombinedMatrix;
                 GL.UniformMatrix4(_viewMatrixLoc, false, ref viewMat);
             }
         }

@@ -28,13 +28,13 @@ namespace ComputerGraphicsCoursework.Shaders
         public SkyShader()
         {
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, false);
-            vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
+            vert.AddUniform(ShaderVarType.Mat4, "vp_matrix");
             vert.AddAttribute(ShaderVarType.Vec3, "in_vertex");
             vert.AddVarying(ShaderVarType.Vec3, "var_texcoord");
             vert.Logic = @"
                 void main(void)
                 {
-                    vec4 pos = view_matrix * vec4(in_vertex, 0.0);
+                    vec4 pos = vp_matrix * vec4(in_vertex, 0.0);
                     gl_Position = pos.xyww;
                     var_texcoord = in_vertex;
                 }

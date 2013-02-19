@@ -16,6 +16,7 @@ namespace ComputerGraphicsCoursework
         private Matrix4 _perspectiveMatrix;
         private Matrix4 _viewMatrix;
         private Matrix4 _iViewMatrix;
+        private Matrix4 _combinedMatrix;
         private Vector3 _position;
         private Vector2 _rotation;
         private float _scale;
@@ -29,27 +30,21 @@ namespace ComputerGraphicsCoursework
         public Matrix4 PerspectiveMatrix
         {
             get { return _perspectiveMatrix; }
-            set
-            {
-                _perspectiveMatrix = value;
-                _perspectiveChanged = false;
-            }
         }
 
-        public Matrix4 ViewMatrix
+        public Matrix4 Viewmatrix
         {
             get { return _viewMatrix; }
-            set
-            {
-                _viewMatrix = value;
-                _iViewMatrix = Matrix4.Invert(value);
-                _viewChanged = false;
-            }
         }
 
         public Matrix4 InvViewmatrix
         {
             get { return _iViewMatrix; }
+        }
+
+        public Matrix4 CombinedMatrix
+        {
+            get { return _combinedMatrix; }
         }
 
         public Vector3 Position
@@ -157,8 +152,9 @@ namespace ComputerGraphicsCoursework
                 Matrix4 xRot = Matrix4.CreateRotationX(_rotation.X);
                 Matrix4 trns = Matrix4.CreateTranslation(-_position);
 
-                _viewMatrix = Matrix4.Mult(Matrix4.Mult(Matrix4.Mult(trns, yRot), xRot), _perspectiveMatrix);
+                _viewMatrix = Matrix4.Mult(Matrix4.Mult(trns, yRot), xRot);
                 _iViewMatrix = Matrix4.Invert(_viewMatrix);
+                _combinedMatrix = Matrix4.Mult(_viewMatrix, _perspectiveMatrix);
             }
         }
     }

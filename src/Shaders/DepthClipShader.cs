@@ -23,13 +23,13 @@ namespace ComputerGraphicsCoursework.Shaders
         public DepthClipShader()
         {
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, false);
-            vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
+            vert.AddUniform(ShaderVarType.Mat4, "vp_matrix");
             vert.AddUniform(ShaderVarType.Mat4, "transform");
             vert.AddAttribute(ShaderVarType.Vec3, "in_vertex");
             vert.Logic = @"
                 void main(void)
                 {
-                    gl_Position = view_matrix * (transform * vec4(in_vertex, 1.0));
+                    gl_Position = vp_matrix * (transform * vec4(in_vertex, 1.0));
                 }
             ";
 

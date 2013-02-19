@@ -68,7 +68,7 @@ namespace ComputerGraphicsCoursework.Shaders
         public ModelShader()
         {
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, false);
-            vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
+            vert.AddUniform(ShaderVarType.Mat4, "vp_matrix");
             vert.AddUniform(ShaderVarType.Mat4, "transform");
             vert.AddAttribute(ShaderVarType.Vec3, "in_vertex");
             vert.AddAttribute(ShaderVarType.Vec2, "in_textuv");
@@ -80,7 +80,7 @@ namespace ComputerGraphicsCoursework.Shaders
                 {
                     var_normal = (transform * vec4(in_normal, 0.0)).xyz;
                     var_textuv = in_textuv;
-                    gl_Position = view_matrix * (transform * vec4(in_vertex, 1.0));
+                    gl_Position = vp_matrix * (transform * vec4(in_vertex, 1.0));
                 }
             ";
 
