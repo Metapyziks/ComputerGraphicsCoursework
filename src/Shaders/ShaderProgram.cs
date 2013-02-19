@@ -94,7 +94,7 @@ namespace ComputerGraphicsCoursework.Shaders
 
                 Shader.Use();
 
-                int val = int.Parse(TextureUnit.ToString().Substring("Texture".Length));
+                int val = (int) TextureUnit - (int) TextureUnit.Texture0;
 
                 GL.Uniform1(UniformLocation, val);
 
