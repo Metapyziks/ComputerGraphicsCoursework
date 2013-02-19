@@ -47,6 +47,7 @@ namespace ComputerGraphicsCoursework.Shaders
                 {
                     //out_frag_colour = vec4(var_texcoord, 1.0);
                     out_frag_colour = texture(skybox, var_texcoord);
+                    out_frag_colour += (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * max(0.0, -var_texcoord.y);
                 }
             ";
 

@@ -86,7 +86,7 @@ namespace ComputerGraphicsCoursework.Shaders
                     out_frag_colour += vec4((texture(skybox, reflect(offset, normal)).rgb - out_frag_colour.rgb) * 0.5, 0.0);
 
                     if (var_scale > 0.0) {
-                        float ripple = texture(ripplemap, (var_texpos * 8.0) + normal.xz).a;
+                        float ripple = texture(ripplemap, (var_texpos * 4.0) + normal.xz).a;
                         float spray = texture(spraymap, var_texpos).a;
                         if (ripple * pow(spray, 2.0) > 0.75) {
                             out_frag_colour += spray * 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * var_scale;
