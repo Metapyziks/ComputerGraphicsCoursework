@@ -22,17 +22,8 @@ namespace ComputerGraphicsCoursework
         private DepthClipShader _depthClipShader;
         private WaterShader _waterShader;
         private SkyShader _skyShader;
-        
-        private List<IRenderable<ModelShader>> _modelRenderables;
-        private List<IRenderable<DepthClipShader>> _dcRenderables;
-
-        private List<IUpdateable> _updateables;
-        private List<IKeyControllable> _keyControllables;
-        private double _lastUpdate;
 
         private World _world;
-        private Ship _ship;
-        private Water _water;
 
         private Random _rand;
 
@@ -58,23 +49,6 @@ namespace ComputerGraphicsCoursework
             this.Title = "Computer Graphics Coursework";
         }
 
-        private T AddToScene<T>(T obj)
-        {
-            if (obj is IRenderable<ModelShader>) {
-                _modelRenderables.Add((IRenderable<ModelShader>) obj);
-            }
-            if (obj is IRenderable<DepthClipShader>) {
-                _dcRenderables.Add((IRenderable<DepthClipShader>) obj);
-            }
-            if (obj is IUpdateable) {
-                _updateables.Add((IUpdateable) obj);
-            }
-            if (obj is IKeyControllable) {
-                _keyControllables.Add((IKeyControllable) obj);
-            }
-            return obj;
-        }
-
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -91,13 +65,6 @@ namespace ComputerGraphicsCoursework
             _firstPerson = false;
 
             _cameraDist = 24f;
-
-            _modelRenderables = new List<IRenderable<ModelShader>>();
-            _dcRenderables = new List<IRenderable<DepthClipShader>>();
-
-            _updateables = new List<IUpdateable>();
-            _keyControllables = new List<IKeyControllable>();
-            _lastUpdate = 0d;
 
             _camera = new Camera(Width, Height);
             _camera.Pitch = 0.0f;
@@ -118,9 +85,6 @@ namespace ComputerGraphicsCoursework
             _skyShader = new SkyShader();
             _skyShader.Camera = _camera;
             _skyShader.World = _world;
-
-            _ship = AddToScene(new Ship());
-            _water = new Water(64f);
 
             _captureMouse = true;
 
@@ -156,17 +120,13 @@ namespace ComputerGraphicsCoursework
                     case Key.V:
                         _firstPerson = !_firstPerson; break;
                     default:
-                        foreach (var obj in _keyControllables) {
-                            obj.KeyDown(ke.Key);
-                        }
+                        _world.KeyDown(ke.Key);
                         break;
                 }
             };
 
             Keyboard.KeyUp += (sender, ke) => {
-                foreach (var obj in _keyControllables) {
-                    obj.KeyUp(ke.Key);
-                }
+                _world.KeyUp(ke.Key);
             };
 
             GL.ClearColor(Color4.White);
@@ -184,16 +144,16 @@ namespace ComputerGraphicsCoursework
 
             if (_drawShip) {
                 _modelShader.StartBatch();
-                foreach (var obj in _modelRenderables) obj.Render(_modelShader);
+                _world.Render(_modelShader);
                 _modelShader.EndBatch();
 
                 _depthClipShader.StartBatch();
-                foreach (var obj in _dcRenderables) obj.Render(_depthClipShader);
+                _world.Render(_depthClipShader);
                 _depthClipShader.EndBatch();
             }
 
             _waterShader.StartBatch();
-            _water.Render(_waterShader);
+            _world.Render(_waterShader);
             _waterShader.EndBatch();
             if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
@@ -215,58 +175,21 @@ namespace ComputerGraphicsCoursework
                 Cursor.Show();
             } else {
                 Cursor.Hide();
-
-                Vector3 movement = new Vector3(0.0f, 0.0f, 0.0f);
-                float angleY = _camera.Yaw;
-                float angleX = _camera.Pitch;
-
-                if (Keyboard[Key.D]) {
-                    movement.X += (float) Math.Cos(angleY);
-                    movement.Z += (float) Math.Sin(angleY);
-                }
-                if (Keyboard[Key.A]) {
-                    movement.X -= (float) Math.Cos(angleY);
-                    movement.Z -= (float) Math.Sin(angleY);
-                }
-                if (Keyboard[Key.S]) {
-                    movement.Z += (float) Math.Cos(angleY) * (float) Math.Cos(angleX);
-                    movement.Y += (float) Math.Sin(angleX);
-                    movement.X -= (float) Math.Sin(angleY) * (float) Math.Cos(angleX);
-                }
-                if (Keyboard[Key.W]) {
-                    movement.Z -= (float) Math.Cos(angleY) * (float) Math.Cos(angleX);
-                    movement.Y -= (float) Math.Sin(angleX);
-                    movement.X += (float) Math.Sin(angleY) * (float) Math.Cos(angleX);
-                }
-
-                if (movement.Length != 0) {
-                    movement.Normalize();
-                    _camera.Position += movement * (float) (16d * e.Time);
-                }
             }
 
-            _camera.Rotation += new Vector2(_ship.Pitch, _ship.Yaw);
-
-            double time = _timer.Elapsed.TotalSeconds;
-            if (time - _lastUpdate > 1.0 / 60.0) {
-                _lastUpdate = time;
-                foreach (var obj in _updateables) obj.Update(time, _water);
-                foreach (var obj in _keyControllables) obj.UpdateKeys(Keyboard);
-            }
-
-            _camera.Rotation -= new Vector2(_ship.Pitch, _ship.Yaw);
+            _camera.Rotation += new Vector2(_world.Ship.Pitch, _world.Ship.Yaw);
+            _world.UpdateFrame(_timer.Elapsed.TotalSeconds, Keyboard);
+            _camera.Rotation -= new Vector2(_world.Ship.Pitch, _world.Ship.Yaw);
 
             if (_firstPerson) {
-                _camera.Position = _ship.Position + _ship.Up * 3f - _ship.Forward * 2f;
+                _camera.Position = _world.Ship.Position + _world.Ship.Up * 3f - _world.Ship.Forward * 2f;
             } else {
-                _camera.Position = _ship.Position - _camera.ViewVector * _cameraDist;
+                _camera.Position = _world.Ship.Position - _camera.ViewVector * _cameraDist;
                 if (_camera.Position.Y < 1f) {
                     _camera.Position = new Vector3(_camera.Position.X, 1f, _camera.Position.Z);
                 }
             }
             _camera.UpdateViewMatrix();
-
-            _water.SimulateWater(_timer.Elapsed.TotalSeconds);
         }
     }
 }
