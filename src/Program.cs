@@ -120,6 +120,9 @@ namespace ComputerGraphicsCoursework
                         _drawShip = !_drawShip; break;
                     case Key.V:
                         _firstPerson = !_firstPerson; break;
+                    case Key.Escape:
+                        Close();
+                        break;
                     default:
                         _world.KeyDown(ke.Key);
                         break;
