@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
 
 using OpenTK;
 using OpenTK.Input;
@@ -39,6 +40,8 @@ namespace ComputerGraphicsCoursework
 
         static void Main(String[] args)
         {
+            Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);            
+
             var program = new Program();
             program.Run();
             program.Dispose();
@@ -60,7 +63,7 @@ namespace ComputerGraphicsCoursework
 
             _wireframe = false;
             _drawShip = true;
-            _firstPerson = false;
+            _firstPerson = true;
 
             _cameraDist = 24f;
 
