@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -21,6 +22,11 @@ namespace ComputerGraphicsCoursework
     {
         private static String _sResourceDirectory = "res";
 
+        /// <summary>
+        /// Prepends a resource file name with the resource directory path.
+        /// </summary>
+        /// <param name="fileName">File name of a resource to locate</param>
+        /// <returns>Path to the resource</returns>
         public static String GetResourcePath(String fileName)
         {
             return _sResourceDirectory + "/" + fileName;
@@ -32,7 +38,7 @@ namespace ComputerGraphicsCoursework
         /// Creates a new instance of Program, runs it until the application ends,
         /// and then disposes any used resources.
         /// </summary>
-        /// <param name="args">There are no recognised command line arguments</param>
+        /// <param name="args">Accepts at most one argument; a path to the resource directory</param>
         static void Main(String[] args)
         {
             Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
@@ -74,77 +80,122 @@ namespace ComputerGraphicsCoursework
 
         /// <summary>
         /// Constructor to create a new Program instance.
+        /// Sets the default resolution, colour depth, and sample quality of the app.
         /// </summary>
         public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 2))
         {
             this.Title = "Computer Graphics Coursework";
         }
 
+        /// <summary>
+        /// Creates a new instance of the specified shader type, and gives it
+        /// references to any needed information about the environment.
+        /// </summary>
+        /// <typeparam name="T">Shader type to set up</typeparam>
+        /// <returns>New instance of T</returns>
+        private T SetupShader<T>()
+            where T : ShaderProgram, new()
+        {
+            T shader = new T();
+
+            // If the shader is a ShaderProgram3D, give it a reference to the camera
+            if (shader is ShaderProgram3D) {
+                ((ShaderProgram3D) (ShaderProgram) shader).Camera = _camera;
+            }
+
+            // If the shader is a WorldAwareShader, give it a reference to the world
+            if (shader is WorldAwareShader) {
+                ((WorldAwareShader) (ShaderProgram) shader).World = _world;
+            }
+
+            return shader;
+        }
+
+        /// <summary>
+        /// Method override that is invoked when the OpenGL context loads.
+        /// </summary>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
+            // Don't limit the frame rate to the monitor's
             VSync = VSyncMode.Off;
 
+            // Create and start a stopwatch for timekeeping
             _timer = new Stopwatch();
             _timer.Start();
-
+            
+            // Start with wireframe mode off, the ship visible, and with a
+            // first person camera
             _wireframe = false;
             _drawShip = true;
             _firstPerson = true;
 
+            // Start with the camera 24 units away from the ship when in
+            // third person mode
             _cameraDist = 24f;
 
+            // Initialize a camera which holds the perspective and
+            // view matrices, to be used when drawing the scene
             _camera = new Camera(Width, Height);
-            _camera.Pitch = 0.0f;
-            _camera.Yaw = 0.0f;
-            _camera.Position = new Vector3(-8f, 0f, 0f);
-            _camera.UpdateViewMatrix();
 
+            // Create a world object to store all scene elements
             _world = new World();
 
-            _depthClipShader = new DepthClipShader();
-            _depthClipShader.Camera = _camera;
-            _modelShader = new ModelShader();
-            _modelShader.Camera = _camera;
-            _modelShader.World = _world;
-            _waterShader = new WaterShader();
-            _waterShader.Camera = _camera;
-            _waterShader.World = _world;
-            _skyShader = new SkyShader();
-            _skyShader.Camera = _camera;
-            _skyShader.World = _world;
+            // Set up each shader to be used when drawing the scene
+            _depthClipShader = SetupShader<DepthClipShader>();
+            _modelShader = SetupShader<ModelShader>();
+            _waterShader = SetupShader<WaterShader>();
+            _skyShader = SetupShader<SkyShader>();
 
+            // Initially ignore mouse input
             _captureMouse = false;
 
-            var lastMouseX = Cursor.Position.X;
-            var lastMouseY = Cursor.Position.Y;
+            // Mouse look implementation
             Mouse.Move += (sender, me) => {
-                if (!Focused || !_captureMouse) return;
-                if (lastMouseX == Cursor.Position.X && lastMouseY == Cursor.Position.Y) return;
+                // Find the middle of the window
+                Point centre = new Point(Bounds.Left + Width / 2, Bounds.Top + Height / 2);
 
-                _camera.Yaw += (Cursor.Position.X - lastMouseX) / 360f;
-                _camera.Pitch += (Cursor.Position.Y - lastMouseY) / 360f;
+                // If the window is not in focus, the mouse is not locked, or the cursor
+                // hasn't moved since the last movement, return without moving the camera
+                if (!Focused || !_captureMouse) return;
+                if (Cursor.Position.X == centre.X && Cursor.Position.Y == centre.Y) return;
+
+                // Rotate the camera's yaw and pitch proportionally to how much the mouse has
+                // moved in the X and Y axis respectively
+                _camera.Yaw += (Cursor.Position.X - centre.X) / 360f;
+                _camera.Pitch += (Cursor.Position.Y - centre.Y) / 360f;
+
+                // Make sure the camera doesn't go upside-down
                 _camera.Pitch = Tools.Clamp(_camera.Pitch, -MathHelper.PiOver2, MathHelper.PiOver2);
+
+                // Instruct the camera to rebuild its view matrix with the new rotation
                 _camera.UpdateViewMatrix();
 
-                Cursor.Position = new System.Drawing.Point(Bounds.Left + Width / 2, Bounds.Top + Height / 2);
-                lastMouseX = Cursor.Position.X;
-                lastMouseY = Cursor.Position.Y;
+                // Move the cursor back to the middle of the window
+                Cursor.Position = centre;
             };
 
+            // Third person zoom implementation
             Mouse.WheelChanged += (sender, mwe) => {
-                if (!_firstPerson) {
-                    _cameraDist -= mwe.DeltaPrecise;
-                    _cameraDist = Tools.Clamp(_cameraDist, 6f, 28f);
-                }
+                // Don't zoom if the view is in first person mode
+                if (_firstPerson) return;
+
+                // Zoom in proportionally to how much the mouse wheel has scrolled
+                _cameraDist -= mwe.DeltaPrecise;
+                    
+                // Don't zoom in closer than 6 units, or further than 28
+                _cameraDist = Tools.Clamp(_cameraDist, 6f, 28f);
             };
 
+            // Enable mouse look by clicking on the window
             Mouse.ButtonUp += (sender, me) => {
-                if (!_captureMouse) {
-                    _captureMouse = true;
-                    Cursor.Hide();
-                }
+                // Ignore if mouse look is aleady enabled
+                if (_captureMouse) return;
+
+                // Enable mouse look and hide the cursor
+                _captureMouse = true;
+                Cursor.Hide();
             };
 
             Keyboard.KeyDown += (sender, ke) => {
@@ -183,6 +234,9 @@ namespace ComputerGraphicsCoursework
             GL.ClearColor(Color4.White);
         }
 
+        /// <summary>
+        /// Method override that is invoked when the window is resized.
+        /// </summary>=
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
@@ -193,6 +247,9 @@ namespace ComputerGraphicsCoursework
             }
         }
 
+        /// <summary>
+        /// Method override that is invoked when a frame is drawn.
+        /// </summary>
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
@@ -215,6 +272,9 @@ namespace ComputerGraphicsCoursework
             ++_frameCount;
         }
 
+        /// <summary>
+        /// Method override that is invoked when a frame is updated.
+        /// </summary>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
