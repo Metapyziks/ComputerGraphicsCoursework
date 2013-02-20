@@ -19,10 +19,16 @@ namespace ComputerGraphicsCoursework.Shaders
             SetScreenSize(width, height);
         }
 
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            AddUniform("screen_resolution");
+        }
+
         public void SetScreenSize(int width, int height)
         {
-            int loc = GL.GetUniformLocation(Program, "screen_resolution");
-            GL.Uniform2(loc, (float) width, (float) height);
+            SetUniform("screen_resolution", (float) width, (float) height);
 
             Tools.ErrorCheck("screensize");
         }

@@ -8,7 +8,6 @@ namespace ComputerGraphicsCoursework.Shaders
     public class WaterSplashVelocityShader : WaterEffectShader
     {
         private Vector3 _splash;
-        private int _splashLoc;
 
         public Vector2 SplashPosition
         {
@@ -28,10 +27,7 @@ namespace ComputerGraphicsCoursework.Shaders
         public float SplashMagnitude
         {
             get { return _splash.Z; }
-            set
-            {
-                _splash.Z = value;
-            }
+            set { _splash.Z = value; }
         }
 
         protected override void OnAddShaderVariables(ShaderBuilder frag)
@@ -72,14 +68,14 @@ namespace ComputerGraphicsCoursework.Shaders
         {
             base.OnCreate();
 
-            _splashLoc = GL.GetUniformLocation(Program, "splash");
+            AddUniform("splash");
         }
 
         protected override void OnBegin()
         {
             base.OnBegin();
 
-            GL.Uniform3(_splashLoc, ref _splash);
+            SetUniform("splash", _splash);
         }
     }
 }

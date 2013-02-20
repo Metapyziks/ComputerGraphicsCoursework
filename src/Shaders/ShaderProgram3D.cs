@@ -12,8 +12,6 @@ namespace ComputerGraphicsCoursework.Shaders
 {
     public class ShaderProgram3D : ShaderProgram
     {
-        private int _viewMatrixLoc;
-
         public int ScreenWidth { get; private set; }
         public int ScreenHeight { get; private set; }
 
@@ -23,14 +21,14 @@ namespace ComputerGraphicsCoursework.Shaders
         {
             base.OnCreate();
 
-            _viewMatrixLoc = GL.GetUniformLocation(Program, "vp_matrix");
+            AddUniform("vp_matrix");
         }
 
         protected override void OnBegin()
         {
             if (Camera != null) {
                 Matrix4 viewMat = Camera.CombinedMatrix;
-                GL.UniformMatrix4(_viewMatrixLoc, false, ref viewMat);
+                SetUniform("vp_matrix", ref viewMat);
             }
         }
     }

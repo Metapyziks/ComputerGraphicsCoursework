@@ -293,6 +293,12 @@ namespace ComputerGraphicsCoursework.Shaders
             _uniforms.Add(identifier, GL.GetUniformLocation(Program, identifier));
         }
 
+        public void SetUniform(String identifier, int value)
+        {
+            if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
+            GL.Uniform1(loc, value);
+        }
+
         public void SetUniform(String identifier, float value)
         {
             if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
@@ -303,6 +309,12 @@ namespace ComputerGraphicsCoursework.Shaders
         {
             if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
             GL.Uniform2(loc, value);
+        }
+
+        public void SetUniform(String identifier, float x, float y)
+        {
+            if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
+            GL.Uniform2(loc, x, y);
         }
 
         public void SetUniform(String identifier, Vector3 value)

@@ -18,8 +18,6 @@ namespace ComputerGraphicsCoursework.Shaders
         private Texture _velocitymap;
         private Texture _spraymap;
 
-        private int _resolutionLoc;
-
         private float[] _bounds;
 
         public Texture HeightMap
@@ -112,8 +110,8 @@ namespace ComputerGraphicsCoursework.Shaders
             AddTexture("velocitymap");
             AddTexture("spraymap");
 
-            _resolutionLoc = GL.GetUniformLocation(Program, "resolution");
-            GL.Uniform1(_resolutionLoc, Water.Resolution);
+            AddUniform("resolution");
+            SetUniform("resolution", Water.Resolution);
         }
 
         public void SetTextures(Texture heightmap, Texture velocitymap, Texture spraymap)
