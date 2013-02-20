@@ -57,7 +57,7 @@
     <Compile Include="src\Shaders\WaterSplashVelocityShader.cs" />
     <Compile Include="src\Shaders\DepthClipShader.cs" />
     <Compile Include="src\Utils\FrameBuffer.cs" />
-    <Compile Include="src\Textures\LumTexture2D.cs" />
+    <Compile Include="src\Textures\AlphaTexture2D.cs" />
     <Compile Include="src\Scene\Model.cs" />
     <Compile Include="src\Program.cs" />
     <Compile Include="src\Utils\ShaderBuilder.cs" />

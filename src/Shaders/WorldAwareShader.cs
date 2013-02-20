@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using OpenTK.Graphics.OpenGL;
-
-using ComputerGraphicsCoursework.Scene;
+﻿using ComputerGraphicsCoursework.Scene;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
@@ -19,7 +11,6 @@ namespace ComputerGraphicsCoursework.Shaders
             base.OnCreate();
 
             AddUniform("light_vector");
-
             AddTexture("skybox");
         }
 

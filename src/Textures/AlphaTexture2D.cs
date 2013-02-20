@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework.Textures
 {
-    public class LumTexture2D : Texture
+    public class AlphaTexture2D : Texture
     {
         private readonly int _actualSize;
         private float[,] _data;
 
-        public LumTexture2D(int width, int height, float clear = 0f)
+        public AlphaTexture2D(int width, int height, float clear = 0f)
             : base(TextureTarget.Texture2D, width, height)
         {
             _actualSize = GetNextPOTS(Width, Height);

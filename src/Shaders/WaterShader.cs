@@ -1,6 +1,5 @@
 ﻿using System;
 
-using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
@@ -11,7 +10,7 @@ namespace ComputerGraphicsCoursework.Shaders
 {
     public class WaterShader : WorldAwareShader
     {
-        private LumTexture2D _ripplemap;
+        private AlphaTexture2D _ripplemap;
 
         private Color4 _colour = new Color4(48, 92, 120, 191);
 
@@ -113,7 +112,7 @@ namespace ComputerGraphicsCoursework.Shaders
             AddTexture("ripplemap");
 
             var rand = new Random();
-            _ripplemap = new LumTexture2D(128, 128);
+            _ripplemap = new AlphaTexture2D(128, 128);
             for (int x = 0; x < 128; ++x) {
                 for (int y = 0; y < 128; ++y) {
                     _ripplemap[x, y] = (float) rand.NextDouble() * 0.5f + 0.5f;

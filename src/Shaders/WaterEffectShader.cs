@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OpenTK.Graphics.OpenGL;
 
-using OpenTK.Graphics.OpenGL;
-
-using ComputerGraphicsCoursework.Textures;
 using ComputerGraphicsCoursework.Scene;
+using ComputerGraphicsCoursework.Textures;
 using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Shaders

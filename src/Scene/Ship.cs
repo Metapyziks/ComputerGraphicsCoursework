@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Drawing;
+using System.Linq;
 
 using OpenTK;
 using OpenTK.Graphics;

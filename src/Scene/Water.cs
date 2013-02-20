@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -131,9 +127,9 @@ namespace ComputerGraphicsCoursework.Scene
             _rand = new Random();
             _heightmapBuffer = new FrameBuffer(new BitmapTexture2D(Resolution, Resolution));
 
-            _heightmapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.5f));
-            _velocitymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.5f));
-            _spraymapBuffer = new FrameBuffer(new LumTexture2D(Resolution, Resolution, 0.0f));
+            _heightmapBuffer = new FrameBuffer(new AlphaTexture2D(Resolution, Resolution, 0.5f));
+            _velocitymapBuffer = new FrameBuffer(new AlphaTexture2D(Resolution, Resolution, 0.5f));
+            _spraymapBuffer = new FrameBuffer(new AlphaTexture2D(Resolution, Resolution, 0.0f));
         }
 
         private void NormalizePosition(ref float x, ref float z)

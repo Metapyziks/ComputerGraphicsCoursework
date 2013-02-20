@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 
 using OpenTK;
-using OpenTK.Input;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 
-using ComputerGraphicsCoursework.Shaders;
 using ComputerGraphicsCoursework.Scene;
+using ComputerGraphicsCoursework.Shaders;
 using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework
