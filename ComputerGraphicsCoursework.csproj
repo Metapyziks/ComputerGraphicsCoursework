@@ -50,9 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\ComputerGraphicsCoursework.AssemblyInfo.cs" />
-    <Compile Include="src\BitmapTexture2D.cs" />
+    <Compile Include="src\Textures\BitmapTexture2D.cs" />
     <Compile Include="src\Camera.cs" />
-    <Compile Include="src\CubeMapTexture.cs" />
+    <Compile Include="src\Textures\CubeMapTexture.cs" />
     <Compile Include="src\Floater.cs" />
     <Compile Include="src\IKeyControllable.cs" />
     <Compile Include="src\IUpdateable.cs" />
@@ -63,7 +63,7 @@
     <Compile Include="src\Shaders\DepthClipShader.cs" />
     <Compile Include="src\FrameBuffer.cs" />
     <Compile Include="src\IRenderable.cs" />
-    <Compile Include="src\LumTexture2D.cs" />
+    <Compile Include="src\Textures\LumTexture2D.cs" />
     <Compile Include="src\Model.cs" />
     <Compile Include="src\Program.cs" />
     <Compile Include="src\Shaders\ShaderBuilder.cs" />
@@ -71,7 +71,7 @@
     <Compile Include="src\Shaders\ShaderProgram3D.cs" />
     <Compile Include="src\Ship.cs" />
     <Compile Include="src\Shaders\ModelShader.cs" />
-    <Compile Include="src\Texture.cs" />
+    <Compile Include="src\Textures\Texture.cs" />
     <Compile Include="src\Tools.cs" />
     <Compile Include="src\VertexBuffer.cs" />
     <Compile Include="src\Water.cs" />

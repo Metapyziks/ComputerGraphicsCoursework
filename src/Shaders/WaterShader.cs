@@ -4,6 +4,8 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Textures;
+
 namespace ComputerGraphicsCoursework.Shaders
 {
     class WaterShader : WorldAwareShader

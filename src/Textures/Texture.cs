@@ -2,7 +2,7 @@ using System;
 
 using OpenTK.Graphics.OpenGL;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Textures
 {
     public abstract class Texture
     {

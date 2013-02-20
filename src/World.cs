@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using OpenTK;
 
+using ComputerGraphicsCoursework.Textures;
+
 namespace ComputerGraphicsCoursework
 {
     class World

@@ -6,7 +6,7 @@ using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Textures
 {
     public class BitmapTexture2D : Texture
     {

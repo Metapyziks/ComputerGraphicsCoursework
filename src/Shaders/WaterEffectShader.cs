@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Textures;
+
 namespace ComputerGraphicsCoursework.Shaders
 {
     abstract class WaterEffectShader : ShaderProgram2D

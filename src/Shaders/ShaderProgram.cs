@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
 
+using ComputerGraphicsCoursework.Textures;
+
 namespace ComputerGraphicsCoursework.Shaders
 {
     public class AttributeInfo

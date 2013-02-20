@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Textures;
+
 namespace ComputerGraphicsCoursework
 {
     public class FrameBuffer : IDisposable
