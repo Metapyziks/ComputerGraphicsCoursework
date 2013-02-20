@@ -197,15 +197,15 @@ namespace ComputerGraphicsCoursework.Scene
             // If the rudder is at a non-zero angle, cause the boat to rotate by accelerating a
             // rear float laterally
             if (_rudderAng < 0) {
-                _leftFloat.Accelerate(Right * speed * (-_rudderAng / MathHelper.PiOver4) / 64f);
+                _leftFloat.Velocity += Right * speed * (-_rudderAng / MathHelper.PiOver4) / 64f;
             } else if (_rudderAng > 0) {
-                _rightFloat.Accelerate(-Right * speed * (_rudderAng / MathHelper.PiOver4) / 64f);
+                _rightFloat.Velocity -= Right * speed * (_rudderAng / MathHelper.PiOver4) / 64f;
             }
 
             // Accelerate the floats towards being in their correct positions relative to the ship
-            _frontFloat.Accelerate((Position + Forward * 6f - _frontFloat.Position) / 128f);
-            _leftFloat.Accelerate((Position - Forward * 6f - Right * 4f - _leftFloat.Position) / 128f);
-            _rightFloat.Accelerate((Position - Forward * 6f + Right * 4f - _rightFloat.Position) / 128f);
+            _frontFloat.Velocity += (Position + Forward * 6f - _frontFloat.Position) / 128f;
+            _leftFloat.Velocity += (Position - Forward * 6f - Right * 4f - _leftFloat.Position) / 128f;
+            _rightFloat.Velocity += (Position - Forward * 6f + Right * 4f - _rightFloat.Position) / 128f;
 
             // Simulate drag which is increased when the floats are moving in a direction other
             // than the way the ship is pointing
@@ -334,15 +334,15 @@ namespace ComputerGraphicsCoursework.Scene
 
             // If the W key is being held, accelerate forwards
             if (keyboard[Key.W]) {
-                _leftFloat.Accelerate(Forward / 128f);
-                _rightFloat.Accelerate(Forward / 128f);
+                _leftFloat.Velocity += Forward / 128f;
+                _rightFloat.Velocity += Forward / 128f;
                 _propSpeed += 1f / 4f;
             }
 
             // If the S key is being held, accelerate backwards
             if (keyboard[Key.S]) {
-                _leftFloat.Accelerate(-Forward / 256f);
-                _rightFloat.Accelerate(-Forward / 256f);
+                _leftFloat.Velocity -= Forward / 256f;
+                _rightFloat.Velocity -= Forward / 256f;
                 _propSpeed -= 1f / 8f;
             }
 
