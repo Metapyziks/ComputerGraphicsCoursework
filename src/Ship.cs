@@ -128,8 +128,6 @@ namespace ComputerGraphicsCoursework
             shader.Shinyness = 2f;
             shader.Colour = Color4.White;
             _sModel.Render(shader, _innerHull);
-            //shader.Texture = _sFiberglassTexture;
-            //shader.Colour = Color4.LightGray;
             shader.Colour = Color.CornflowerBlue;
             shader.Shinyness = 8f;
             _sModel.Render(shader, _outerHull);
@@ -137,11 +135,14 @@ namespace ComputerGraphicsCoursework
             shader.Colour = Color4.White; // new Color4(64, 64, 64, 255);
             _sModel.Render(shader, _trim);
             shader.Colour = new Color4(32, 32, 32, 255);
-            shader.Transform = Matrix4.Mult(Matrix4.Mult(Matrix4.CreateRotationY(_rudderAng), Matrix4.CreateTranslation(-4f, 0f, 0f)), _trans);
+            shader.Transform = Matrix4.Mult(Matrix4.Mult(
+                Matrix4.CreateRotationY(_rudderAng), Matrix4.CreateTranslation(-4f, 0f, 0f)), _trans);
             shader.Shinyness = 4f;
             _sModel.Render(shader, _motor);
             shader.Colour = Color4.Gray;
-            shader.Transform = Matrix4.Mult(Matrix4.CreateRotationX(_propAng), shader.Transform);
+            shader.Transform = Matrix4.Mult(Matrix4.Mult(
+                Matrix4.CreateRotationX(_propAng), Matrix4.CreateTranslation(0f, -1f / 8f, 0f)),
+                shader.Transform);
             shader.Shinyness = 4f;
             _sModel.Render(shader, _prop);
 

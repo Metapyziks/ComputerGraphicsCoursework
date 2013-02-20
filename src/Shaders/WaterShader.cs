@@ -15,8 +15,6 @@ namespace ComputerGraphicsCoursework.Shaders
 
         private int _viewVectorLoc = -1;
         private int _viewOriginLoc = -1;
-        private int _viewMatrixLoc = -1;
-        private int _viewInvMatrixLoc = -1;
 
         public Color4 Colour
         {
@@ -34,7 +32,6 @@ namespace ComputerGraphicsCoursework.Shaders
         {
             ShaderBuilder vert = new ShaderBuilder(ShaderType.VertexShader, false);
             vert.AddUniform(ShaderVarType.Mat4, "vp_matrix");
-            vert.AddUniform(ShaderVarType.Mat4, "view_matrix");
             vert.AddUniform(ShaderVarType.Vec3, "view_origin");
             vert.AddUniform(ShaderVarType.Vec3, "view_vector");
             vert.AddUniform(ShaderVarType.Sampler2D, "heightmap");
@@ -70,9 +67,6 @@ namespace ComputerGraphicsCoursework.Shaders
             frag.AddUniform(ShaderVarType.Sampler2D, "spraymap");
             frag.AddUniform(ShaderVarType.SamplerCube, "skybox");
             frag.AddUniform(ShaderVarType.Vec4, "colour");
-            frag.AddUniform(ShaderVarType.Mat4, "view_matrix");
-            frag.AddUniform(ShaderVarType.Mat4, "view_inv_matrix");
-            frag.AddUniform(ShaderVarType.Vec3, "view_vector");
             frag.AddUniform(ShaderVarType.Vec3, "view_origin");
             frag.AddUniform(ShaderVarType.Vec3, "light_vector");
             frag.Logic = @"
@@ -83,29 +77,24 @@ namespace ComputerGraphicsCoursework.Shaders
                     float r = textureOffset(heightmap, var_texpos, ivec2( 1,  0 )).a;
                     float b = textureOffset(heightmap, var_texpos, ivec2( 0,  1 )).a;
 
-                    vec3 horz = normalize(vec3(0.0, (r - l) * 2.0 * var_scale, 2.0));
-                    vec3 vert = normalize(vec3(2.0, (b - t) * 2.0 * var_scale, 0.0));
+                    vec3 horz = normalize(vec3(0.0, (r - l) * 2.0 * var_scale, 1.0));
+                    vec3 vert = normalize(vec3(1.0, (b - t) * 2.0 * var_scale, 0.0));
                     vec3 normal = cross(horz, vert);
                     
                     vec3 cam_dir = normalize(var_position - view_origin);
 
                     vec3 reflected = normalize(reflect(cam_dir, normal));
 
-                    out_frag_colour = texture(skybox, normalize(reflected.xyz));
+                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light_vector, normal)), colour.a);
+                    out_frag_colour += vec4((texture(skybox, reflected).rgb - out_frag_colour.rgb) * 0.5, 0.0);
 
-                    //out_frag_colour = vec4(normal * 0.5 + vec3(0.5, 0.5, 0.5), 1.0);
-
-                    //out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light_vector, normal)), colour.a);
-                    //out_frag_colour += vec4((texture(skybox, reflected).rgb - out_frag_colour.rgb) * 0.5, 0.0);
-
-                    //if (var_scale > 0.0) {
-                    //    float ripple = texture(ripplemap, (var_texpos * 8.0) + normal.xz * 0.125).a;
-                    //    float spray = texture(spraymap, var_texpos).a;
-                    //    if (ripple * pow(spray, 2.0) > 0.75) {
-                    //        out_frag_colour += spray * 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * var_scale;
-                    //    }
-                    //}
-
+                    if (var_scale > 0.0) {
+                        float ripple = texture(ripplemap, (var_texpos * 8.0) + normal.xz * 0.125).a;
+                        float spray = texture(spraymap, var_texpos).a;
+                        if (ripple * pow(spray, 2.0) > 0.75) {
+                            out_frag_colour += spray * 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * var_scale;
+                        }
+                    }
                 }
             ";
 
@@ -137,8 +126,6 @@ namespace ComputerGraphicsCoursework.Shaders
             _colourLoc = GL.GetUniformLocation(Program, "colour");
             _viewVectorLoc = GL.GetUniformLocation(Program, "view_vector");
             _viewOriginLoc = GL.GetUniformLocation(Program, "view_origin");
-            _viewMatrixLoc = GL.GetUniformLocation(Program, "view_matrix");
-            _viewInvMatrixLoc = GL.GetUniformLocation(Program, "view_inv_matrix");
 
             GL.Uniform4(_colourLoc, Colour);
         }
@@ -149,11 +136,6 @@ namespace ComputerGraphicsCoursework.Shaders
 
             GL.Uniform3(_viewVectorLoc, Camera.ViewVector);
             GL.Uniform3(_viewOriginLoc, Camera.Position);
-
-            Matrix4 viewMatrix = Camera.InvViewmatrix;
-            Matrix4 invViewMatrix = Camera.InvViewmatrix;
-            GL.UniformMatrix4(_viewMatrixLoc, false, ref viewMatrix);
-            GL.UniformMatrix4(_viewInvMatrixLoc, false, ref invViewMatrix);
 
             SetTexture("ripplemap", _ripplemap);
 

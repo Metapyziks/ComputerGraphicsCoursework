@@ -143,6 +143,7 @@ namespace ComputerGraphicsCoursework
             Mouse.WheelChanged += (sender, mwe) => {
                 if (!_firstPerson) {
                     _cameraDist -= mwe.DeltaPrecise;
+                    _cameraDist = Tools.Clamp(_cameraDist, 6f, 28f);
                 }
             };
 
@@ -259,6 +260,9 @@ namespace ComputerGraphicsCoursework
                 _camera.Position = _ship.Position + _ship.Up * 3f - _ship.Forward * 2f;
             } else {
                 _camera.Position = _ship.Position - _camera.ViewVector * _cameraDist;
+                if (_camera.Position.Y < 1f) {
+                    _camera.Position = new Vector3(_camera.Position.X, 1f, _camera.Position.Z);
+                }
             }
             _camera.UpdateViewMatrix();
 
