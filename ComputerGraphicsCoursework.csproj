@@ -65,7 +65,7 @@
     <Compile Include="src\Scene\Ship.cs" />
     <Compile Include="src\Shaders\ModelShader.cs" />
     <Compile Include="src\Textures\Texture.cs" />
-    <Compile Include="src\Tools.cs" />
+    <Compile Include="src\Utils\Tools.cs" />
     <Compile Include="src\Utils\VertexBuffer.cs" />
     <Compile Include="src\Scene\Water.cs" />
     <Compile Include="src\Shaders\WaterEffectShader.cs" />

@@ -6,6 +6,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
 
 using ComputerGraphicsCoursework.Textures;
+using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Shaders
 {

@@ -5,6 +5,8 @@ using System.Linq;
 
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Utils;
+
 namespace ComputerGraphicsCoursework.Textures
 {
     public class CubeMapTexture : Texture

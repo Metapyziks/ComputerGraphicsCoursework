@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Utils
 {
     public static class Tools
     {

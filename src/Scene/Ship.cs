@@ -8,6 +8,7 @@ using OpenTK.Input;
 
 using ComputerGraphicsCoursework.Shaders;
 using ComputerGraphicsCoursework.Textures;
+using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Scene
 {
