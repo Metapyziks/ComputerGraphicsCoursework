@@ -12,7 +12,26 @@ using ComputerGraphicsCoursework.Textures;
 
 namespace ComputerGraphicsCoursework.Scene
 {
-    class World : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IRenderable<WaterShader>
+    public interface IKeyControllable
+    {
+        void KeyDown(Key key);
+        void KeyUp(Key key);
+
+        void UpdateKeys(KeyboardDevice keyboard);
+    }
+
+    public interface IRenderable<T>
+        where T : ShaderProgram
+    {
+        void Render(T shader);
+    }
+
+    public interface IUpdateable
+    {
+        void Update(double time, Water water);
+    }
+
+    public class World
     {
         private static CubeMapTexture _sDefaultSkyCubeMap;
 

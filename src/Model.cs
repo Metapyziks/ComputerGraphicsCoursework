@@ -7,10 +7,11 @@ using System.IO;
 using OpenTK;
 
 using ComputerGraphicsCoursework.Shaders;
+using ComputerGraphicsCoursework.Scene;
 
 namespace ComputerGraphicsCoursework
 {
-    class Model : IRenderable<ModelShader>, IRenderable<DepthClipShader>
+    public class Model : IRenderable<ModelShader>, IRenderable<DepthClipShader>
     {
         private enum VertData : byte
         {

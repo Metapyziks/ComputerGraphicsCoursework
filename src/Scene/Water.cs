@@ -12,7 +12,7 @@ using ComputerGraphicsCoursework.Textures;
 
 namespace ComputerGraphicsCoursework.Scene
 {
-    class Water : IRenderable<WaterShader>
+    public class Water : IRenderable<WaterShader>
     {
         public const int Resolution = 512;
         public const double SimulationPeriod = 1.0 / 60.0;

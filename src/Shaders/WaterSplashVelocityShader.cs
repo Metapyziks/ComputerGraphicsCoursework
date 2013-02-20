@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class WaterSplashVelocityShader : WaterEffectShader
+    public class WaterSplashVelocityShader : WaterEffectShader
     {
         private Vector3 _splash;
         private int _splashLoc;

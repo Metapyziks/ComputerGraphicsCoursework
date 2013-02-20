@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class WaterSimulateVelocityShader : WaterEffectShader
+    public class WaterSimulateVelocityShader : WaterEffectShader
     {
         protected override void OnAddShaderLogic(ShaderBuilder frag)
         {

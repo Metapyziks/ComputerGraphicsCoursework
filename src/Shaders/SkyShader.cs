@@ -10,7 +10,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class SkyShader : WorldAwareShader
+    public class SkyShader : WorldAwareShader
     {
         private const float BoxSize = 1f;
 

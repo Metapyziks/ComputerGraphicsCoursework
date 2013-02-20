@@ -7,7 +7,7 @@ using ComputerGraphicsCoursework.Shaders;
 
 namespace ComputerGraphicsCoursework.Scene
 {
-    class Floater : IRenderable<ModelShader>, IUpdateable
+    public class Floater : IRenderable<ModelShader>, IUpdateable
     {
         private static Model _sModel;
         

@@ -11,7 +11,7 @@ using ComputerGraphicsCoursework.Textures;
 
 namespace ComputerGraphicsCoursework.Scene
 {
-    class Ship : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IUpdateable, IKeyControllable
+    public class Ship : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IUpdateable, IKeyControllable
     {
         private const float RudderMoveSpeed = MathHelper.Pi / 120f;
 

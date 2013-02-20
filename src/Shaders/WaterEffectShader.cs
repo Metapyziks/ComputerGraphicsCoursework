@@ -11,7 +11,7 @@ using ComputerGraphicsCoursework.Scene;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    abstract class WaterEffectShader : ShaderProgram2D
+    public abstract class WaterEffectShader : ShaderProgram2D
     {
         private Texture _heightmap;
         private Texture _velocitymap;

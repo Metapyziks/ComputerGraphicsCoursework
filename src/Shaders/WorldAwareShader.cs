@@ -10,7 +10,7 @@ using ComputerGraphicsCoursework.Scene;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class WorldAwareShader : ShaderProgram3D
+    public class WorldAwareShader : ShaderProgram3D
     {
         private int _lightDirLoc;
 

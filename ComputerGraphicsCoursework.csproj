@@ -50,15 +50,12 @@
     <Compile Include="src\Scene\Camera.cs" />
     <Compile Include="src\Textures\CubeMapTexture.cs" />
     <Compile Include="src\Scene\Floater.cs" />
-    <Compile Include="src\IKeyControllable.cs" />
-    <Compile Include="src\IUpdateable.cs" />
     <Compile Include="src\Shaders\SkyShader.cs" />
     <Compile Include="src\Shaders\WaterSimulateHeightShader.cs" />
     <Compile Include="src\Shaders\WaterSimulateVelocityShader.cs" />
     <Compile Include="src\Shaders\WaterSplashVelocityShader.cs" />
     <Compile Include="src\Shaders\DepthClipShader.cs" />
     <Compile Include="src\FrameBuffer.cs" />
-    <Compile Include="src\IRenderable.cs" />
     <Compile Include="src\Textures\LumTexture2D.cs" />
     <Compile Include="src\Model.cs" />
     <Compile Include="src\Program.cs" />

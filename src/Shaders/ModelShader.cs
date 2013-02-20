@@ -6,7 +6,7 @@ using ComputerGraphicsCoursework.Textures;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class ModelShader : WorldAwareShader
+    public class ModelShader : WorldAwareShader
     {
         private Color4 _colour = Color4.White;
         private int _colourLoc = -1;

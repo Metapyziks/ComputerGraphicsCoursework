@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class DepthClipShader : ShaderProgram3D
+    public class DepthClipShader : ShaderProgram3D
     {
         private Matrix4 _trans = Matrix4.Identity;
         private int _transLoc = -1;

@@ -13,7 +13,7 @@ using ComputerGraphicsCoursework.Scene;
 
 namespace ComputerGraphicsCoursework
 {
-    class Program : GameWindow
+    public class Program : GameWindow
     {
         private bool _captureMouse;
 

@@ -8,7 +8,7 @@ using ComputerGraphicsCoursework.Textures;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    class WaterShader : WorldAwareShader
+    public class WaterShader : WorldAwareShader
     {
         private LumTexture2D _ripplemap;
 
