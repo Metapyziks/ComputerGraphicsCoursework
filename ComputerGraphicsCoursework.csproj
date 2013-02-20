@@ -42,11 +42,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\ComputerGraphicsCoursework.AssemblyInfo.cs" />
@@ -80,9 +76,6 @@
     <Compile Include="src\Shaders\WaterSimulateSprayShader.cs" />
     <Compile Include="src\World.cs" />
     <Compile Include="src\Shaders\WorldAwareShader.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\Objects\" />
