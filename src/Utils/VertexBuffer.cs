@@ -55,7 +55,7 @@ namespace ComputerGraphicsCoursework.Utils
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, VboID);
 
-            foreach (AttributeInfo info in shader.Attributes) {
+            foreach (var info in shader.Attributes) {
                 GL.VertexAttribPointer(info.Location, info.Size, info.PointerType,
                     info.Normalize, shader.VertexDataStride, info.Offset);
                 GL.EnableVertexAttribArray(info.Location);
@@ -74,7 +74,7 @@ namespace ComputerGraphicsCoursework.Utils
 
         public void EndBatch(ShaderProgram shader)
         {
-            foreach (AttributeInfo info in shader.Attributes)
+            foreach (var info in shader.Attributes)
                 GL.DisableVertexAttribArray(info.Location);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);

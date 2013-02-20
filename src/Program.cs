@@ -44,7 +44,7 @@ namespace ComputerGraphicsCoursework
         /// <summary>
         /// Entry point of the application.
         /// 
-        /// Creates a new instance of Program, runsa it until the application ends,
+        /// Creates a new instance of Program, runs it until the application ends,
         /// and then disposes any used resources.
         /// </summary>
         /// <param name="args">There are no recognised command line arguments</param>
@@ -60,7 +60,7 @@ namespace ComputerGraphicsCoursework
         /// <summary>
         /// Constructor to create a new Program instance.
         /// </summary>
-        public Program() : base(1024, 768, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 2))
+        public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 2))
         {
             this.Title = "Computer Graphics Coursework";
         }

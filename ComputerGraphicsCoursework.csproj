@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\ComputerGraphicsCoursework.AssemblyInfo.cs" />
+    <Compile Include="src\Shaders\ShaderProgram2D.cs" />
     <Compile Include="src\Textures\BitmapTexture2D.cs" />
     <Compile Include="src\Scene\Camera.cs" />
     <Compile Include="src\Textures\CubeMapTexture.cs" />

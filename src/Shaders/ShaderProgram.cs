@@ -10,75 +10,75 @@ using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    public class AttributeInfo
+    public class ShaderProgram
     {
-        public ShaderProgram Shader { get; private set; }
-        public String Identifier { get; private set; }
-        public int Location { get; private set; }
-        public int Size { get; private set; }
-        public int Offset { get; private set; }
-        public int Divisor { get; private set; }
-        public int InputOffset { get; private set; }
-        public VertexAttribPointerType PointerType { get; private set; }
-        public bool Normalize { get; private set; }
-
-        public int Length
+        public class AttributeInfo
         {
-            get
+            public ShaderProgram Shader { get; private set; }
+            public String Identifier { get; private set; }
+            public int Location { get; private set; }
+            public int Size { get; private set; }
+            public int Offset { get; private set; }
+            public int Divisor { get; private set; }
+            public int InputOffset { get; private set; }
+            public VertexAttribPointerType PointerType { get; private set; }
+            public bool Normalize { get; private set; }
+
+            public int Length
             {
-                switch (PointerType) {
-                    case VertexAttribPointerType.Byte:
-                    case VertexAttribPointerType.UnsignedByte:
-                        return Size * sizeof(byte);
+                get
+                {
+                    switch (PointerType) {
+                        case VertexAttribPointerType.Byte:
+                        case VertexAttribPointerType.UnsignedByte:
+                            return Size * sizeof(byte);
 
-                    case VertexAttribPointerType.Short:
-                    case VertexAttribPointerType.UnsignedShort:
-                        return Size * sizeof(short);
+                        case VertexAttribPointerType.Short:
+                        case VertexAttribPointerType.UnsignedShort:
+                            return Size * sizeof(short);
 
-                    case VertexAttribPointerType.Int:
-                    case VertexAttribPointerType.UnsignedInt:
-                        return Size * sizeof(int);
+                        case VertexAttribPointerType.Int:
+                        case VertexAttribPointerType.UnsignedInt:
+                            return Size * sizeof(int);
 
-                    case VertexAttribPointerType.HalfFloat:
-                        return Size * sizeof(float) / 2;
+                        case VertexAttribPointerType.HalfFloat:
+                            return Size * sizeof(float) / 2;
 
-                    case VertexAttribPointerType.Float:
-                        return Size * sizeof(float);
+                        case VertexAttribPointerType.Float:
+                            return Size * sizeof(float);
 
-                    case VertexAttribPointerType.Double:
-                        return Size * sizeof(double);
+                        case VertexAttribPointerType.Double:
+                            return Size * sizeof(double);
 
-                    default:
-                        return 0;
+                        default:
+                            return 0;
+                    }
                 }
+            }
+
+            public AttributeInfo(ShaderProgram shader, String identifier,
+                int size, int offset, int divisor, int inputOffset,
+                VertexAttribPointerType pointerType =
+                    VertexAttribPointerType.Float,
+                bool normalize = false)
+            {
+                Shader = shader;
+                Identifier = identifier;
+                Location = GL.GetAttribLocation(shader.Program, Identifier);
+                Size = size;
+                Offset = offset;
+                Divisor = divisor;
+                InputOffset = inputOffset;
+                PointerType = pointerType;
+                Normalize = normalize;
+            }
+
+            public override String ToString()
+            {
+                return Identifier + " @" + Location + ", Size: " + Size + ", Offset: " + Offset;
             }
         }
 
-        public AttributeInfo(ShaderProgram shader, String identifier,
-            int size, int offset, int divisor, int inputOffset,
-            VertexAttribPointerType pointerType =
-                VertexAttribPointerType.Float,
-            bool normalize = false)
-        {
-            Shader = shader;
-            Identifier = identifier;
-            Location = GL.GetAttribLocation(shader.Program, Identifier);
-            Size = size;
-            Offset = offset;
-            Divisor = divisor;
-            InputOffset = inputOffset;
-            PointerType = pointerType;
-            Normalize = normalize;
-        }
-
-        public override String ToString()
-        {
-            return Identifier + " @" + Location + ", Size: " + Size + ", Offset: " + Offset;
-        }
-    }
-
-    public class ShaderProgram
-    {
         private class TextureInfo
         {
             public ShaderProgram Shader { get; private set; }
@@ -214,8 +214,9 @@ namespace ComputerGraphicsCoursework.Shaders
 #endif
             Use();
 
-            if (GL3)
+            if (GL3) {
                 GL.BindFragDataLocation(Program, 0, "out_frag_colour");
+            }
 
             OnCreate();
 
@@ -239,8 +240,9 @@ namespace ComputerGraphicsCoursework.Shaders
             VertexAttribPointerType pointerType = VertexAttribPointerType.Float,
             bool normalize = false)
         {
-            if (inputOffset == -1)
+            if (inputOffset == -1) {
                 inputOffset = VertexDataSize;
+            }
 
             AttributeInfo info = new AttributeInfo(this, identifier, size, VertexDataStride,
                 divisor, inputOffset - VertexDataSize, pointerType, normalize);
@@ -308,10 +310,7 @@ namespace ComputerGraphicsCoursework.Shaders
             Tools.ErrorCheck("startbatch");
         }
 
-        protected virtual void OnStartBatch()
-        {
-
-        }
+        protected virtual void OnStartBatch() { }
 
         public void End()
         {
@@ -330,10 +329,7 @@ namespace ComputerGraphicsCoursework.Shaders
             Tools.ErrorCheck("endbatch");
         }
 
-        protected virtual void OnEndBatch()
-        {
-
-        }
+        protected virtual void OnEndBatch() { }
 
         public virtual void Render(float[] data)
         {
@@ -371,30 +367,6 @@ namespace ComputerGraphicsCoursework.Shaders
                     }
                 }
             }
-        }
-    }
-
-    public class ShaderProgram2D : ShaderProgram
-    {
-        public ShaderProgram2D()
-            : base()
-        {
-
-        }
-
-        public ShaderProgram2D(int width, int height)
-            : base()
-        {
-            Create();
-            SetScreenSize(width, height);
-        }
-
-        public void SetScreenSize(int width, int height)
-        {
-            int loc = GL.GetUniformLocation(Program, "screen_resolution");
-            GL.Uniform2(loc, (float) width, (float) height);
-
-            Tools.ErrorCheck("screensize");
         }
     }
 }
