@@ -13,7 +13,9 @@ using ComputerGraphicsCoursework.Utils;
 namespace ComputerGraphicsCoursework.Scene
 {
     /// <summary>
-    /// Class representing the moveable ship.
+    /// Class representing the moveable ship. The physics of the ship is simulated
+    /// by using three boyant point masses (floats) that interact with the water and
+    /// try and form a triangle with a specific shape on the surface.
     /// </summary>
     public class Ship :
         IRenderable<ModelShader>,
@@ -66,22 +68,52 @@ namespace ComputerGraphicsCoursework.Scene
         /// <summary>
         /// Normalized forward vector of the ship.
         /// </summary>
-        public Vector3 Forward { get; private set; }
+        public Vector3 Forward
+        {
+            get
+            {
+                return Vector4.Transform(new Vector4(1f, 0f, 0f, 0f), _trans).Xyz;
+            }
+        }
 
         /// <summary>
         /// Normalized right-hand vector of the ship.
         /// </summary>
-        public Vector3 Right { get; private set; }
+        public Vector3 Right
+        {
+            get
+            {
+                return Vector4.Transform(new Vector4(0f, 0f, 1f, 0f), _trans).Xyz;
+            }
+        }
 
         /// <summary>
         /// Normalized up vector of the ship.
         /// </summary>
-        public Vector3 Up { get; private set; }
+        public Vector3 Up
+        {
+            get
+            {
+                return Vector4.Transform(new Vector4(0f, 1f, 0f, 0f), _trans).Xyz;
+            }
+        }
 
         /// <summary>
         /// Position of the ship in the world.
         /// </summary>
         public Vector3 Position { get; private set; }
+
+        /// <summary>
+        /// Current velocity of the ship.
+        /// </summary>
+        public Vector3 Velocity
+        {
+            get
+            {
+                // The ship velocity is the average velocity of the three invisible floats
+                return (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity) / 3f;
+            }
+        }
 
         /// <summary>
         /// Constructor to create a new Ship instance.
@@ -159,20 +191,15 @@ namespace ComputerGraphicsCoursework.Scene
             _trans = Matrix4.Mult(Matrix4.CreateRotationX(Roll), _trans);
             _trans = Matrix4.Mult(Matrix4.CreateRotationZ(Pitch), _trans);
 
-            // Find the forward, right and up normalized vectors
-            Forward = Vector4.Transform(new Vector4(1f, 0f, 0f, 0f), _trans).Xyz;
-            Right = Vector4.Transform(new Vector4(0f, 0f, 1f, 0f), _trans).Xyz;
-            Up = Vector4.Transform(new Vector4(0f, 1f, 0f, 0f), _trans).Xyz;
-
             // Calculate the current speed of the ship by averaging the velocities of the three floats
-            float vel = (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 3f;
+            float speed = Velocity.Length;
 
             // If the rudder is at a non-zero angle, cause the boat to rotate by accelerating a
             // rear float laterally
             if (_rudderAng < 0) {
-                _leftFloat.Accelerate(Right * vel * (-_rudderAng / MathHelper.PiOver4) / 64f);
+                _leftFloat.Accelerate(Right * speed * (-_rudderAng / MathHelper.PiOver4) / 64f);
             } else if (_rudderAng > 0) {
-                _rightFloat.Accelerate(-Right * vel * (_rudderAng / MathHelper.PiOver4) / 64f);
+                _rightFloat.Accelerate(-Right * speed * (_rudderAng / MathHelper.PiOver4) / 64f);
             }
 
             // Accelerate the floats towards being in their correct positions relative to the ship
@@ -206,71 +233,136 @@ namespace ComputerGraphicsCoursework.Scene
             water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
         }
 
+        /// <summary>
+        /// Draw the ship to the screen.
+        /// </summary>
+        /// <param name="shader">ModelShader to use to draw each face of the ship</param>
         public void Render(ModelShader shader)
         {
-            shader.Texture = _sPlanksTexture;
+            // Use the ship's transformation when drawing the model
             shader.Transform = _trans;
+
+            // Inner hull texture, specular shinyness and colour
+            shader.Texture = _sPlanksTexture;
             shader.Shinyness = 2f;
             shader.Colour = Color4.White;
+
+            // Draw the inner hull
             _sModel.Render(shader, _sInnerHull);
+
+            // Outer hull colour and specular shinyness (same texture as the inner hull)
             shader.Colour = Color.CornflowerBlue;
             shader.Shinyness = 8f;
+
+            // Draw the outer hull
             _sModel.Render(shader, _sOuterHull);
+
+            // Trim texture and colour
             shader.Texture = _sFiberglassTexture;
-            shader.Colour = Color4.White; // new Color4(64, 64, 64, 255);
+            shader.Colour = Color4.White;
+
+            // Draw the trim
             _sModel.Render(shader, _sTrim);
-            shader.Colour = new Color4(32, 32, 32, 255);
+
+            // The tiller and motor transformation is an aditional rotation and translation 
+            // before the main ship transformation
             shader.Transform = Matrix4.Mult(Matrix4.Mult(
-                Matrix4.CreateRotationY(_rudderAng), Matrix4.CreateTranslation(-4f, 0f, 0f)), _trans);
+                Matrix4.CreateRotationY(_rudderAng), Matrix4.CreateTranslation(-4f, 0f, 0f)),
+                shader.Transform);
+
+            // Tiller and motor colour and specular shinyness
+            shader.Colour = new Color4(32, 32, 32, 255);
             shader.Shinyness = 4f;
+
+            // Draw the tiller and motor
             _sModel.Render(shader, _sMotor);
-            shader.Colour = Color4.Gray;
+
+            // The propeller transformation is an aditional rotation and translation before
+            // the motor and tiller transformation
             shader.Transform = Matrix4.Mult(Matrix4.Mult(
                 Matrix4.CreateRotationX(_propAng), Matrix4.CreateTranslation(0f, -1f / 8f, 0f)),
                 shader.Transform);
-            shader.Shinyness = 4f;
+
+            // Propeller colour and specular shinyness
+            shader.Colour = Color4.Gray;
+            shader.Shinyness = 8f;
+
+            // Draw the propeller
             _sModel.Render(shader, _sProp);
 
-            //_frontFloat.Render(shader);
-            //_leftFloat.Render(shader);
-            //_rightFloat.Render(shader);
+            // Draw the otherwise invisible floats
+            /*
+                _frontFloat.Render(shader);
+                leftFloat.Render(shader);
+                rightFloat.Render(shader);
+            */
         }
 
+        /// <summary>
+        /// Draw the invisible depth clip plane that hides any water
+        /// behind it. Used to fix the ship having water inside it.
+        /// </summary>
+        /// <param name="shader">DepthClipShader to use when drawing the clip plane</param>
         public void Render(DepthClipShader shader)
         {
             shader.Transform = _trans;
             _sModel.Render(shader, _sWaterclip);
         }
 
+        /// <summary>
+        /// Event handler for when a key is pressed.
+        /// Implementation of IKeyControllable.KeyDown(Key)
+        /// </summary>
+        /// <param name="key">The key that has just been pressed</param>
         public void KeyDown(Key key) { }
 
+        /// <summary>
+        /// Event handler for when a key is released.
+        /// Implementation of IKeyControllable.KeyUp(Key)
+        /// </summary>
+        /// <param name="key">The key that has just been released</param>
         public void KeyUp(Key key) { }
 
+        /// <summary>
+        /// Method invoked once per update to check the keyboard state.
+        /// </summary>
+        /// <param name="keyboard">KeyboardDevice to read input from</param>
         public void UpdateKeys(KeyboardDevice keyboard)
         {
+            // Decelerate the propeller
             _propSpeed *= 0.99f;
 
+            // If the W key is being held, accelerate forwards
             if (keyboard[Key.W]) {
                 _leftFloat.Accelerate(Forward / 128f);
                 _rightFloat.Accelerate(Forward / 128f);
                 _propSpeed += 1f / 4f;
             }
 
+            // If the S key is being held, accelerate backwards
             if (keyboard[Key.S]) {
                 _leftFloat.Accelerate(-Forward / 256f);
                 _rightFloat.Accelerate(-Forward / 256f);
                 _propSpeed -= 1f / 8f;
             }
 
-            float vel = (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 3f;
-            float rudderVel = -_rudderAng * vel / 8f;
+            // Find the amount to move the rudder by, with the base
+            // movement being towards the neutral position with a speed
+            // relative to the speed of the ship
+            float rudderVel = -_rudderAng * Velocity.Length / 8f;
+
+            // If the A key is being held, rotate the rudder left
             if (keyboard[Key.A]) {
                 rudderVel -= RudderMoveSpeed;
             }
+
+            // If the D key is being held, rotate the rudder right
             if (keyboard[Key.D]) {
                 rudderVel += RudderMoveSpeed;
             }
 
+            // Rotate the rudder by the amount calculated, and keep it
+            // within a bounds of +/- 45 degrees
             _rudderAng = Tools.Clamp(_rudderAng + rudderVel, -MathHelper.PiOver4, MathHelper.PiOver4);
         }
     }
