@@ -9,6 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 using ComputerGraphicsCoursework.Shaders;
 using ComputerGraphicsCoursework.Textures;
+using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Scene
 {

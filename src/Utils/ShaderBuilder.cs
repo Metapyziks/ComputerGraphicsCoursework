@@ -4,7 +4,7 @@ using System.Linq;
 
 using OpenTK.Graphics.OpenGL;
 
-namespace ComputerGraphicsCoursework.Shaders
+namespace ComputerGraphicsCoursework.Utils
 {
     public enum ShaderVarType
     {

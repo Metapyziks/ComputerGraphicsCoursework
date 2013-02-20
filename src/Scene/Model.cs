@@ -7,9 +7,9 @@ using System.IO;
 using OpenTK;
 
 using ComputerGraphicsCoursework.Shaders;
-using ComputerGraphicsCoursework.Scene;
+using ComputerGraphicsCoursework.Utils;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Scene
 {
     public class Model : IRenderable<ModelShader>, IRenderable<DepthClipShader>
     {

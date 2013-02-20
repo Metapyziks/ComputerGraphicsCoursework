@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Utils;
+
 namespace ComputerGraphicsCoursework.Shaders
 {
     public class DepthClipShader : ShaderProgram3D

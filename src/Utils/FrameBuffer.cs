@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 
 using ComputerGraphicsCoursework.Textures;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Utils
 {
     public class FrameBuffer : IDisposable
     {

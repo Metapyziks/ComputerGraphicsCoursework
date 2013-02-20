@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Utils;
+
 namespace ComputerGraphicsCoursework.Shaders
 {
     public class WaterSimulateVelocityShader : WaterEffectShader

@@ -5,7 +5,7 @@ using OpenTK.Graphics.OpenGL;
 
 using ComputerGraphicsCoursework.Shaders;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Utils
 {
     public class VertexBuffer : IDisposable
     {
