@@ -34,13 +34,12 @@ namespace ComputerGraphicsCoursework
 
         /// <summary>
         /// Entry point of the application.
-        /// 
-        /// Creates a new instance of Program, runs it until the application ends,
-        /// and then disposes any used resources.
         /// </summary>
         /// <param name="args">Accepts at most one argument; a path to the resource directory</param>
         static void Main(String[] args)
         {
+            // Set the working directory to be the one containing this executable, so
+            // that relative paths will be relative to the location of the app
             Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
 
             if (args.Length > 0) {
@@ -52,12 +51,15 @@ namespace ComputerGraphicsCoursework
                 }
             }
 
+            // Create a new instance of the app
             var program = new Program();
+
+            // Initiate the rendering and updating loop
             program.Run();
+
+            // At program exit, dispose all unmanaged resources
             program.Dispose();
         }
-
-        private bool _captureMouse;
 
         private Camera _camera;
 
@@ -72,8 +74,9 @@ namespace ComputerGraphicsCoursework
         private double _lastFPSUpdate;
         private int _frameCount;
 
+        private bool _captureMouse;
         private bool _wireframe;
-        private bool _drawShip;
+        private bool _drawModels;
         private bool _firstPerson;
 
         private float _cameraDist;
@@ -124,11 +127,14 @@ namespace ComputerGraphicsCoursework
             // Create and start a stopwatch for timekeeping
             _timer = new Stopwatch();
             _timer.Start();
-            
-            // Start with wireframe mode off, the ship visible, and with a
+
+            // Initially ignore mouse input
+            _captureMouse = false;
+
+            // Start with wireframe mode off, all models visible, and with a
             // first person camera
             _wireframe = false;
-            _drawShip = true;
+            _drawModels = true;
             _firstPerson = true;
 
             // Start with the camera 24 units away from the ship when in
@@ -147,10 +153,7 @@ namespace ComputerGraphicsCoursework
             _modelShader = SetupShader<ModelShader>();
             _waterShader = SetupShader<WaterShader>();
             _skyShader = SetupShader<SkyShader>();
-
-            // Initially ignore mouse input
-            _captureMouse = false;
-
+            
             // Mouse look implementation
             Mouse.Move += (sender, me) => {
                 // Find the middle of the window
@@ -198,18 +201,28 @@ namespace ComputerGraphicsCoursework
                 Cursor.Hide();
             };
 
+            // Key press event handler
             Keyboard.KeyDown += (sender, ke) => {
                 switch (ke.Key) {
-                    case Key.L:
+                    // L toggles wireframe mode
+                    case Key.L: 
                         _wireframe = !_wireframe; break;
-                    case Key.B:
-                        _drawShip = !_drawShip; break;
+
+                    // B toggles rendering of models
+                    case Key.B: 
+                        _drawModels = !_drawModels; break;
+
+                    // V toggles first person view
                     case Key.V:
                         _firstPerson = !_firstPerson; break;
+
+                    // Escape disables mouse look and shows the cursor
                     case Key.Escape:
                         _captureMouse = !_captureMouse;
                         if (_captureMouse) Cursor.Hide(); else Cursor.Show();
                         break;
+
+                    // Alt+Enter toggles fullscreen mode
                     case Key.Enter:
                         if (Keyboard[Key.AltLeft]) {
                             if (WindowState != WindowState.Fullscreen) {
@@ -221,28 +234,33 @@ namespace ComputerGraphicsCoursework
                             }
                         }
                         break;
-                    default:
+
+                    // Delegate any other keys to any scene elements that accept key input
+                    default: 
                         _world.KeyDown(ke.Key);
                         break;
                 }
             };
 
+            // Key release event handler
             Keyboard.KeyUp += (sender, ke) => {
+                // Delegate to any scene elements that accept key input
                 _world.KeyUp(ke.Key);
             };
-
-            GL.ClearColor(Color4.White);
         }
 
         /// <summary>
         /// Method override that is invoked when the window is resized.
-        /// </summary>=
+        /// </summary>
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
 
+            // Update the size of the viewport OpenGL draws to
             GL.Viewport(ClientRectangle);
             if (_camera != null) {
+                // Update the perspective matrix in the camera with the
+                // new aspect ratio
                 _camera.SetScreenSize(Width, Height);
             }
         }
@@ -254,21 +272,33 @@ namespace ComputerGraphicsCoursework
         {
             base.OnRenderFrame(e);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            // Clear the depth buffer
+            GL.Clear(ClearBufferMask.DepthBufferBit);
 
+            // If wireframe mode is enabled, switch to only draw the perimiter lines
+            // of each primitive
             if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
+            // Draw the sky
             _skyShader.Render();
 
-            if (_drawShip) {
+            // If model drawing is enabled, draw any scene elements that contain a model
+            // and also draw any depth clip faces that hide water drawn behind them
+            if (_drawModels) {
                 _world.Render(_modelShader);
                 _world.Render(_depthClipShader);
             }
 
+            // Draw the water
             _world.Render(_waterShader);
+
+            // Make sure that line drawing mode is disabled if it was originally enabled
             if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
+            // Swap the back and front buffers to show the frame that was just drawn
             SwapBuffers();
+
+            // Increment the FPS counter
             ++_frameCount;
         }
 
@@ -279,24 +309,38 @@ namespace ComputerGraphicsCoursework
         {
             base.OnUpdateFrame(e);
 
+            // If it has been more than half a second since the last FPS update, calculate
+            // the new FPS, display it in the window title, and reset the counter.
             if (_timer.Elapsed.TotalSeconds - _lastFPSUpdate > 0.5) {
                 Title = string.Format("FPS: {0:F2}", _frameCount / (_timer.Elapsed.TotalSeconds - _lastFPSUpdate));
                 _lastFPSUpdate = _timer.Elapsed.TotalSeconds;
                 _frameCount = 0;
             }
 
+            // To keep camera rotation relative to the ship's rotation, first rotate it
+            // to be relative to the world before updating the ship
             _camera.Rotation += new Vector2(_world.Ship.Pitch, _world.Ship.Yaw);
+
+            // Update any dynamic scene elements, which includes the ship and the water
             _world.UpdateFrame(_timer.Elapsed.TotalSeconds, Keyboard);
+
+            // Now rotate the camera to be relative to the new ship rotation
             _camera.Rotation -= new Vector2(_world.Ship.Pitch, _world.Ship.Yaw);
 
             if (_firstPerson) {
+                // In first person view, move the camera to be inside the ship
                 _camera.Position = _world.Ship.Position + _world.Ship.Up * 3f - _world.Ship.Forward * 2f;
             } else {
+                // In third person view, move the camera so it is orbiting the ship
                 _camera.Position = _world.Ship.Position - _camera.ViewVector * _cameraDist;
                 if (_camera.Position.Y < 1f) {
+                    // Ensure the camera is above the water at all times
                     _camera.Position = new Vector3(_camera.Position.X, 1f, _camera.Position.Z);
                 }
             }
+
+            // It's pretty likely that the camera's position or rotation has changed, so
+            // tell the camera to update its view matrix to reflect these changes
             _camera.UpdateViewMatrix();
         }
     }
