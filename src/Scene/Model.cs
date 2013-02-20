@@ -214,10 +214,10 @@ namespace ComputerGraphicsCoursework.Scene
             _vb.SetData(raw);
         }
 
-        public FaceGroup[] GetFaceGroups(String prefix)
+        public FaceGroup[] GetFaceGroups(params String[] prefixes)
         {
-            prefix = prefix + "_";
-            return FaceGroups.Where(x => x.Name.StartsWith(prefix)).ToArray();
+            prefixes = prefixes.Select(x => x + "_").ToArray();
+            return FaceGroups.Where(x => prefixes.Any(y => x.Name.StartsWith(y))).ToArray();
         }
 
         public void Render(ModelShader shader)

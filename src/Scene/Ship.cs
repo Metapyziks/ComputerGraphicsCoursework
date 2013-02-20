@@ -12,20 +12,31 @@ using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Scene
 {
-    public class Ship : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IUpdateable, IKeyControllable
+    /// <summary>
+    /// Class representing the moveable ship.
+    /// </summary>
+    public class Ship :
+        IRenderable<ModelShader>,
+        IRenderable<DepthClipShader>,
+        IUpdateable, IKeyControllable
     {
+        #region Private Static Fields
         private const float RudderMoveSpeed = MathHelper.Pi / 120f;
 
         private static Model _sModel;
+
+        private Model.FaceGroup[] _sWaterclip;
+        private Model.FaceGroup[] _sInnerHull;
+        private Model.FaceGroup[] _sOuterHull;
+        private Model.FaceGroup[] _sTrim;
+        private Model.FaceGroup[] _sMotor;
+        private Model.FaceGroup[] _sProp;
+
         private static BitmapTexture2D _sPlanksTexture;
         private static BitmapTexture2D _sFiberglassTexture;
+        #endregion
 
-        private Model.FaceGroup[] _waterclip;
-        private Model.FaceGroup[] _innerHull;
-        private Model.FaceGroup[] _outerHull;
-        private Model.FaceGroup[] _trim;
-        private Model.FaceGroup[] _motor;
-        private Model.FaceGroup[] _prop;
+        #region Private Fields
         private Matrix4 _trans;
 
         private Floater _frontFloat;
@@ -35,34 +46,74 @@ namespace ComputerGraphicsCoursework.Scene
         private float _rudderAng;
         private float _propSpeed;
         private float _propAng;
+        #endregion
 
+        /// <summary>
+        /// Rotation of the ship on the X axis.
+        /// </summary>
         public float Pitch { get; private set; }
+
+        /// <summary>
+        /// Rotation of the ship on the Y axis.
+        /// </summary>
         public float Yaw { get; private set; }
+
+        /// <summary>
+        /// Rotation of the ship on the Z axis.
+        /// </summary>
         public float Roll { get; private set; }
+
+        /// <summary>
+        /// Normalized forward vector of the ship.
+        /// </summary>
         public Vector3 Forward { get; private set; }
+
+        /// <summary>
+        /// Normalized right-hand vector of the ship.
+        /// </summary>
         public Vector3 Right { get; private set; }
+
+        /// <summary>
+        /// Normalized up vector of the ship.
+        /// </summary>
         public Vector3 Up { get; private set; }
+
+        /// <summary>
+        /// Position of the ship in the world.
+        /// </summary>
         public Vector3 Position { get; private set; }
 
+        /// <summary>
+        /// Constructor to create a new Ship instance.
+        /// </summary>
         public Ship()
         {
+            // If the models and textures have never been loaded, load them and store them
+            // in static fields for use in this ship and any others created later
             if (_sModel == null) {
+                // Load the boat model
                 _sModel = Model.FromFile(Program.GetResourcePath("boat.obj"));
+
+                // Extract the various face groups from the ship model so they can be drawn
+                // separately with different textures and material effects
+                _sWaterclip = _sModel.GetFaceGroups("Waterclip");
+                _sInnerHull = _sModel.GetFaceGroups("InnerHull");
+                _sOuterHull = _sModel.GetFaceGroups("OuterHull");
+                _sTrim = _sModel.GetFaceGroups("Trim");
+                _sMotor = _sModel.GetFaceGroups("Motor", "Tiller");
+                _sProp = _sModel.GetFaceGroups("Prop");
+
+                // Load the textures used when drawing the ship
                 _sPlanksTexture = BitmapTexture2D.FromFile(Program.GetResourcePath("planks.png"));
                 _sFiberglassTexture = BitmapTexture2D.FromFile(Program.GetResourcePath("fiberglass.png"));
             }
 
-            _waterclip = _sModel.GetFaceGroups("Waterclip");
-            _innerHull = _sModel.GetFaceGroups("InnerHull");
-            _outerHull = _sModel.GetFaceGroups("OuterHull");
-            _trim = _sModel.GetFaceGroups("Trim");
-            _motor = _sModel.GetFaceGroups("Motor").Union(_sModel.GetFaceGroups("Tiller")).ToArray();
-            _prop = _sModel.GetFaceGroups("Prop");
-
+            // Create the three invisible boyant floats used to simulate the ship's physics
             _frontFloat = new Floater(new Vector3(6f, 0f, 0f));
             _leftFloat = new Floater(new Vector3(-6f, 0f, -4f));
             _rightFloat = new Floater(new Vector3(-6f, 0f, 4f));
 
+            // Use the identity matrix for the ship's transformation until a new one is found
             _trans = Matrix4.Identity;
         }
 
@@ -129,24 +180,24 @@ namespace ComputerGraphicsCoursework.Scene
             shader.Transform = _trans;
             shader.Shinyness = 2f;
             shader.Colour = Color4.White;
-            _sModel.Render(shader, _innerHull);
+            _sModel.Render(shader, _sInnerHull);
             shader.Colour = Color.CornflowerBlue;
             shader.Shinyness = 8f;
-            _sModel.Render(shader, _outerHull);
+            _sModel.Render(shader, _sOuterHull);
             shader.Texture = _sFiberglassTexture;
             shader.Colour = Color4.White; // new Color4(64, 64, 64, 255);
-            _sModel.Render(shader, _trim);
+            _sModel.Render(shader, _sTrim);
             shader.Colour = new Color4(32, 32, 32, 255);
             shader.Transform = Matrix4.Mult(Matrix4.Mult(
                 Matrix4.CreateRotationY(_rudderAng), Matrix4.CreateTranslation(-4f, 0f, 0f)), _trans);
             shader.Shinyness = 4f;
-            _sModel.Render(shader, _motor);
+            _sModel.Render(shader, _sMotor);
             shader.Colour = Color4.Gray;
             shader.Transform = Matrix4.Mult(Matrix4.Mult(
                 Matrix4.CreateRotationX(_propAng), Matrix4.CreateTranslation(0f, -1f / 8f, 0f)),
                 shader.Transform);
             shader.Shinyness = 4f;
-            _sModel.Render(shader, _prop);
+            _sModel.Render(shader, _sProp);
 
             //_frontFloat.Render(shader);
             //_leftFloat.Render(shader);
@@ -156,7 +207,7 @@ namespace ComputerGraphicsCoursework.Scene
         public void Render(DepthClipShader shader)
         {
             shader.Transform = _trans;
-            _sModel.Render(shader, _waterclip);
+            _sModel.Render(shader, _sWaterclip);
         }
 
         public void KeyDown(Key key) { }
