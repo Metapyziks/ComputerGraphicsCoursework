@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 
 using ComputerGraphicsCoursework.Textures;
+using ComputerGraphicsCoursework.Scene;
 
 namespace ComputerGraphicsCoursework.Shaders
 {

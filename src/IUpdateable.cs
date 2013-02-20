@@ -1,4 +1,6 @@
-﻿namespace ComputerGraphicsCoursework
+﻿using ComputerGraphicsCoursework.Scene;
+
+namespace ComputerGraphicsCoursework
 {
     interface IUpdateable
     {

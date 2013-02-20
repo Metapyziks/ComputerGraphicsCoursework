@@ -10,7 +10,7 @@ using OpenTK.Input;
 using ComputerGraphicsCoursework.Shaders;
 using ComputerGraphicsCoursework.Textures;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Scene
 {
     class World : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IRenderable<WaterShader>
     {

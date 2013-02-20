@@ -9,7 +9,7 @@ using OpenTK.Input;
 using ComputerGraphicsCoursework.Shaders;
 using ComputerGraphicsCoursework.Textures;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Scene
 {
     class Ship : IRenderable<ModelShader>, IRenderable<DepthClipShader>, IUpdateable, IKeyControllable
     {

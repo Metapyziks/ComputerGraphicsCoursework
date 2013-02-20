@@ -6,7 +6,7 @@ using System.Drawing;
 
 using OpenTK;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Scene
 {
     public class Camera
     {

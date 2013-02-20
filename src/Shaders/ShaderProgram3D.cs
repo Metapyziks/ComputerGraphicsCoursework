@@ -6,6 +6,8 @@ using System.Text;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+using ComputerGraphicsCoursework.Scene;
+
 namespace ComputerGraphicsCoursework.Shaders
 {
     public class ShaderProgram3D : ShaderProgram

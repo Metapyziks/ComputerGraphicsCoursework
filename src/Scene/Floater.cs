@@ -5,7 +5,7 @@ using OpenTK.Graphics;
 
 using ComputerGraphicsCoursework.Shaders;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Scene
 {
     class Floater : IRenderable<ModelShader>, IUpdateable
     {

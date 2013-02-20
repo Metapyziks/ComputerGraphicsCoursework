@@ -10,7 +10,7 @@ using OpenTK.Graphics.OpenGL;
 using ComputerGraphicsCoursework.Shaders;
 using ComputerGraphicsCoursework.Textures;
 
-namespace ComputerGraphicsCoursework
+namespace ComputerGraphicsCoursework.Scene
 {
     class Water : IRenderable<WaterShader>
     {
