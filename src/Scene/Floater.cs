@@ -17,7 +17,7 @@ namespace ComputerGraphicsCoursework.Scene
         public Floater(Vector3 position)
         {
             if (_sModel == null) {
-                _sModel = Model.FromFile("../../res/sphere.obj");
+                _sModel = Model.FromFile(Program.GetResourcePath("sphere.obj"));
             }
 
             Position = position;

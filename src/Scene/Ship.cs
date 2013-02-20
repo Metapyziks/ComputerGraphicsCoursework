@@ -47,9 +47,9 @@ namespace ComputerGraphicsCoursework.Scene
         public Ship()
         {
             if (_sModel == null) {
-                _sModel = Model.FromFile("../../res/boat.obj");
-                _sPlanksTexture = new BitmapTexture2D((Bitmap) Bitmap.FromFile("../../res/planks.png"));
-                _sFiberglassTexture = new BitmapTexture2D((Bitmap) Bitmap.FromFile("../../res/fiberglass.png"));
+                _sModel = Model.FromFile(Program.GetResourcePath("boat.obj"));
+                _sPlanksTexture = BitmapTexture2D.FromFile(Program.GetResourcePath("planks.png"));
+                _sFiberglassTexture = BitmapTexture2D.FromFile(Program.GetResourcePath("fiberglass.png"));
             }
 
             _waterclip = _sModel.GetFaceGroups("Waterclip");

@@ -19,6 +19,13 @@ namespace ComputerGraphicsCoursework
     /// </summary>
     public class Program : GameWindow
     {
+        private static String _sResourceDirectory = "res";
+
+        public static String GetResourcePath(String fileName)
+        {
+            return _sResourceDirectory + "/" + fileName;
+        }
+
         private bool _captureMouse;
 
         private Camera _camera;
@@ -49,7 +56,16 @@ namespace ComputerGraphicsCoursework
         /// <param name="args">There are no recognised command line arguments</param>
         static void Main(String[] args)
         {
-            Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);            
+            Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+
+            if (args.Length > 0) {
+                _sResourceDirectory = args[0].TrimEnd('/', '\\');
+            } else {
+                int depth = 0;
+                while (!Directory.Exists(_sResourceDirectory) && depth++ < 4) {
+                    _sResourceDirectory = "../" + _sResourceDirectory;
+                }
+            }
 
             var program = new Program();
             program.Run();

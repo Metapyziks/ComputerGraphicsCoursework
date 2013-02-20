@@ -64,7 +64,7 @@ namespace ComputerGraphicsCoursework.Scene
                 (float) Math.Sin(sunPitch), (float) (Math.Cos(sunPitch) *(float)  Math.Sin(sunYaw)));
             LightDirection /= LightDirection.Length;
 
-            Skybox = _sDefaultSkyCubeMap = _sDefaultSkyCubeMap ?? CubeMapTexture.FromFiles("../../res/sky_{0}.png");
+            Skybox = _sDefaultSkyCubeMap = _sDefaultSkyCubeMap ?? CubeMapTexture.FromFiles(Program.GetResourcePath("sky_{0}.png"));
         }
 
         public T Add<T>(T obj)

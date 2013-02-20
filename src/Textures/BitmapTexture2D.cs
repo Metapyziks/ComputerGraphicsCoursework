@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 
 using OpenTK;
@@ -17,6 +18,11 @@ namespace ComputerGraphicsCoursework.Textures
             Bitmap blankBmp = new Bitmap(1, 1);
             blankBmp.SetPixel(0, 0, Color.White);
             Blank = new BitmapTexture2D(blankBmp);
+        }
+
+        public static BitmapTexture2D FromFile(String filePath)
+        {
+            return new BitmapTexture2D((Bitmap) Bitmap.FromFile(filePath));
         }
 
         private readonly int _actualSize;
