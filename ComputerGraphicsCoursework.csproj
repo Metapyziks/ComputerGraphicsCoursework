@@ -70,11 +70,8 @@
     <Compile Include="src\Shaders\ShaderProgram.cs" />
     <Compile Include="src\Shaders\ShaderProgram3D.cs" />
     <Compile Include="src\Ship.cs" />
-    <Compile Include="src\Sprite.cs" />
-    <Compile Include="src\Shaders\SpriteShader.cs" />
     <Compile Include="src\Shaders\ModelShader.cs" />
     <Compile Include="src\Texture.cs" />
-    <Compile Include="src\Texture2DArray.cs" />
     <Compile Include="src\Tools.cs" />
     <Compile Include="src\VertexBuffer.cs" />
     <Compile Include="src\Water.cs" />
