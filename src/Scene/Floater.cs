@@ -11,7 +11,9 @@ namespace ComputerGraphicsCoursework.Scene
     /// Class representing a bouyant point mass that reacts to the surface
     /// of the water.
     /// </summary>
-    public class Floater : IRenderable<ModelShader>, IUpdateable
+    public class Floater :
+        IRenderable<ModelShader>,
+        IUpdateable
     {
         #region Private Static Fields
         private static Model _sModel;
