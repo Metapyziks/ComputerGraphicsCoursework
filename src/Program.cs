@@ -15,6 +15,9 @@ using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework
 {
+    /// <summary>
+    /// Main window class for the app. Includes the entry point for the application.
+    /// </summary>
     public class Program : GameWindow
     {
         private bool _captureMouse;
@@ -38,6 +41,13 @@ namespace ComputerGraphicsCoursework
 
         private float _cameraDist;
 
+        /// <summary>
+        /// Entry point of the application.
+        /// 
+        /// Creates a new instance of Program, runsa it until the application ends,
+        /// and then disposes any used resources.
+        /// </summary>
+        /// <param name="args">There are no recognised command line arguments</param>
         static void Main(String[] args)
         {
             Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);            
@@ -47,7 +57,10 @@ namespace ComputerGraphicsCoursework
             program.Dispose();
         }
 
-        public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 2))
+        /// <summary>
+        /// Constructor to create a new Program instance.
+        /// </summary>
+        public Program() : base(1024, 768, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 2))
         {
             this.Title = "Computer Graphics Coursework";
         }
@@ -123,6 +136,17 @@ namespace ComputerGraphicsCoursework
                     case Key.Escape:
                         Close();
                         break;
+                    case Key.Enter:
+                        if (Keyboard[Key.AltLeft]) {
+                            if (WindowState != WindowState.Fullscreen) {
+                                WindowBorder = WindowBorder.Hidden;
+                                WindowState = WindowState.Fullscreen;
+                            } else {
+                                WindowBorder = WindowBorder.Resizable;
+                                WindowState = WindowState.Normal;
+                            }
+                        }
+                        break;
                     default:
                         _world.KeyDown(ke.Key);
                         break;
@@ -134,6 +158,16 @@ namespace ComputerGraphicsCoursework
             };
 
             GL.ClearColor(Color4.White);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            GL.Viewport(ClientRectangle);
+            if (_camera != null) {
+                _camera.SetScreenSize(Width, Height);
+            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

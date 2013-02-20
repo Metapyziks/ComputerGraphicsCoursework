@@ -23,9 +23,6 @@ namespace ComputerGraphicsCoursework.Scene
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public int WrapWidth { get; private set; }
-        public int WrapHeight { get; private set; }
-
         public Matrix4 PerspectiveMatrix
         {
             get { return _perspectiveMatrix; }
