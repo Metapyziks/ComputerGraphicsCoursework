@@ -53,8 +53,7 @@ namespace ComputerGraphicsCoursework.Scene
         {
             get
             {
-                if (_perspectiveChanged) UpdatePerspectiveMatrix();
-                else if (_viewChanged) UpdateViewMatrix();
+                if (_viewChanged) UpdateViewMatrix();
 
                 return _viewMatrix;
             }
@@ -69,7 +68,7 @@ namespace ComputerGraphicsCoursework.Scene
             get
             {
                 if (_perspectiveChanged) UpdatePerspectiveMatrix();
-                else if (_viewChanged) UpdateViewMatrix();
+                if (_viewChanged) UpdateViewMatrix();
 
                 return _combinedMatrix;
             }
@@ -128,6 +127,9 @@ namespace ComputerGraphicsCoursework.Scene
             }
         }
 
+        /// <summary>
+        /// Gets or sets the eye normal in world-space.
+        /// </summary>
         public Vector3 ViewVector
         {
             get
@@ -136,16 +138,24 @@ namespace ComputerGraphicsCoursework.Scene
                 float sinYaw = (float) Math.Sin(Yaw);
                 float cosPitch = (float) Math.Cos(Pitch);
                 float sinPitch = (float) Math.Sin(Pitch);
+
+                // Found through the elegant process of trial and error
                 return new Vector3(sinYaw * cosPitch, -sinPitch, -cosYaw * cosPitch);
             }
             set
             {
+                // Using a given eye normal, find the pitch and yaw
                 value.Normalize();
                 Pitch = (float) Math.Asin(-value.Y);
                 Yaw = (float) Math.Atan2(value.X, -value.Z);
             }
         }
 
+        /// <summary>
+        /// Constructor to create a new Camera instance.
+        /// </summary>
+        /// <param name="width">Width of the viewport in pixels</param>
+        /// <param name="height">Height of the viewport in pixels</param>
         public Camera(int width, int height)
         {
             Width = width;
@@ -154,36 +164,60 @@ namespace ComputerGraphicsCoursework.Scene
             Position = new Vector3();
             Rotation = new Vector2();
 
-            UpdatePerspectiveMatrix();
-            UpdateViewMatrix();
+            _perspectiveChanged = true;
+            _viewChanged = true;
         }
 
+        /// <summary>
+        /// Update the dimensions of the viewport.
+        /// </summary>
+        /// <param name="width">Width of the viewport in pixels</param>
+        /// <param name="height">Height of the viewport in pixels</param>
         public void SetScreenSize(int width, int height)
         {
             Width = width;
             Height = height;
 
-            UpdatePerspectiveMatrix();
+            _perspectiveChanged = true;
         }
 
+        /// <summary>
+        /// Update the perspective matrix to reflect a change in viewport dimensions.
+        /// </summary>
         private void UpdatePerspectiveMatrix()
         {
             _perspectiveChanged = false;
 
-            _perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, (float) Width / Height, 1f / 64f, 256f);
+            // Set up a perspective matrix with a 60 degree FOV, the aspect ratio
+            // of the current viewport dimensions, some arbitrary depth clip planes
+            _perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3,
+                (float) Width / Height, 1f / 64f, 256f);
 
-            UpdateViewMatrix();
+            UpdateCombinedMatrix();
         }
 
+        /// <summary>
+        /// Update the view matrix to reflect a change in camera position or rotation.
+        /// </summary>
         private void UpdateViewMatrix()
         {
             _viewChanged = false;
 
-            Matrix4 yRot = Matrix4.CreateRotationY(_rotation.Y);
-            Matrix4 xRot = Matrix4.CreateRotationX(_rotation.X);
-            Matrix4 trns = Matrix4.CreateTranslation(-_position);
+            Matrix4 yRot = Matrix4.CreateRotationY(_rotation.Y);  // yaw rotation
+            Matrix4 xRot = Matrix4.CreateRotationX(_rotation.X);  // pitch rotation
+            Matrix4 trns = Matrix4.CreateTranslation(-_position); // position offset
 
+            // Combine the matrices to find the view transformation
             _viewMatrix = Matrix4.Mult(trns, Matrix4.Mult(yRot, xRot));
+
+            UpdateCombinedMatrix();
+        }
+
+        /// <summary>
+        /// Update the combined view and perspective matrix when either of them changes.
+        /// </summary>
+        private void UpdateCombinedMatrix()
+        {
             _combinedMatrix = Matrix4.Mult(_viewMatrix, _perspectiveMatrix);
         }
     }
