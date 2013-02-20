@@ -8,7 +8,11 @@ SRCDIR = src
 
 SRC = \
 	$(SRCDIR)/*.cs \
-	Properties/*.cs
+	Properties/*.cs \
+	$(SRCDIR)/Utils/*.cs \
+	$(SRCDIR)/Shaders/*.cs \
+	$(SRCDIR)/Textures/*.cs \
+	$(SRCDIR)/Scene/*.cs
 
 LIB = OpenTK.dll,System.Drawing.dll,System.Windows.Forms
 

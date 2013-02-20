@@ -161,9 +161,7 @@ namespace ComputerGraphicsCoursework.Scene
             x -= xi; z -= zi;
 
             float l = (1f - z) * heights[xi, zi] + z * heights[xi, zi + 1];
-            float t = (1f - x) * heights[xi, zi] + x * heights[xi + 1, zi];
             float r = (1f - z) * heights[xi + 1, zi] + z * heights[xi + 1, zi + 1];
-            float b = (1f - x) * heights[xi, zi + 1] + x * heights[xi + 1, zi + 1];
 
             return ((1f - x) * l + x * r) * 2f - 1f;
         }

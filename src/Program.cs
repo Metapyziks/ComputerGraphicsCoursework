@@ -27,8 +27,6 @@ namespace ComputerGraphicsCoursework
 
         private World _world;
 
-        private Random _rand;
-
         private Stopwatch _timer;
         private double _lastFPSUpdate;
         private int _frameCount;
@@ -56,8 +54,6 @@ namespace ComputerGraphicsCoursework
             base.OnLoad(e);
 
             VSync = VSyncMode.Off;
-
-            _rand = new Random();
 
             _timer = new Stopwatch();
             _timer.Start();
