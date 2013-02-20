@@ -100,7 +100,7 @@ namespace ComputerGraphicsCoursework
             _skyShader.Camera = _camera;
             _skyShader.World = _world;
 
-            _captureMouse = true;
+            _captureMouse = false;
 
             var lastMouseX = Cursor.Position.X;
             var lastMouseY = Cursor.Position.Y;
@@ -125,6 +125,13 @@ namespace ComputerGraphicsCoursework
                 }
             };
 
+            Mouse.ButtonUp += (sender, me) => {
+                if (!_captureMouse) {
+                    _captureMouse = true;
+                    Cursor.Hide();
+                }
+            };
+
             Keyboard.KeyDown += (sender, ke) => {
                 switch (ke.Key) {
                     case Key.L:
@@ -134,7 +141,8 @@ namespace ComputerGraphicsCoursework
                     case Key.V:
                         _firstPerson = !_firstPerson; break;
                     case Key.Escape:
-                        Close();
+                        _captureMouse = !_captureMouse;
+                        if (_captureMouse) Cursor.Hide(); else Cursor.Show();
                         break;
                     case Key.Enter:
                         if (Keyboard[Key.AltLeft]) {
@@ -207,12 +215,6 @@ namespace ComputerGraphicsCoursework
                 Title = string.Format("FPS: {0:F2}", _frameCount / (_timer.Elapsed.TotalSeconds - _lastFPSUpdate));
                 _lastFPSUpdate = _timer.Elapsed.TotalSeconds;
                 _frameCount = 0;
-            }
-
-            if (!Focused || !_captureMouse) {
-                Cursor.Show();
-            } else {
-                Cursor.Hide();
             }
 
             _camera.Rotation += new Vector2(_world.Ship.Pitch, _world.Ship.Yaw);
