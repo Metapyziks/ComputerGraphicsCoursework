@@ -26,27 +26,6 @@ namespace ComputerGraphicsCoursework
             return _sResourceDirectory + "/" + fileName;
         }
 
-        private bool _captureMouse;
-
-        private Camera _camera;
-
-        private ModelShader _modelShader;
-        private DepthClipShader _depthClipShader;
-        private WaterShader _waterShader;
-        private SkyShader _skyShader;
-
-        private World _world;
-
-        private Stopwatch _timer;
-        private double _lastFPSUpdate;
-        private int _frameCount;
-
-        private bool _wireframe;
-        private bool _drawShip;
-        private bool _firstPerson;
-
-        private float _cameraDist;
-
         /// <summary>
         /// Entry point of the application.
         /// 
@@ -71,6 +50,27 @@ namespace ComputerGraphicsCoursework
             program.Run();
             program.Dispose();
         }
+
+        private bool _captureMouse;
+
+        private Camera _camera;
+
+        private ModelShader _modelShader;
+        private DepthClipShader _depthClipShader;
+        private WaterShader _waterShader;
+        private SkyShader _skyShader;
+
+        private World _world;
+
+        private Stopwatch _timer;
+        private double _lastFPSUpdate;
+        private int _frameCount;
+
+        private bool _wireframe;
+        private bool _drawShip;
+        private bool _firstPerson;
+
+        private float _cameraDist;
 
         /// <summary>
         /// Constructor to create a new Program instance.
