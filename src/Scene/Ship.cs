@@ -113,61 +113,93 @@ namespace ComputerGraphicsCoursework.Scene
             _leftFloat = new Floater(new Vector3(-6f, 0f, -4f));
             _rightFloat = new Floater(new Vector3(-6f, 0f, 4f));
 
-            // Use the identity matrix for the ship's transformation until a new one is found
+            // Use the identity matrix for the ship's transformation until a new one is calculated
             _trans = Matrix4.Identity;
         }
 
+        /// <summary>
+        /// Simulate the movement and rotation of the ship, and update the transformation
+        /// matrix. Also updates the rotation of the propeller and triggers the water depression
+        /// effect in the wake of the ship.
+        /// </summary>
+        /// <param name="time">Time in seconds since the start of the application</param>
+        /// <param name="water">Water instance to lookup the wave height at the ship's position</param>
         public void Update(double time, Water water)
         {
+            // Simulate the movement of the three invisible floats
             _frontFloat.Update(time, water);
             _leftFloat.Update(time, water);
             _rightFloat.Update(time, water);
 
+            // Find the position of the point half way between the two rear floats
             Vector3 aft = (_leftFloat.Position + _rightFloat.Position) / 2f;
+            
+            // Find the desired position of the centre of the ship, which is mid-way
+            // between the front float and the aft midpoint.
             Position = (aft + _frontFloat.Position) / 2f;
 
-            Vector3 diff = Position - aft;
+            // Find the current pitch of the ship as a function of the front float's position
+            // and the midpoint between the two rear floats.
+            Vector3 diff = _frontFloat.Position - aft;
             Pitch = (float) Math.Atan2(diff.Y, Math.Sqrt(diff.X * diff.X + diff.Z * diff.Z));
 
+            // Find the current roll of the ship as a function of the two rear floats' positions
             diff = _rightFloat.Position - _leftFloat.Position;
             Roll = (float) Math.Atan2(diff.Y, Math.Sqrt(diff.X * diff.X + diff.Z * diff.Z));
 
+            // Find the current yaw of the ship as a function of the front float's position
+            // and the midpoint between the two read floats
             diff = _frontFloat.Position - aft;
             Yaw = (float) -Math.Atan2(diff.Z, diff.X);
 
+            // Construct the transformation matrix to be used when drawing the ship from the
+            // position, pitch, roll, and yaw
             _trans = Matrix4.CreateTranslation(Position);
             _trans = Matrix4.Mult(Matrix4.CreateRotationY(Yaw), _trans);
             _trans = Matrix4.Mult(Matrix4.CreateRotationX(Roll), _trans);
             _trans = Matrix4.Mult(Matrix4.CreateRotationZ(Pitch), _trans);
 
+            // Find the forward, right and up normalized vectors
             Forward = Vector4.Transform(new Vector4(1f, 0f, 0f, 0f), _trans).Xyz;
             Right = Vector4.Transform(new Vector4(0f, 0f, 1f, 0f), _trans).Xyz;
             Up = Vector4.Transform(new Vector4(0f, 1f, 0f, 0f), _trans).Xyz;
 
+            // Calculate the current speed of the ship by averaging the velocities of the three floats
             float vel = (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 3f;
+
+            // If the rudder is at a non-zero angle, cause the boat to rotate by accelerating a
+            // rear float laterally
             if (_rudderAng < 0) {
                 _leftFloat.Accelerate(Right * vel * (-_rudderAng / MathHelper.PiOver4) / 64f);
             } else if (_rudderAng > 0) {
                 _rightFloat.Accelerate(-Right * vel * (_rudderAng / MathHelper.PiOver4) / 64f);
             }
 
+            // Accelerate the floats towards being in their correct positions relative to the ship
             _frontFloat.Accelerate((Position + Forward * 6f - _frontFloat.Position) / 128f);
             _leftFloat.Accelerate((Position - Forward * 6f - Right * 4f - _leftFloat.Position) / 128f);
             _rightFloat.Accelerate((Position - Forward * 6f + Right * 4f - _rightFloat.Position) / 128f);
 
+            // Simulate drag which is increased when the floats are moving in a direction other
+            // than the way the ship is pointing
             _frontFloat.Streamline(Forward, 0.02f);
             _leftFloat.Streamline(Forward, 0.01f);
             _rightFloat.Streamline(Forward, 0.01f);
 
+            // Rotate the propeller
             _propAng += _propSpeed / 60f;
 
+            // Calculate the amount to depress the water under the ship
             float mag = Math.Min(1f, (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 12f);
 
-            var splashPos = Position + Forward * 3.5f;
+            // Depress the water under the ship in positions down the length of the vessel
+            Vector3 splashPos;
             for (int i = 0; i < 8; ++i) {
                 splashPos = Position + Forward * (3.5f - i);
                 water.Splash(new Vector2(splashPos.X, splashPos.Z), mag / 2f);
             }
+
+            // Now depress the water under the two rear corners of the ship
             splashPos = Position - Forward * 3.5f - Right;
             water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
             splashPos += Right * 2f;
