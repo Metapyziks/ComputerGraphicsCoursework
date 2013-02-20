@@ -12,27 +12,22 @@ namespace ComputerGraphicsCoursework.Shaders
 {
     public class WorldAwareShader : ShaderProgram3D
     {
-        private int _lightDirLoc;
-
         public World World { get; set; }
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            _lightDirLoc = GL.GetUniformLocation(Program, "light_vector");
+            AddUniform("light_vector");
 
             AddTexture("skybox");
         }
 
-        protected override void OnStartBatch()
+        protected override void OnBegin()
         {
-            base.OnStartBatch();
+            base.OnBegin();
 
-            if (_lightDirLoc != -1) {
-                GL.Uniform3(_lightDirLoc, World.LightDirection);
-            }
-
+            SetUniform("light_vector", World.LightDirection);
             SetTexture("skybox", World.Skybox);
         }
     }

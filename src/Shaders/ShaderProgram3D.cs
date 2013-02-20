@@ -26,7 +26,7 @@ namespace ComputerGraphicsCoursework.Shaders
             _viewMatrixLoc = GL.GetUniformLocation(Program, "vp_matrix");
         }
 
-        protected override void OnStartBatch()
+        protected override void OnBegin()
         {
             if (Camera != null) {
                 Matrix4 viewMat = Camera.CombinedMatrix;

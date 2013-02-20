@@ -199,7 +199,7 @@ namespace ComputerGraphicsCoursework.Scene
             _sSplashVelocityShader.SplashMagnitude = magnitude;
 
             _velocitymapBuffer.Begin();
-            _sSplashVelocityShader.Begin();
+            _sSplashVelocityShader.Begin(true);
             _sSplashVelocityShader.Render();
             _sSplashVelocityShader.End();
             _velocitymapBuffer.End();
@@ -217,7 +217,7 @@ namespace ComputerGraphicsCoursework.Scene
             _sSimSprayShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
             
             _spraymapBuffer.Begin();
-            _sSimSprayShader.Begin();
+            _sSimSprayShader.Begin(true);
             _sSimSprayShader.Render();
             _sSimSprayShader.End();
             _spraymapBuffer.End();
@@ -225,7 +225,7 @@ namespace ComputerGraphicsCoursework.Scene
             _sSimVelocityShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
 
             _velocitymapBuffer.Begin();
-            _sSimVelocityShader.Begin();
+            _sSimVelocityShader.Begin(true);
             _sSimVelocityShader.Render();
             _sSimVelocityShader.End();
             _velocitymapBuffer.End();
@@ -233,7 +233,7 @@ namespace ComputerGraphicsCoursework.Scene
             _sSimHeightShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
 
             _heightmapBuffer.Begin();
-            _sSimHeightShader.Begin();
+            _sSimHeightShader.Begin(true);
             _sSimHeightShader.Render();
             _sSimHeightShader.End();
             _heightmapBuffer.End();
@@ -243,9 +243,9 @@ namespace ComputerGraphicsCoursework.Scene
         {
             shader.SetTexture("heightmap", _heightmapBuffer.Texture);
             shader.SetTexture("spraymap", _spraymapBuffer.Texture);
-            _sVB.StartBatch(shader);
-            _sVB.Render(shader);
-            _sVB.EndBatch(shader);
+            _sVB.Begin(shader);
+            _sVB.Render();
+            _sVB.End();
         }
     }
 }

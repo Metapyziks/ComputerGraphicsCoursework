@@ -189,18 +189,11 @@ namespace ComputerGraphicsCoursework
             _skyShader.Render();
 
             if (_drawShip) {
-                _modelShader.StartBatch();
                 _world.Render(_modelShader);
-                _modelShader.EndBatch();
-
-                _depthClipShader.StartBatch();
                 _world.Render(_depthClipShader);
-                _depthClipShader.EndBatch();
             }
 
-            _waterShader.StartBatch();
             _world.Render(_waterShader);
-            _waterShader.EndBatch();
             if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             SwapBuffers();

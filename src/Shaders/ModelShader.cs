@@ -10,17 +10,9 @@ namespace ComputerGraphicsCoursework.Shaders
     public class ModelShader : WorldAwareShader
     {
         private Color4 _colour = Color4.White;
-        private int _colourLoc = -1;
-
         private BitmapTexture2D _texture = BitmapTexture2D.Blank;
-
         private Matrix4 _trans = Matrix4.Identity;
-        private int _transLoc = -1;
-
         private float _shinyness = 0f;
-        private int _shinynessLoc = -1;
-
-        private int _viewVectorLoc = -1;
 
         public Color4 Colour
         {
@@ -28,9 +20,7 @@ namespace ComputerGraphicsCoursework.Shaders
             set
             {
                 _colour = value;
-                if (_colourLoc != -1) {
-                    GL.Uniform4(_colourLoc, _colour);
-                }
+                SetUniform("colour", _colour);
             }
         }
 
@@ -50,9 +40,7 @@ namespace ComputerGraphicsCoursework.Shaders
             set
             {
                 _trans = value;
-                if (_transLoc != -1) {
-                    GL.UniformMatrix4(_transLoc, false, ref _trans);
-                }
+                SetUniform("transform", ref _trans);
             }
         }
 
@@ -62,9 +50,7 @@ namespace ComputerGraphicsCoursework.Shaders
             set
             {
                 _shinyness = value;
-                if (_transLoc != -1) {
-                    GL.Uniform1(_shinynessLoc, _shinyness);
-                }
+                SetUniform("shinyness", value);
             }
         }
 
@@ -121,40 +107,34 @@ namespace ComputerGraphicsCoursework.Shaders
 
             AddTexture("tex");
 
-            _colourLoc = GL.GetUniformLocation(Program, "colour");
-            _transLoc = GL.GetUniformLocation(Program, "transform");
-            _shinynessLoc = GL.GetUniformLocation(Program, "shinyness");
-            _viewVectorLoc = GL.GetUniformLocation(Program, "view_vector");
+            AddUniform("colour");
+            AddUniform("transform");
+            AddUniform("shinyness");
+            AddUniform("view_vector");
 
-            GL.Uniform4(_colourLoc, Colour);
-            GL.UniformMatrix4(_transLoc, false, ref _trans);
+            SetUniform("colour", Colour);
+            SetUniform("transform", ref _trans);
         }
 
-        protected override void OnStartBatch()
+        protected override void OnBegin()
         {
-            base.OnStartBatch();
+            base.OnBegin();
 
             GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.CullFace);
-            GL.Uniform4(_colourLoc, _colour);
-            GL.UniformMatrix4(_transLoc, false, ref _trans);
-            GL.Uniform1(_shinynessLoc, _shinyness);
-            Vector3 viewVector = Camera.ViewVector;
-            GL.Uniform3(_viewVectorLoc, ref viewVector);
+
+            SetUniform("colour", Colour);
+            SetUniform("transform", ref _trans);
+            SetUniform("shinyness", _shinyness);
+            SetUniform("view_vector", Camera.ViewVector);
 
             SetTexture("tex", _texture);
         }
 
-        protected override void OnEndBatch()
+        protected override void OnEnd()
         {
-            base.OnEndBatch();
+            base.OnEnd();
 
             GL.Disable(EnableCap.DepthTest); GL.Disable(EnableCap.CullFace);
-        }
-
-        public void Render(Vector3 vert, Vector3 norm)
-        {
-            GL.VertexAttrib3(Attributes[0].Location, vert);
-            GL.VertexAttrib3(Attributes[1].Location, norm);
         }
     }
 }

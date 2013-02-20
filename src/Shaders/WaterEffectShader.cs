@@ -123,9 +123,9 @@ namespace ComputerGraphicsCoursework.Shaders
             SprayMap = spraymap;
         }
 
-        protected override void OnStartBatch()
+        protected override void OnBegin()
         {
-            base.OnStartBatch();
+            base.OnBegin();
 
             SetTexture("heightmap", HeightMap);
             SetTexture("velocitymap", VelocityMap);

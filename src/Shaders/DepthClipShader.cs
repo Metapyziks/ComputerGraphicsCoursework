@@ -8,7 +8,6 @@ namespace ComputerGraphicsCoursework.Shaders
     public class DepthClipShader : ShaderProgram3D
     {
         private Matrix4 _trans = Matrix4.Identity;
-        private int _transLoc = -1;
 
         public Matrix4 Transform
         {
@@ -16,9 +15,7 @@ namespace ComputerGraphicsCoursework.Shaders
             set
             {
                 _trans = value;
-                if (_transLoc != -1) {
-                    GL.UniformMatrix4(_transLoc, false, ref _trans);
-                }
+                SetUniform("transform", ref _trans);
             }
         }
 
@@ -58,30 +55,24 @@ namespace ComputerGraphicsCoursework.Shaders
             AddAttribute("in_vertex", 3);
             AddUnusedAttribute(5);
 
-            _transLoc = GL.GetUniformLocation(Program, "transform");
-            GL.UniformMatrix4(_transLoc, false, ref _trans);
+            AddUniform("transform");
+            SetUniform("transform", ref _trans);
         }
 
-        protected override void OnStartBatch()
+        protected override void OnBegin()
         {
-            base.OnStartBatch();
+            base.OnBegin();
 
             GL.Enable(EnableCap.DepthTest); GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            GL.UniformMatrix4(_transLoc, false, ref _trans);
+            SetUniform("transform", ref _trans);
         }
 
-        protected override void OnEndBatch()
+        protected override void OnEnd()
         {
-            base.OnEndBatch();
+            base.OnEnd();
 
             GL.Disable(EnableCap.DepthTest); GL.Disable(EnableCap.Blend);
-        }
-
-        public void Render(Vector3 vert, Vector3 norm)
-        {
-            GL.VertexAttrib3(Attributes[0].Location, vert);
-            GL.VertexAttrib3(Attributes[1].Location, norm);
         }
     }
 }

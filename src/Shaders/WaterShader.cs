@@ -14,10 +14,6 @@ namespace ComputerGraphicsCoursework.Shaders
         private LumTexture2D _ripplemap;
 
         private Color4 _colour = new Color4(48, 92, 120, 191);
-        private int _colourLoc = -1;
-
-        private int _viewVectorLoc = -1;
-        private int _viewOriginLoc = -1;
 
         public Color4 Colour
         {
@@ -25,9 +21,7 @@ namespace ComputerGraphicsCoursework.Shaders
             set
             {
                 _colour = value;
-                if (_colourLoc != -1) {
-                    GL.Uniform4(_colourLoc, value);
-                }
+                SetUniform("colour", value);
             }
         }
 
@@ -126,19 +120,19 @@ namespace ComputerGraphicsCoursework.Shaders
                 }
             }
 
-            _colourLoc = GL.GetUniformLocation(Program, "colour");
-            _viewVectorLoc = GL.GetUniformLocation(Program, "view_vector");
-            _viewOriginLoc = GL.GetUniformLocation(Program, "view_origin");
+            AddUniform("colour");
+            AddUniform("view_vector");
+            AddUniform("view_origin");
 
-            GL.Uniform4(_colourLoc, Colour);
+            SetUniform("colour", Colour);
         }
 
-        protected override void OnStartBatch()
+        protected override void OnBegin()
         {
-            base.OnStartBatch();
+            base.OnBegin();
 
-            GL.Uniform3(_viewVectorLoc, Camera.ViewVector);
-            GL.Uniform3(_viewOriginLoc, Camera.Position);
+            SetUniform("view_vector", Camera.ViewVector);
+            SetUniform("view_origin", Camera.Position);
 
             SetTexture("ripplemap", _ripplemap);
 
@@ -147,16 +141,11 @@ namespace ComputerGraphicsCoursework.Shaders
             // GL.CullFace(CullFaceMode.Front);
         }
 
-        protected override void OnEndBatch()
+        protected override void OnEnd()
         {
-            base.OnEndBatch();
+            base.OnEnd();
 
             GL.Disable(EnableCap.DepthTest); GL.Disable(EnableCap.Blend); //GL.Disable(EnableCap.CullFace);
-        }
-
-        public void Render(Vector2 vert)
-        {
-            GL.VertexAttrib2(Attributes[0].Location, vert);
         }
     }
 }

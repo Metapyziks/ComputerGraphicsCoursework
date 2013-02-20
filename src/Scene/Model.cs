@@ -222,34 +222,34 @@ namespace ComputerGraphicsCoursework.Scene
 
         public void Render(ModelShader shader)
         {
-            _vb.StartBatch(shader);
-            _vb.Render(shader);
-            _vb.EndBatch(shader);
+            _vb.Begin(shader);
+            _vb.Render();
+            _vb.End();
         }
 
         public void Render(ModelShader shader, params FaceGroup[] facegroups)
         {
-            _vb.StartBatch(shader);
+            _vb.Begin(shader);
             foreach (var facegroup in facegroups) {
-                _vb.Render(shader, facegroup.StartIndex * 3, facegroup.Length * 3);
+                _vb.Render(facegroup.StartIndex * 3, facegroup.Length * 3);
             }
-            _vb.EndBatch(shader);
+            _vb.End();
         }
 
         public void Render(DepthClipShader shader)
         {
-            _vb.StartBatch(shader);
-            _vb.Render(shader);
-            _vb.EndBatch(shader);
+            _vb.Begin(shader);
+            _vb.Render();
+            _vb.End();
         }
 
         public void Render(DepthClipShader shader, params FaceGroup[] facegroups)
         {
-            _vb.StartBatch(shader);
+            _vb.Begin(shader);
             foreach (var facegroup in facegroups) {
-                _vb.Render(shader, facegroup.StartIndex * 3, facegroup.Length * 3);
+                _vb.Render(facegroup.StartIndex * 3, facegroup.Length * 3);
             }
-            _vb.EndBatch(shader);
+            _vb.End();
         }
     }
 }

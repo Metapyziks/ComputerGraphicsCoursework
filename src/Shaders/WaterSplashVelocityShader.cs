@@ -75,9 +75,9 @@ namespace ComputerGraphicsCoursework.Shaders
             _splashLoc = GL.GetUniformLocation(Program, "splash");
         }
 
-        protected override void OnStartBatch()
+        protected override void OnBegin()
         {
-            base.OnStartBatch();
+            base.OnBegin();
 
             GL.Uniform3(_splashLoc, ref _splash);
         }

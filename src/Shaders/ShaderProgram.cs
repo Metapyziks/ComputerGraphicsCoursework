@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-
-using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
+
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 
 using ComputerGraphicsCoursework.Textures;
 using ComputerGraphicsCoursework.Utils;
@@ -154,15 +156,15 @@ namespace ComputerGraphicsCoursework.Shaders
 
         public int VertexDataStride;
         public int VertexDataSize;
+
         private List<AttributeInfo> _attributes;
         private Dictionary<String, TextureInfo> _textures;
+        private Dictionary<String, int> _uniforms;
+
+        private bool _immediate;
+        private bool _started;
 
         public int Program { get; private set; }
-
-        public AttributeInfo[] Attributes
-        {
-            get { return _attributes.ToArray(); }
-        }
 
         public BeginMode BeginMode;
         public String VertexSource;
@@ -173,16 +175,15 @@ namespace ComputerGraphicsCoursework.Shaders
             get { return _sCurProgram == this; }
         }
 
-        public bool started;
-
         public ShaderProgram()
         {
             BeginMode = BeginMode.Triangles;
             _attributes = new List<AttributeInfo>();
             _textures = new Dictionary<String, TextureInfo>();
+            _uniforms = new Dictionary<String, int>();
             VertexDataStride = 0;
             VertexDataSize = 0;
-            started = false;
+            _started = false;
         }
 
         public void Create()
@@ -236,7 +237,7 @@ namespace ComputerGraphicsCoursework.Shaders
             }
         }
 
-        public void AddAttribute(String identifier, int size, int divisor = 0, int inputOffset = -1,
+        protected void AddAttribute(String identifier, int size, int divisor = 0, int inputOffset = -1,
             VertexAttribPointerType pointerType = VertexAttribPointerType.Float,
             bool normalize = false)
         {
@@ -254,7 +255,7 @@ namespace ComputerGraphicsCoursework.Shaders
             Tools.ErrorCheck("addattrib:" + identifier);
         }
 
-        public void AddUnusedAttribute(int size, VertexAttribPointerType pointerType = VertexAttribPointerType.Float)
+        protected void AddUnusedAttribute(int size, VertexAttribPointerType pointerType = VertexAttribPointerType.Float)
         {
             AttributeInfo info = new AttributeInfo(this, String.Empty, size, VertexDataStride,
                 0, 0, pointerType, false);
@@ -263,7 +264,7 @@ namespace ComputerGraphicsCoursework.Shaders
             VertexDataSize += info.Size;
         }
 
-        public void AddTexture(String identifier)
+        protected void AddTexture(String identifier)
         {
             _textures.Add(identifier, new TextureInfo(this, identifier,
                 (TextureUnit) Enumerable.Range((int) TextureUnit.Texture0, 16).First(x =>
@@ -274,7 +275,7 @@ namespace ComputerGraphicsCoursework.Shaders
 
         public void SetTexture(String identifier, Texture texture)
         {
-            if (started) {
+            if (_started && _immediate) {
                 GL.End();
                 Tools.ErrorCheck("end");
             }
@@ -283,58 +284,106 @@ namespace ComputerGraphicsCoursework.Shaders
 
             Tools.ErrorCheck("settexture");
 
-            if (started)
+            if (_started && _immediate)
                 GL.Begin(BeginMode);
         }
 
-        public void Begin()
+        protected void AddUniform(String identifier)
         {
-            StartBatch();
+            _uniforms.Add(identifier, GL.GetUniformLocation(Program, identifier));
+        }
 
-            foreach (AttributeInfo info in _attributes)
+        public void SetUniform(String identifier, float value)
+        {
+            if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
+            GL.Uniform1(loc, value);
+        }
+
+        public void SetUniform(String identifier, Vector2 value)
+        {
+            if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
+            GL.Uniform2(loc, value);
+        }
+
+        public void SetUniform(String identifier, Vector3 value)
+        {
+            if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
+            GL.Uniform3(loc, value);
+        }
+
+        public void SetUniform(String identifier, Vector4 value)
+        {
+            if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
+            GL.Uniform4(loc, value);
+        }
+
+        public void SetUniform(String identifier, Color4 value)
+        {
+            if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
+            GL.Uniform4(loc, value);
+        }
+
+        public void SetUniform(String identifier, ref Matrix4 value)
+        {
+            if (!Active) Use(); int loc = _uniforms[identifier]; if (loc == -1) return;
+            GL.UniformMatrix4(loc, false, ref value);
+        }
+
+        public void Begin(bool immediateMode)
+        {
+            Use();
+            OnBegin();
+
+            Tools.ErrorCheck("begin");
+
+            if (immediateMode) {
+                GL.Begin(BeginMode);
+            }
+
+            _immediate = immediateMode;
+            _started = true;
+        }
+
+        public void BeginArrays()
+        {
+            foreach (AttributeInfo info in _attributes) {
                 GL.VertexAttribPointer(info.Location, info.Size,
                     info.PointerType, info.Normalize, VertexDataStride, info.Offset);
 
-            Tools.ErrorCheck("begin");
-            GL.Begin(BeginMode);
-
-            started = true;
+                GL.EnableVertexAttribArray(info.Location);
+            }
         }
 
-        public void StartBatch()
-        {
-            Use();
-
-            OnStartBatch();
-
-            Tools.ErrorCheck("startbatch");
-        }
-
-        protected virtual void OnStartBatch() { }
+        protected virtual void OnBegin() { }
 
         public void End()
         {
-            started = false;
-            GL.End();
+            _started = false;
 
-            EndBatch();
+            if (_immediate) {
+                GL.End();
+            } else {
+                foreach (AttributeInfo info in _attributes) {
+                    GL.DisableVertexAttribArray(info.Location);
+                }
+            }
+
+            OnEnd();
 
             Tools.ErrorCheck("end");
         }
 
-        public void EndBatch()
-        {
-            OnEndBatch();
-
-            Tools.ErrorCheck("endbatch");
-        }
-
-        protected virtual void OnEndBatch() { }
+        protected virtual void OnEnd() { }
 
         public virtual void Render(float[] data)
         {
-            if (!started)
+            if (!_started) {
                 throw new Exception("Must call Begin() first!");
+            }
+
+            if (!_immediate) {
+                throw new Exception("Must use immediate mode!");
+            }
 
             int i = 0;
             while (i < data.Length) {

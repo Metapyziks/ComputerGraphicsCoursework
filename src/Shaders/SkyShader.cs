@@ -75,11 +75,9 @@ namespace ComputerGraphicsCoursework.Shaders
 
         public void Render()
         {
-            StartBatch();
-            _sVB.StartBatch(this);
-            _sVB.Render(this);
-            _sVB.EndBatch(this);
-            EndBatch();
+            _sVB.Begin(this);
+            _sVB.Render();
+            _sVB.End();
         }
     }
 }

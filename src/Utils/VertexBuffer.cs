@@ -17,6 +17,8 @@ namespace ComputerGraphicsCoursework.Utils
         private int _vboID;
         private int _length;
 
+        private ShaderProgram _curShader;
+
         public int VboID
         {
             get
@@ -51,32 +53,31 @@ namespace ComputerGraphicsCoursework.Utils
             _dataSet = true;
         }
 
-        public void StartBatch(ShaderProgram shader)
+        public void Begin(ShaderProgram shader)
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VboID);
+            _curShader = shader;
 
-            foreach (var info in shader.Attributes) {
-                GL.VertexAttribPointer(info.Location, info.Size, info.PointerType,
-                    info.Normalize, shader.VertexDataStride, info.Offset);
-                GL.EnableVertexAttribArray(info.Location);
-            }
+            Tools.ErrorCheck("vboprebegin");
+
+            shader.Begin(false);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VboID);
+            shader.BeginArrays();
         }
 
-        public void Render(ShaderProgram shader, int first = 0, int count = -1)
+        public void Render(int first = 0, int count = -1)
         {
             if (_dataSet) {
-                if (count == -1)
+                if (count == -1) {
                     count = _length - first;
+                }
 
-                GL.DrawArrays(shader.BeginMode, first, count);
+                GL.DrawArrays(_curShader.BeginMode, first, count);
             }
         }
 
-        public void EndBatch(ShaderProgram shader)
+        public void End()
         {
-            foreach (var info in shader.Attributes)
-                GL.DisableVertexAttribArray(info.Location);
-
+            _curShader.End();
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
