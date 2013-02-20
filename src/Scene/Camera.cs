@@ -4,8 +4,13 @@ using OpenTK;
 
 namespace ComputerGraphicsCoursework.Scene
 {
+    /// <summary>
+    /// Class containing the camera's current position and rotation, along
+    /// with the perspective and view matrices used when rendering the scene.
+    /// </summary>
     public class Camera
     {
+        #region Private Fields
         private bool _perspectiveChanged;
         private bool _viewChanged;
 
@@ -14,26 +19,65 @@ namespace ComputerGraphicsCoursework.Scene
         private Matrix4 _combinedMatrix;
         private Vector3 _position;
         private Vector2 _rotation;
-        private float _scale;
+        #endregion
 
+        /// <summary>
+        /// Current width in pixels of the viewport being drawn to.
+        /// </summary>
         public int Width { get; private set; }
+
+        /// <summary>
+        /// Current height in pixels of the viewport being drawn to.
+        /// </summary>
         public int Height { get; private set; }
 
+        /// <summary>
+        /// Perspective matrix that encodes the transformation from
+        /// eye-space to screen-space.
+        /// </summary>
         public Matrix4 PerspectiveMatrix
         {
-            get { return _perspectiveMatrix; }
+            get
+            {
+                if (_perspectiveChanged) UpdatePerspectiveMatrix();
+
+                return _perspectiveMatrix;
+            }
         }
 
+        /// <summary>
+        /// View matrix that encodes the transformation from world-space
+        /// to eye-space.
+        /// </summary>
         public Matrix4 Viewmatrix
         {
-            get { return _viewMatrix; }
+            get
+            {
+                if (_perspectiveChanged) UpdatePerspectiveMatrix();
+                else if (_viewChanged) UpdateViewMatrix();
+
+                return _viewMatrix;
+            }
         }
 
+        /// <summary>
+        /// Combined view and perspective matrix that encodes the
+        /// transformation from world-space to screen-space.
+        /// </summary>
         public Matrix4 CombinedMatrix
         {
-            get { return _combinedMatrix; }
+            get
+            {
+                if (_perspectiveChanged) UpdatePerspectiveMatrix();
+                else if (_viewChanged) UpdateViewMatrix();
+
+                return _combinedMatrix;
+            }
         }
 
+        /// <summary>
+        /// Position of the camera in the world.
+        /// </summary>
         public Vector3 Position
         {
             get { return _position; }
@@ -44,6 +88,10 @@ namespace ComputerGraphicsCoursework.Scene
             }
         }
 
+        /// <summary>
+        /// Rotation of the camera, stored as the rotation on the
+        /// X and Y axis (pitch and yaw).
+        /// </summary>
         public Vector2 Rotation
         {
             get { return _rotation; }
@@ -54,16 +102,22 @@ namespace ComputerGraphicsCoursework.Scene
             }
         }
 
+        /// <summary>
+        /// The pitch of the camera (rotation on the X axis).
+        /// </summary>
         public float Pitch
         {
             get { return _rotation.X; }
             set
             {
                 _rotation.X = value;
-                _perspectiveChanged = true;
+                _viewChanged = true;
             }
         }
 
+        /// <summary>
+        /// The yaw of the camera (rotation on the Y axis).
+        /// </summary>
         public float Yaw
         {
             get { return _rotation.Y; }
@@ -71,16 +125,6 @@ namespace ComputerGraphicsCoursework.Scene
             {
                 _rotation.Y = value;
                 _viewChanged = true;
-            }
-        }
-
-        public float Scale
-        {
-            get { return _scale; }
-            set
-            {
-                _scale = value;
-                _perspectiveChanged = true;
             }
         }
 
@@ -102,15 +146,13 @@ namespace ComputerGraphicsCoursework.Scene
             }
         }
 
-        public Camera(int width, int height, float scale = 1.0f)
+        public Camera(int width, int height)
         {
             Width = width;
             Height = height;
 
             Position = new Vector3();
             Rotation = new Vector2();
-
-            Scale = scale;
 
             UpdatePerspectiveMatrix();
             UpdateViewMatrix();
@@ -120,28 +162,29 @@ namespace ComputerGraphicsCoursework.Scene
         {
             Width = width;
             Height = height;
+
             UpdatePerspectiveMatrix();
         }
 
-        public void UpdatePerspectiveMatrix()
+        private void UpdatePerspectiveMatrix()
         {
-            if (_perspectiveChanged) {
-                _perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, (float) Width / Height, 1f / 64f, 256f);
+            _perspectiveChanged = false;
 
-                UpdateViewMatrix();
-            }
+            _perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, (float) Width / Height, 1f / 64f, 256f);
+
+            UpdateViewMatrix();
         }
 
-        public void UpdateViewMatrix()
+        private void UpdateViewMatrix()
         {
-            if (_viewChanged) {
-                Matrix4 yRot = Matrix4.CreateRotationY(_rotation.Y);
-                Matrix4 xRot = Matrix4.CreateRotationX(_rotation.X);
-                Matrix4 trns = Matrix4.CreateTranslation(-_position);
+            _viewChanged = false;
 
-                _viewMatrix = Matrix4.Mult(trns, Matrix4.Mult(yRot, xRot));
-                _combinedMatrix = Matrix4.Mult(_viewMatrix, _perspectiveMatrix);
-            }
+            Matrix4 yRot = Matrix4.CreateRotationY(_rotation.Y);
+            Matrix4 xRot = Matrix4.CreateRotationX(_rotation.X);
+            Matrix4 trns = Matrix4.CreateTranslation(-_position);
+
+            _viewMatrix = Matrix4.Mult(trns, Matrix4.Mult(yRot, xRot));
+            _combinedMatrix = Matrix4.Mult(_viewMatrix, _perspectiveMatrix);
         }
     }
 }

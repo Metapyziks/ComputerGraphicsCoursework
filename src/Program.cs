@@ -20,7 +20,9 @@ namespace ComputerGraphicsCoursework
     /// </summary>
     public class Program : GameWindow
     {
+        #region Private Static Fields
         private static String _sResourceDirectory = "res";
+        #endregion
 
         /// <summary>
         /// Prepends a resource file name with the resource directory path.
@@ -36,7 +38,7 @@ namespace ComputerGraphicsCoursework
         /// Entry point of the application.
         /// </summary>
         /// <param name="args">Accepts at most one argument; a path to the resource directory</param>
-        static void Main(String[] args)
+        public static void Main(String[] args)
         {
             // Set the working directory to be the one containing this executable, so
             // that relative paths will be relative to the location of the app
@@ -61,6 +63,7 @@ namespace ComputerGraphicsCoursework
             program.Dispose();
         }
 
+        #region Private Fields
         private Camera _camera;
 
         private ModelShader _modelShader;
@@ -80,6 +83,7 @@ namespace ComputerGraphicsCoursework
         private bool _firstPerson;
 
         private float _cameraDist;
+        #endregion
 
         /// <summary>
         /// Constructor to create a new Program instance.
@@ -171,9 +175,6 @@ namespace ComputerGraphicsCoursework
 
                 // Make sure the camera doesn't go upside-down
                 _camera.Pitch = Tools.Clamp(_camera.Pitch, -MathHelper.PiOver2, MathHelper.PiOver2);
-
-                // Instruct the camera to rebuild its view matrix with the new rotation
-                _camera.UpdateViewMatrix();
 
                 // Move the cursor back to the middle of the window
                 Cursor.Position = centre;
@@ -338,10 +339,6 @@ namespace ComputerGraphicsCoursework
                     _camera.Position = new Vector3(_camera.Position.X, 1f, _camera.Position.Z);
                 }
             }
-
-            // It's pretty likely that the camera's position or rotation has changed, so
-            // tell the camera to update its view matrix to reflect these changes
-            _camera.UpdateViewMatrix();
         }
     }
 }
