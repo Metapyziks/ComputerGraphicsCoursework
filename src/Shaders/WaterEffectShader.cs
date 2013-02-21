@@ -20,8 +20,8 @@ namespace ComputerGraphicsCoursework.Shaders
             set
             {
                 if (_heightmap != value) {
-                    SetTexture("heightmap", value);
                     _heightmap = value;
+                    SetTexture("heightmap", value);
                 }
             }
         }
@@ -32,8 +32,8 @@ namespace ComputerGraphicsCoursework.Shaders
             set
             {
                 if (_velocitymap != value) {
-                    SetTexture("velocitymap", value);
                     _velocitymap = value;
+                    SetTexture("velocitymap", value);
                 }
             }
         }
@@ -44,8 +44,8 @@ namespace ComputerGraphicsCoursework.Shaders
             set
             {
                 if (_spraymap != value) {
-                    SetTexture("spraymap", value);
                     _spraymap = value;
+                    SetTexture("spraymap", value);
                 }
             }
         }

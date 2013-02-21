@@ -350,20 +350,17 @@ namespace ComputerGraphicsCoursework.Shaders
 
             if (immediateMode) {
                 GL.Begin(BeginMode);
+            } else {
+                foreach (AttributeInfo info in _attributes) {
+                    GL.VertexAttribPointer(info.Location, info.Size,
+                        info.PointerType, info.Normalize, VertexDataStride, info.Offset);
+
+                    GL.EnableVertexAttribArray(info.Location);
+                }
             }
 
             _immediate = immediateMode;
             _started = true;
-        }
-
-        public void BeginArrays()
-        {
-            foreach (AttributeInfo info in _attributes) {
-                GL.VertexAttribPointer(info.Location, info.Size,
-                    info.PointerType, info.Normalize, VertexDataStride, info.Offset);
-
-                GL.EnableVertexAttribArray(info.Location);
-            }
         }
 
         protected virtual void OnBegin() { }
