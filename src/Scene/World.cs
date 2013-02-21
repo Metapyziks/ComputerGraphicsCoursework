@@ -57,14 +57,14 @@ namespace ComputerGraphicsCoursework.Scene
             Ship = Add(new Ship());
             _water = new Water(64f);
 
-            float sunPitch = 35f;
-            float sunYaw = 165f;
+            float sunPitch = -60f * MathHelper.Pi / 180f;
+            float sunYaw = 215f * MathHelper.Pi / 180f;
 
             LightDirection = new Vector3((float) (Math.Cos(sunPitch) * Math.Cos(sunYaw)),
                 (float) Math.Sin(sunPitch), (float) (Math.Cos(sunPitch) *(float)  Math.Sin(sunYaw)));
             LightDirection /= LightDirection.Length;
 
-            Skybox = _sDefaultSkyCubeMap = _sDefaultSkyCubeMap ?? CubeMapTexture.FromFiles(Program.GetResourcePath("sky_{0}.png"));
+            Skybox = _sDefaultSkyCubeMap = _sDefaultSkyCubeMap ?? CubeMapTexture.FromFiles(Program.GetResourcePath("miramar_{0}.png"));
         }
 
         public T Add<T>(T obj)
