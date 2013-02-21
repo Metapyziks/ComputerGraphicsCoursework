@@ -1,0 +1,19 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{lipsum}
+\usepackage{fullpage}
+\usepackage{amsmath}
+
+\title{Computer Graphics OpenGL Coursework}
+\date{\today}
+\author{James King}
+
+\begin{document}
+\maketitle
+
+\section{Assessment Criteria Catchment}
+\subsection{Ship Model}
+The ship model itself was created using the free 3D modelling application Blender, which also handled vertex normal and UV coordinate calculation. The finished model was then exported as a Wavefront OBJ (.obj) file, which could then be imported into my application using a parser written by myself.
+
+The model is split into several groups, which I have called `Face Groups' within the application. The purpose of the groups was to allow different parts of the ship to have different material effects; and in the case of the outboard motor and propeller, to have a different transformation applied before rendering.
+\end{document}

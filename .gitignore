@@ -58,3 +58,5 @@ pingme.txt
 *.psess
 *.vsp
 *.vspx
+*.aux
+*.log
