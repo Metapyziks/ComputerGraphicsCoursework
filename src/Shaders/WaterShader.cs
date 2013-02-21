@@ -12,7 +12,7 @@ namespace ComputerGraphicsCoursework.Shaders
     {
         private AlphaTexture2D _ripplemap;
 
-        private Color4 _colour = new Color4(48, 92, 120, 191);
+        private Color4 _colour = new Color4(48, 132, 255, 191);
 
         public Color4 Colour
         {
@@ -81,7 +81,7 @@ namespace ComputerGraphicsCoursework.Shaders
 
                     vec3 reflected = normalize(reflect(cam_dir, normal));
 
-                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light_vector, normal)), colour.a);
+                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(light_vector, normal)), colour.a);
                     out_frag_colour += vec4((textureCube(skybox, reflected).rgb - out_frag_colour.rgb) * 0.5, 0.0);
 
                     if (var_scale > 0.0) {
