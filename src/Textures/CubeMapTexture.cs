@@ -80,7 +80,7 @@ namespace ComputerGraphicsCoursework.Textures
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int) TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int) TextureWrapMode.ClampToEdge);
 
-            Tools.ErrorCheck("loadtexture");
+            // Tools.ErrorCheck("loadtexture");
         }
     }
 }

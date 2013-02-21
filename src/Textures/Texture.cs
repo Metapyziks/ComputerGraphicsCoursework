@@ -67,7 +67,7 @@ namespace ComputerGraphicsCoursework.Textures
                 _sCurrentLoadedTexture = this;
             }
 
-            Tools.ErrorCheck("bindtexture");
+            // Tools.ErrorCheck("bindtexture");
 
             if (!_loaded) {
                 Load();

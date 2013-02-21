@@ -76,7 +76,7 @@ namespace ComputerGraphicsCoursework.Utils
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
             // Check that nothing went wrong
-            Tools.ErrorCheck("setdata");
+            // Tools.ErrorCheck("setdata");
 
             // Record that the VBO now has data, and may be drawn to
             _dataSet = true;

@@ -28,7 +28,7 @@ namespace ComputerGraphicsCoursework.Shaders
         {
             SetUniform("screen_resolution", (float) width, (float) height);
 
-            Tools.ErrorCheck("screensize");
+            // Tools.ErrorCheck("screensize");
         }
     }
 }

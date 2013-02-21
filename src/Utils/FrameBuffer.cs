@@ -32,7 +32,7 @@ namespace ComputerGraphicsCoursework.Utils
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, tex.TextureTarget, tex.ID, 0);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            Tools.ErrorCheck("fbo_init");
+            // Tools.ErrorCheck("fbo_init");
         }
 
         public void Begin()
@@ -43,8 +43,6 @@ namespace ComputerGraphicsCoursework.Utils
             GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
             GL.PushAttrib(AttribMask.ViewportBit);
             GL.Viewport(0, 0, Texture.Width, Texture.Height);
-
-            Tools.ErrorCheck("fbo_begin");
         }
 
         public void End()
@@ -52,7 +50,7 @@ namespace ComputerGraphicsCoursework.Utils
             GL.PopAttrib();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            Tools.ErrorCheck("fbo_end");
+            // Tools.ErrorCheck("fbo_end");
         }
 
         public void Dispose()

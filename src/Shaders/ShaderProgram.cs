@@ -221,7 +221,7 @@ namespace ComputerGraphicsCoursework.Shaders
 
             OnCreate();
 
-            Tools.ErrorCheck("create");
+            // Tools.ErrorCheck("create");
         }
 
         protected virtual void OnCreate()
@@ -252,7 +252,7 @@ namespace ComputerGraphicsCoursework.Shaders
             VertexDataSize += info.Size;
             _attributes.Add(info);
 
-            Tools.ErrorCheck("addattrib:" + identifier);
+            // Tools.ErrorCheck("addattrib:" + identifier);
         }
 
         protected void AddUnusedAttribute(int size, VertexAttribPointerType pointerType = VertexAttribPointerType.Float)
@@ -270,19 +270,19 @@ namespace ComputerGraphicsCoursework.Shaders
                 (TextureUnit) Enumerable.Range((int) TextureUnit.Texture0, 16).First(x =>
                     _textures.Count(y => y.Value.TextureUnit == (TextureUnit) x) == 0)));
 
-            Tools.ErrorCheck("addtexture");
+            // Tools.ErrorCheck("addtexture");
         }
 
         public void SetTexture(String identifier, Texture texture)
         {
             if (_started && _immediate) {
                 GL.End();
-                Tools.ErrorCheck("end");
+                // Tools.ErrorCheck("end");
             }
 
             _textures[identifier].SetCurrentTexture(texture);
 
-            Tools.ErrorCheck("settexture");
+            // Tools.ErrorCheck("settexture");
 
             if (_started && _immediate)
                 GL.Begin(BeginMode);
@@ -346,7 +346,7 @@ namespace ComputerGraphicsCoursework.Shaders
             Use();
             OnBegin();
 
-            Tools.ErrorCheck("begin");
+            // Tools.ErrorCheck("begin");
 
             if (immediateMode) {
                 GL.Begin(BeginMode);
@@ -379,7 +379,7 @@ namespace ComputerGraphicsCoursework.Shaders
 
             OnEnd();
 
-            Tools.ErrorCheck("end");
+            // Tools.ErrorCheck("end");
         }
 
         protected virtual void OnEnd() { }

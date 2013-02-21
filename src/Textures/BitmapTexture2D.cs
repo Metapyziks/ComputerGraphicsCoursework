@@ -78,7 +78,7 @@ namespace ComputerGraphicsCoursework.Textures
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            Tools.ErrorCheck("loadtexture");
+            // Tools.ErrorCheck("loadtexture");
         }
     }
 }
