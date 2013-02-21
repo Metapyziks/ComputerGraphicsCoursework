@@ -152,6 +152,7 @@ namespace ComputerGraphicsCoursework
             // Initialize a camera which holds the perspective and
             // view matrices, to be used when drawing the scene
             _camera = new Camera(Width, Height);
+            _camera.Yaw = MathHelper.PiOver2;
 
             // Create a world object to store all scene elements
             _world = new World();
