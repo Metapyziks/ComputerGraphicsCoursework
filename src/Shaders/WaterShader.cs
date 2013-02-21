@@ -48,7 +48,7 @@ namespace ComputerGraphicsCoursework.Shaders
 
                     vec2 offset = rmat * (in_vertex * size) + view_origin.xz;
                     var_texpos = offset / 128.0 + vec2(0.5, 0.5);
-                    var_height = texture(heightmap, var_texpos).a * 2.0 * var_scale;
+                    var_height = texture2D(heightmap, var_texpos).a * 2.0 * var_scale;
                     
                     vec4 pos = vec4(offset.x, var_height - 1.0, offset.y, 1.0);
 
@@ -82,11 +82,11 @@ namespace ComputerGraphicsCoursework.Shaders
                     vec3 reflected = normalize(reflect(cam_dir, normal));
 
                     out_frag_colour = vec4(colour.rgb * max(0.0, dot(-light_vector, normal)), colour.a);
-                    out_frag_colour += vec4((texture(skybox, reflected).rgb - out_frag_colour.rgb) * 0.5, 0.0);
+                    out_frag_colour += vec4((textureCube(skybox, reflected).rgb - out_frag_colour.rgb) * 0.5, 0.0);
 
                     if (var_scale > 0.0) {
-                        float ripple = texture(ripplemap, (var_texpos * 8.0) + normal.xz * 0.125).a;
-                        float spray = texture(spraymap, var_texpos).a;
+                        float ripple = texture2D(ripplemap, (var_texpos * 8.0) + normal.xz * 0.125).a;
+                        float spray = texture2D(spraymap, var_texpos).a;
                         if (ripple * pow(spray, 2.0) > 0.75) {
                             out_frag_colour += spray * 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * var_scale;
                         }

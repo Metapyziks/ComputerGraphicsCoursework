@@ -149,6 +149,7 @@ namespace ComputerGraphicsCoursework.Utils
             if (Type == ShaderType.FragmentShader) {
                 if (gl3)
                     logic = logic.Replace("texture2DArray(", "texture(")
+                        .Replace("textureCube(", "texture(")
                         .Replace("texture2D(", "texture(");
                 else
                     logic = logic.Replace(FragOutIdentifier, "gl_FragColor");

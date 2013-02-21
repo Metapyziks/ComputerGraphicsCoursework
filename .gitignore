@@ -55,3 +55,6 @@ Desktop.ini
 
 pingme.txt
 *.blend[0-9]
+*.psess
+*.vsp
+*.vspx

@@ -19,7 +19,7 @@ namespace ComputerGraphicsCoursework.Shaders
                         0.707, 1.0, 0.707, 1.0, 1.0, 0.707, 1.0, 0.707
                     );
                     
-                    float cur = texture(heightmap, tex_pos).a;
+                    float cur = texture2D(heightmap, tex_pos).a;
                     float avg = (0.5
                         + textureOffset(heightmap, tex_pos, offsets[0]).a * weights[0]
                         + textureOffset(heightmap, tex_pos, offsets[1]).a * weights[1]
@@ -30,7 +30,7 @@ namespace ComputerGraphicsCoursework.Shaders
                         + textureOffset(heightmap, tex_pos, offsets[6]).a * weights[6]
                         + textureOffset(heightmap, tex_pos, offsets[7]).a * weights[7]) / 7.828;
 
-                    float new = min(1.0, max(0.0, texture(velocitymap, tex_pos).a + (avg - cur) * 2.0)) * 0.996;
+                    float new = min(1.0, max(0.0, texture2D(velocitymap, tex_pos).a + (avg - cur) * 1.0)) * 0.996;
                     
                     out_frag_colour = vec4(new, new, new, new);
                 }

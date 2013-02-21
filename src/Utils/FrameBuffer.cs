@@ -6,7 +6,7 @@ using ComputerGraphicsCoursework.Textures;
 
 namespace ComputerGraphicsCoursework.Utils
 {
-    public class FrameBuffer : IDisposable
+    public sealed class FrameBuffer : IDisposable
     {
         private int _fboID;
 

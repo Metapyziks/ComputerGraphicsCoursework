@@ -19,7 +19,7 @@ namespace ComputerGraphicsCoursework.Shaders
                         0.707, 1.0, 0.707, 1.0, 1.0, 0.707, 1.0, 0.707
                     );
                     
-                    float cur = texture(spraymap, tex_pos).a;
+                    float cur = texture2D(spraymap, tex_pos).a;
                     float mx = 
                         max(
                             max(
@@ -44,7 +44,7 @@ namespace ComputerGraphicsCoursework.Shaders
                             )
                         );
 
-                    float vel = pow(abs(texture(velocitymap, tex_pos).a - 0.5), 2.5);
+                    float vel = pow(abs(texture2D(velocitymap, tex_pos).a - 0.5), 2.5);
                     float new = min(1.0, cur + max((mx - cur) * 0.75, 0.0) + vel) * 0.99;
                     
                     out_frag_colour = vec4(new, new, new, new);

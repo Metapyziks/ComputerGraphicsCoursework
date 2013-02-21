@@ -53,7 +53,7 @@ namespace ComputerGraphicsCoursework.Shaders
                     float dist = length(diff) * 128.0;
                     if (dist < 1.0) {
                         float scale = (1.0 - dist) * splash.z;
-                        float cur = texture(velocitymap, tex_pos).a;
+                        float cur = texture2D(velocitymap, tex_pos).a;
                         float mag = cur - scale;
                         out_frag_colour = vec4(mag, mag, mag, mag);
                     } else {

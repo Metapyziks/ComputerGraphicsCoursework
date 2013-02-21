@@ -28,7 +28,7 @@ namespace ComputerGraphicsCoursework.Scene
         void Update(double time, Water water);
     }
 
-    public class World
+    public sealed class World : IDisposable
     {
         private static CubeMapTexture _sDefaultSkyCubeMap;
 
@@ -122,6 +122,11 @@ namespace ComputerGraphicsCoursework.Scene
             }
 
             _water.SimulateWater(time);
+        }
+
+        public void Dispose()
+        {
+            _water.Dispose();
         }
     }
 }

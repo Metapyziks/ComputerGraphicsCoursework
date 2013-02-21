@@ -7,7 +7,7 @@ using ComputerGraphicsCoursework.Shaders;
 
 namespace ComputerGraphicsCoursework.Utils
 {
-    public class VertexBuffer : IDisposable
+    public sealed class VertexBuffer : IDisposable
     {
         private int _stride;
 

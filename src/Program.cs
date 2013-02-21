@@ -38,6 +38,7 @@ namespace ComputerGraphicsCoursework
         /// Entry point of the application.
         /// </summary>
         /// <param name="args">Accepts at most one argument; a path to the resource directory</param>
+        [STAThread]
         public static void Main(String[] args)
         {
             // Set the working directory to be the one containing this executable, so
@@ -127,6 +128,9 @@ namespace ComputerGraphicsCoursework
 
             // Don't limit the frame rate to the monitor's
             VSync = VSyncMode.Off;
+
+            // Set the colour buffer clear colour to black
+            GL.ClearColor(Color4.Black);
 
             // Create and start a stopwatch for timekeeping
             _timer = new Stopwatch();
@@ -277,8 +281,11 @@ namespace ComputerGraphicsCoursework
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // If wireframe mode is enabled, switch to only draw the perimiter lines
-            // of each primitive
-            if (_wireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            // of each primitive and clear the back buffer
+            if (_wireframe) {
+                GL.Clear(ClearBufferMask.ColorBufferBit);
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            }
 
             // Draw the sky
             _skyShader.Render();

@@ -9,7 +9,7 @@ using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Scene
 {
-    public class Water : IRenderable<WaterShader>
+    public sealed class Water : IRenderable<WaterShader>, IDisposable
     {
         public const int Resolution = 512;
         public const double SimulationPeriod = 1.0 / 60.0;
@@ -242,6 +242,14 @@ namespace ComputerGraphicsCoursework.Scene
             _sVB.Begin(shader);
             _sVB.Render();
             _sVB.End();
+        }
+
+        public void Dispose()
+        {
+            _sVB.Dispose();
+            _heightmapBuffer.Dispose();
+            _velocitymapBuffer.Dispose();
+            _spraymapBuffer.Dispose();
         }
     }
 }
