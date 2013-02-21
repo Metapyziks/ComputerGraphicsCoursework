@@ -1,4 +1,6 @@
-﻿using OpenTK;
+﻿using System;
+
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace ComputerGraphicsCoursework.Textures
@@ -11,7 +13,7 @@ namespace ComputerGraphicsCoursework.Textures
         public AlphaTexture2D(int width, int height, float clear = 0f)
             : base(TextureTarget.Texture2D, width, height)
         {
-            _actualSize = GetNextPOTS(Width, Height);
+            _actualSize = MathHelper.NextPowerOfTwo(Math.Max(width, height));
 
             _data = new float[Width, Height];
 

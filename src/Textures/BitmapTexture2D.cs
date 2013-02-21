@@ -32,7 +32,7 @@ namespace ComputerGraphicsCoursework.Textures
         public BitmapTexture2D(Bitmap bitmap)
             : base(TextureTarget.Texture2D, bitmap.Width, bitmap.Height)
         {
-            _actualSize = GetNextPOTS(bitmap.Width, bitmap.Height);
+            _actualSize = MathHelper.NextPowerOfTwo(Math.Max(bitmap.Width, bitmap.Height));
 
             if (_actualSize == bitmap.Width && _actualSize == bitmap.Height)
                 Bitmap = bitmap;

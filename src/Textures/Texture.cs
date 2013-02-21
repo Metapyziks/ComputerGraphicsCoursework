@@ -1,5 +1,3 @@
-using System;
-
 using OpenTK.Graphics.OpenGL;
 
 using ComputerGraphicsCoursework.Utils;
@@ -8,13 +6,6 @@ namespace ComputerGraphicsCoursework.Textures
 {
     public abstract class Texture
     {
-        protected static int GetNextPOTS(int wid, int hei)
-        {
-            int max = wid > hei ? wid : hei;
-
-            return (int) Math.Pow(2.0, Math.Ceiling(Math.Log(max, 2.0)));
-        }
-
         private static Texture _sCurrentLoadedTexture;
 
         public static Texture Current

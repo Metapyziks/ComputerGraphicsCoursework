@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using ComputerGraphicsCoursework.Utils;
@@ -50,7 +51,7 @@ namespace ComputerGraphicsCoursework.Textures
                 right, left, top, bottom, back, front
             };
 
-            _actualSize = _faces.Max(x => GetNextPOTS(x.Width, x.Height));
+            _actualSize = _faces.Max(x => MathHelper.NextPowerOfTwo(Math.Max(x.Width, x.Height)));
 
             for (int i = 0; i < 6; ++i) {
                 if (_faces[i].Width != _actualSize || _faces[i].Height != _actualSize) {
