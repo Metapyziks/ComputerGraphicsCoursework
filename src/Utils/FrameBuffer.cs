@@ -47,7 +47,7 @@ namespace ComputerGraphicsCoursework.Utils
 
             // Assign the texture to the frame buffer
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FboID);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, tex.TextureTarget, tex.ID, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, tex.TextureTarget, tex.TextureID, 0);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             // Tools.ErrorCheck("fbo_init");

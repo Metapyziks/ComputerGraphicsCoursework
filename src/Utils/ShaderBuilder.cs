@@ -237,6 +237,7 @@ namespace ComputerGraphicsCoursework.Utils
                 sb.AppendLine();
             }
 
+            // Please ignore the next 26 lines, thanks
             int index = Logic.IndexOf("void") - 1;
             String indent = "";
             while (index >= 0 && Logic[index] == ' ')
@@ -266,6 +267,7 @@ namespace ComputerGraphicsCoursework.Utils
 
             sb.Append(logic);
 
+            // Return the completed shader source
             return sb.ToString();
         }
     }

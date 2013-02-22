@@ -23,7 +23,7 @@ namespace ComputerGraphicsCoursework.Textures
                         _data[x, y] = clear;
                     }
                 }
-                Update();
+                Invalidate();
             }
         }
 
@@ -46,7 +46,7 @@ namespace ComputerGraphicsCoursework.Textures
             set
             {
                 _data[x, y] = value;
-                Update();
+                Invalidate();
             }
         }
 
