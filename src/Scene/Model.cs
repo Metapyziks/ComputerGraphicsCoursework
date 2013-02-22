@@ -21,6 +21,9 @@ namespace ComputerGraphicsCoursework.Scene
         IDisposable
     {
         #region Private Enum VertData
+        /// <summary>
+        /// Enumeration of the vertex attribute types stored in each face.
+        /// </summary>
         private enum VertData : byte
         {
             Vertex = 0,
