@@ -335,7 +335,7 @@ namespace ComputerGraphicsCoursework.Scene
         }
 
         /// <summary>
-        /// Depress the water at a given position by a specified amount
+        /// Depress the water at a given position by a specified amount.
         /// </summary>
         /// <param name="pos">Position to depress the water at</param>
         /// <param name="magnitude"></param>
@@ -344,12 +344,20 @@ namespace ComputerGraphicsCoursework.Scene
             Depress(new Vector2(pos.X, pos.Z), magnitude);
         }
 
+        /// <summary>
+        /// Depress the water at a given position by a specified amount.
+        /// </summary>
+        /// <param name="pos">Position to depress the water at</param>
+        /// <param name="magnitude"></param>
         public void Depress(Vector2 pos, float magnitude)
         {
+            // Prepare the depression shader with the three input textures and
+            // information about where to depress the water and by how much
             _sDepressVelocityShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
-            _sDepressVelocityShader.SplashPosition = pos;
-            _sDepressVelocityShader.SplashMagnitude = magnitude;
+            _sDepressVelocityShader.DepressPosition = pos;
+            _sDepressVelocityShader.DepressionMagnitude = magnitude;
 
+            // Run a shader pass on the velocity map
             _velocitymapBuffer.Begin();
             _sDepressVelocityShader.Begin(true);
             _sDepressVelocityShader.Render();
@@ -357,33 +365,46 @@ namespace ComputerGraphicsCoursework.Scene
             _velocitymapBuffer.End();
         }
 
+        /// <summary>
+        /// Simulate water dynamics.
+        /// </summary>
+        /// <param name="time"></param>
         public void SimulateWater(double time)
         {
+            // Check if an update is due, and return if not
             if (time - _lastSim < SimulationPeriod) return;
             _lastSim = time;
 
+            // Randomly disturb some points on the surface to make some
+            // high frequency turbulence
             for (int i = 0; i < 16; ++i) {
                 Depress(new Vector2((float) _rand.NextDouble() * 512f, (float) _rand.NextDouble() * 512f), (float) _rand.NextDouble() / 8f);
             }         
 
+            // Prepare the input textures for the spray dissipation shader
             _sSimSprayShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
-            
+
+            // Run a shader pass on the spray map
             _spraymapBuffer.Begin();
             _sSimSprayShader.Begin(true);
             _sSimSprayShader.Render();
             _sSimSprayShader.End();
             _spraymapBuffer.End();
-
+            
+            // Prepare the input textures for the water acceleration shader
             _sSimVelocityShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
 
+            // Run a shader pass on the velocity map
             _velocitymapBuffer.Begin();
             _sSimVelocityShader.Begin(true);
             _sSimVelocityShader.Render();
             _sSimVelocityShader.End();
             _velocitymapBuffer.End();
 
+            // Prepare the input textures for the water velocity shader
             _sSimHeightShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
 
+            // Run a shader pass on the height map
             _heightmapBuffer.Begin();
             _sSimHeightShader.Begin(true);
             _sSimHeightShader.Render();
@@ -391,15 +412,25 @@ namespace ComputerGraphicsCoursework.Scene
             _heightmapBuffer.End();
         }
 
+        /// <summary>
+        /// Draw the water to the screen using a given WaterShader.
+        /// </summary>
+        /// <param name="shader">Shader to use when drawing the water</param>
         public void Render(WaterShader shader)
         {
+            // Set the two textures used when drawing the water
             shader.SetTexture("heightmap", _heightmapBuffer.Texture);
             shader.SetTexture("spraymap", _spraymapBuffer.Texture);
+
+            // Draw the water mesh from the VBO
             _sVB.Begin(shader);
             _sVB.Render();
             _sVB.End();
         }
 
+        /// <summary>
+        /// Dispose of any unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             _sVB.Dispose();
