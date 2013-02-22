@@ -14,9 +14,18 @@ namespace ComputerGraphicsCoursework.Scene
     /// </summary>
     public sealed class Water : IRenderable<WaterShader>, IDisposable
     {
+        /// <summary>
+        /// Width and height of the height, velocity and spray textures used to
+        /// simulate the water dynamics.
+        /// </summary>
         public const int Resolution = 512;
+
+        /// <summary>
+        /// Interval between water simulations, in seconds.
+        /// </summary>
         public const double SimulationPeriod = 1.0 / 60.0;
 
+        #region Private Static Fields
         private static readonly WaterSimulateSprayShader _sSimSprayShader;
         private static readonly WaterSimulateVelocityShader _sSimVelocityShader;
         private static readonly WaterSimulateHeightShader _sSimHeightShader;
@@ -25,31 +34,58 @@ namespace ComputerGraphicsCoursework.Scene
 
         private static readonly float[] _sVerts;
         private static readonly VertexBuffer _sVB;
+        #endregion
 
+        /// <summary>
+        /// Static constructor for the Water class. Creates the shaders used
+        /// to simulate the water, and builds the water mesh.
+        /// </summary>
         static Water()
         {
+            // Set up the three simulation shaders
             _sSimSprayShader = new WaterSimulateSprayShader();
             _sSimVelocityShader = new WaterSimulateVelocityShader();
             _sSimHeightShader = new WaterSimulateHeightShader();
 
+            // Set up the splash shader
             _sSplashVelocityShader = new WaterSplashVelocityShader();
 
+            // Function deciding the minimum size of a quad given its position
             Func<int, int, int> sizeCalc = (x, y) => {
+                // If the quad is behind the camera, discard
                 if (x < -32) return 0;
+
+                // If the quad is in front of the area seen when looking
+                // directly down...
                 if (x > 32) {
+                    // If the quad is outside the player's field of view, discard
                     if (Math.Abs(Math.Atan2(y, x + 24)) > Math.PI / 4.0) return 0;
+
+                    // Otherwise, return a number that gets gradually smaller
+                    // for quads further from the camera
                     return Math.Max(1, ((x - 32) * (x - 32)) >> 11);
                 }
+
+                // If the quad is outside the area seen when looking directly
+                // down, discard
                 if (Math.Abs(Math.Atan2(y, 32 + 24)) > Math.PI / 4.0) return 0;
+
+                // Otherwise, use the smallest size possible for a high
+                // detail area
                 return 1;
             };
 
+            // Width and height of the initial water quad before subdivision
             int meshDetail = 1024;
+
+            // Find the number of quads given a size and size criteria
             int length = FindWaterDataLength(meshDetail, sizeCalc);
             
+            // Find the actual quad vertex data
             _sVerts = new float[4 * 2 * length];
             FindWaterData(meshDetail, sizeCalc, _sVerts);
 
+            // Store in a VBO for speedy rendering
             _sVB = new VertexBuffer(2);
             _sVB.SetData(_sVerts);
         }
