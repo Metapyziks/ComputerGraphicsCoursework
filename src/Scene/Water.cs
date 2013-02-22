@@ -20,11 +20,6 @@ namespace ComputerGraphicsCoursework.Scene
         /// </summary>
         public const int Resolution = 512;
 
-        /// <summary>
-        /// Interval between water simulations, in seconds.
-        /// </summary>
-        public const double SimulationPeriod = 1.0 / 60.0;
-
         #region Private Static Fields
         private static readonly WaterSimulateSprayShader _sSimSprayShader;
         private static readonly WaterSimulateVelocityShader _sSimVelocityShader;
@@ -217,7 +212,6 @@ namespace ComputerGraphicsCoursework.Scene
         private FrameBuffer _velocitymapBuffer;
         private FrameBuffer _spraymapBuffer;
         private Random _rand;
-        private double _lastSim;
 
         private float[,] _heightBuffer;
         #endregion
@@ -369,12 +363,8 @@ namespace ComputerGraphicsCoursework.Scene
         /// Simulate water dynamics.
         /// </summary>
         /// <param name="time"></param>
-        public void SimulateWater(double time)
+        public void SimulateWater()
         {
-            // Check if an update is due, and return if not
-            if (time - _lastSim < SimulationPeriod) return;
-            _lastSim = time;
-
             // Randomly disturb some points on the surface to make some
             // high frequency turbulence
             for (int i = 0; i < 16; ++i) {
