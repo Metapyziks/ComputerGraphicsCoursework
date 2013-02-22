@@ -8,6 +8,7 @@ using OpenTK;
 
 using ComputerGraphicsCoursework.Shaders;
 using ComputerGraphicsCoursework.Utils;
+using System.Globalization;
 
 namespace ComputerGraphicsCoursework.Scene
 {
@@ -74,7 +75,7 @@ namespace ComputerGraphicsCoursework.Scene
                         // Some indices may be omitted, if they are store a default
                         // value of -1
                         if (next - prev > 0) {
-                            indices[i, j] = Int32.Parse(group.Substring(prev, next - prev)) - 1;
+                            indices[i, j] = Int32.Parse(group.Substring(prev, next - prev), _sCultureInfo) - 1;
                         } else {
                             indices[i, j] = -1;
                         }
@@ -144,6 +145,8 @@ namespace ComputerGraphicsCoursework.Scene
         #endregion
 
         #region Private Static Fields
+        private static readonly CultureInfo _sCultureInfo = CultureInfo.GetCultureInfo("en-US");
+
         private static readonly Regex _sRENumb = new Regex("-?[0-9]+(\\.[0-9]+)?");
         private static readonly Regex _sREObjc = new Regex("^o\\s.*$");
         private static readonly Regex _sREVert = new Regex("^v(\\s+-?[0-9]+(\\.[0-9]+)?){3}$");
@@ -163,8 +166,8 @@ namespace ComputerGraphicsCoursework.Scene
             // and store them in a vector
             var match = _sRENumb.Match(str);
             var vector = new Vector2();
-            vector.X = Single.Parse(match.Value); match = match.NextMatch();
-            vector.Y = Single.Parse(match.Value);
+            vector.X = Single.Parse(match.Value, _sCultureInfo); match = match.NextMatch();
+            vector.Y = Single.Parse(match.Value, _sCultureInfo);
 
             // Return the parsed vector
             return vector;
@@ -181,9 +184,9 @@ namespace ComputerGraphicsCoursework.Scene
             // and store them in a vector
             var match = _sRENumb.Match(str);
             var vector = new Vector3();
-            vector.X = Single.Parse(match.Value); match = match.NextMatch();
-            vector.Y = Single.Parse(match.Value); match = match.NextMatch();
-            vector.Z = Single.Parse(match.Value);
+            vector.X = Single.Parse(match.Value, _sCultureInfo); match = match.NextMatch();
+            vector.Y = Single.Parse(match.Value, _sCultureInfo); match = match.NextMatch();
+            vector.Z = Single.Parse(match.Value, _sCultureInfo);
 
             // Return the parsed vector
             return vector;
