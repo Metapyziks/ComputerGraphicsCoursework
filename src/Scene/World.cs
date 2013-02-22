@@ -55,7 +55,7 @@ namespace ComputerGraphicsCoursework.Scene
             _keyControllables = new List<IKeyControllable>();
 
             Ship = Add(new Ship());
-            _water = new Water(64f);
+            _water = new Water();
 
             float sunPitch = -60f * MathHelper.Pi / 180f;
             float sunYaw = 225f * MathHelper.Pi / 180f;

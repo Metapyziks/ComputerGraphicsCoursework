@@ -9,6 +9,9 @@ using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Scene
 {
+    /// <summary>
+    /// Class representing an infinite plane of dynamic water.
+    /// </summary>
     public sealed class Water : IRenderable<WaterShader>, IDisposable
     {
         public const int Resolution = 512;
@@ -111,8 +114,6 @@ namespace ComputerGraphicsCoursework.Scene
                 buffer[i++] = (float) (y + size) / totalSize;
             }
         }
-
-        public readonly float Size;
         
         private FrameBuffer _heightmapBuffer;
         private FrameBuffer _velocitymapBuffer;
@@ -120,10 +121,8 @@ namespace ComputerGraphicsCoursework.Scene
         private Random _rand;
         private double _lastSim;
 
-        public Water(float size)
+        public Water()
         {
-            Size = size;
-
             _rand = new Random();
             _heightmapBuffer = new FrameBuffer(new BitmapTexture2D(Resolution, Resolution));
 
