@@ -36,7 +36,7 @@ namespace ComputerGraphicsCoursework.Shaders
             frag.Logic = @"
                 void main(void)
                 {
-                    out_frag_colour = vec4(0.0, 0.0, 0.0, 0.0);
+                    out_colour = vec4(0.0, 0.0, 0.0, 0.0);
                 }
             ";
 

@@ -126,7 +126,7 @@ namespace ComputerGraphicsCoursework.Utils
             Logic = "";
 
             // Default fragment colour output variable identifier
-            FragOutIdentifier = "out_frag_colour";
+            FragOutIdentifier = "out_colour";
         }
 
         /// <summary>

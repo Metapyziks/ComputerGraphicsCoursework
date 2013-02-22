@@ -81,14 +81,14 @@ namespace ComputerGraphicsCoursework.Shaders
 
                     vec3 reflected = normalize(reflect(cam_dir, normal));
 
-                    out_frag_colour = vec4(colour.rgb * max(0.0, dot(light_vector, normal)), colour.a);
-                    out_frag_colour += vec4((textureCube(skybox, reflected).rgb - out_frag_colour.rgb) * 0.5, 0.0);
+                    out_colour = vec4(colour.rgb * max(0.0, dot(light_vector, normal)), colour.a);
+                    out_colour += vec4((textureCube(skybox, reflected).rgb - out_colour.rgb) * 0.5, 0.0);
 
                     if (var_scale > 0.0) {
                         float ripple = texture2D(ripplemap, (var_texpos * 8.0) + normal.xz * 0.125).a;
                         float spray = texture2D(spraymap, var_texpos).a;
                         if (ripple * pow(spray, 2.0) > 0.75) {
-                            out_frag_colour += spray * 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_frag_colour) * var_scale;
+                            out_colour += spray * 0.75 * (vec4(1.0, 1.0, 1.0, 1.0) - out_colour) * var_scale;
                         }
                     }
                 }

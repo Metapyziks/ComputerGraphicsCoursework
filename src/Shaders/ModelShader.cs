@@ -82,9 +82,9 @@ namespace ComputerGraphicsCoursework.Shaders
             frag.Logic = @"
                 void main(void)
                 {
-                    out_frag_colour = vec4(colour.rgb * texture2D(tex, var_textuv + vec2(0.5, 0.5)).rgb * (dot(-light_vector, var_normal) * 0.5 + 0.5), colour.a);
+                    out_colour = vec4(colour.rgb * texture2D(tex, var_textuv + vec2(0.5, 0.5)).rgb * (dot(-light_vector, var_normal) * 0.5 + 0.5), colour.a);
                     if (shinyness > 0.0) {
-                        out_frag_colour = vec4(out_frag_colour.rgb + (vec3(1.0, 1.0, 1.0) - out_frag_colour.rgb) * 0.5 * pow(max(0.0, dot(reflect(-light_vector, var_normal), view_vector)), shinyness), out_frag_colour.a);
+                        out_colour = vec4(out_colour.rgb + (vec3(1.0, 1.0, 1.0) - out_colour.rgb) * 0.5 * pow(max(0.0, dot(reflect(-light_vector, var_normal), view_vector)), shinyness), out_colour.a);
                     }
                 }
             ";

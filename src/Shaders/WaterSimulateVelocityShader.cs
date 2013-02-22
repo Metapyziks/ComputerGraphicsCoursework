@@ -32,7 +32,7 @@ namespace ComputerGraphicsCoursework.Shaders
 
                     float new = min(1.0, max(0.0, texture2D(velocitymap, tex_pos).a + (avg - cur) * 1.0)) * 0.996;
                     
-                    out_frag_colour = vec4(new, new, new, new);
+                    out_colour = vec4(new, new, new, new);
                 }
             ";
         }

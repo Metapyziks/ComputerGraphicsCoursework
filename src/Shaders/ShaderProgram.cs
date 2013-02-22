@@ -216,7 +216,7 @@ namespace ComputerGraphicsCoursework.Shaders
             Use();
 
             if (GL3) {
-                GL.BindFragDataLocation(Program, 0, "out_frag_colour");
+                GL.BindFragDataLocation(Program, 0, "out_colour");
             }
 
             OnCreate();
