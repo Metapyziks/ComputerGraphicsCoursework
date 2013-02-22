@@ -30,7 +30,7 @@ namespace ComputerGraphicsCoursework.Scene
         private static readonly WaterSimulateVelocityShader _sSimVelocityShader;
         private static readonly WaterSimulateHeightShader _sSimHeightShader;
 
-        private static readonly WaterSplashVelocityShader _sSplashVelocityShader;
+        private static readonly WaterDepressVelocityShader _sDepressVelocityShader;
 
         private static readonly float[] _sVerts;
         private static readonly VertexBuffer _sVB;
@@ -48,7 +48,7 @@ namespace ComputerGraphicsCoursework.Scene
             _sSimHeightShader = new WaterSimulateHeightShader();
 
             // Set up the splash shader
-            _sSplashVelocityShader = new WaterSplashVelocityShader();
+            _sDepressVelocityShader = new WaterDepressVelocityShader();
 
             // Function deciding the minimum size of a quad given its position
             Func<int, int, int> sizeCalc = (x, y) => {
@@ -90,149 +90,270 @@ namespace ComputerGraphicsCoursework.Scene
             _sVB.SetData(_sVerts);
         }
 
+        /// <summary>
+        /// Given an initial quad size and size calculation function, find the number
+        /// of quads to be created when generating a water mesh.
+        /// </summary>
+        /// <param name="size">Size of the initial water mesh quad</param>
+        /// <param name="sizeCalc">Function deciding the minimum size of a quad given its position</param>
+        /// <returns>The number of quads to be created</returns>
         private static int FindWaterDataLength(int size, Func<int, int, int> sizeCalc)
         {
+            // Start recursing using the initial quad
             return FindWaterDataLength(size, -(size >> 1), -(size >> 1), sizeCalc);
         }
 
+        /// <summary>
+        /// Given a quad size, position, and size calculation function, find
+        /// the number of quads to be created when generating a water mesh.
+        /// </summary>
+        /// <param name="size">Size of the current water mesh quad</param>
+        /// <param name="x">Horizontal position of the quad</param>
+        /// <param name="y">Vertical position of the quad</param>
+        /// <param name="sizeCalc">Function deciding the minimum size of a quad given its position</param>
+        /// <returns>The number of quads to be created</returns>
         private static int FindWaterDataLength(int size, int x, int y, Func<int, int, int> sizeCalc)
         {
             int half = size >> 1;
+
+            // Determine the maximum size for this quad
             int desired = sizeCalc(x < 0 ? x + size : x, y < 0 ? y + size : y);
+
+            // If the quad is too big, and should be subdivided...
             if (size > 1 && size > desired) {
+                // Recurse for the four child quadrants
                 return FindWaterDataLength(half, x, y, sizeCalc)
                     + FindWaterDataLength(half, x + half, y, sizeCalc)
                     + FindWaterDataLength(half, x + half, y + half, sizeCalc)
                     + FindWaterDataLength(half, x, y + half, sizeCalc);
             }
 
-            if (desired <= 0)
-                return 0;
+            // If the size calculation returned 0, discard
+            if (desired <= 0) return 0;
 
+            // Otherwise, this is a leaf of the quadtree
             return 1;
         }
 
+        /// <summary>
+        /// Given an initial quad size and size calculation function, find the vertex
+        /// data for the quads in a water mesh.
+        /// </summary>
+        /// <param name="size">Size of the initial water mesh quad</param>
+        /// <param name="sizeCalc">Function deciding the minimum size of a quad given its position</param>
+        /// <param name="buffer">Array to store the vertex data in</param>
         private static void FindWaterData(int size, Func<int, int, int> sizeCalc, float[] buffer)
         {
             int i = 0;
+
+            // Start recursing using the initial quad
             FindWaterData(size, size, -(size >> 1), -(size >> 1), sizeCalc, buffer, ref i);
         }
 
+        /// <summary>
+        /// Given a quad size, position, and size calculation function, find
+        /// the vertex data for the quads in a water mesh.
+        /// </summary>
+        /// <param name="totalSize">Size of the initial water mesh quad</param>
+        /// <param name="size">Size of the current water mesh quad</param>
+        /// <param name="x">Horizontal position of the quad</param>
+        /// <param name="y">Vertical position of the quad</param>
+        /// <param name="sizeCalc">Function deciding the minimum size of a quad given its position</param>
+        /// <param name="buffer">Array to store the vertex data in</param>
+        /// <param name="i">Index pointing to where to write in <paramref name="buffer"/></param>
         private static void FindWaterData(int totalSize, int size, int x, int y, Func<int, int, int> sizeCalc, float[] buffer, ref int i)
         {
             int half = size >> 1;
+
+            // Determine the maximum size for this quad
             int desired = sizeCalc(x < 0 ? x + size : x, y < 0 ? y + size : y);
+
+            // If the quad is too big, and should be subdivided...
             if (size > 1 && size > desired) {
+                // Recurse for the four child quadrants
                 FindWaterData(totalSize, half, x + half, y, sizeCalc, buffer, ref i);
                 FindWaterData(totalSize, half, x + half, y + half, sizeCalc, buffer, ref i);
                 FindWaterData(totalSize, half, x, y, sizeCalc, buffer, ref i);
                 FindWaterData(totalSize, half, x, y + half, sizeCalc, buffer, ref i);
-            } else if (desired > 0) {
-                buffer[i++] = (float) (x + 0000) / totalSize;
-                buffer[i++] = (float) (y + 0000) / totalSize;
-                if ((x & size) == 0 || sizeCalc(x + size, y) < (size << 1)) {
-                    buffer[i++] = (float) (x + size) / totalSize;
-                    buffer[i++] = (float) (y + 0000) / totalSize;
-
-                    buffer[i++] = (float) (x + size) / totalSize;
-                    buffer[i++] = (float) (y + size) / totalSize;
-                } else {
-                    int join = y & size;
-
-                    buffer[i++] = (float) (x + size) / totalSize;
-                    buffer[i++] = (float) (y - join) / totalSize;
-
-                    buffer[i++] = (float) (x + size) / totalSize;
-                    buffer[i++] = (float) (y + join) / totalSize;
-                }
-
-                buffer[i++] = (float) (x + 0000) / totalSize;
-                buffer[i++] = (float) (y + size) / totalSize;
+                return;
             }
+
+            // If the size calculation returned 0, discard
+            if (desired <= 0) return;
+
+            // Add the position for the front left vertex
+            buffer[i++] = (float) (x + 0000) / totalSize;
+            buffer[i++] = (float) (y + 0000) / totalSize;
+
+            // If the quad doesn't need to be stitched...
+            if ((x & size) == 0 || sizeCalc(x + size, y) < (size << 1)) {
+                // Add the position for the back left vertex
+                buffer[i++] = (float) (x + size) / totalSize;
+                buffer[i++] = (float) (y + 0000) / totalSize;
+
+                // Add the position for the back right vertex
+                buffer[i++] = (float) (x + size) / totalSize;
+                buffer[i++] = (float) (y + size) / totalSize;
+            } else {
+                // Determine if the quad should be stitched left or right
+                int join = y & size;
+
+                // Add the position for the back left vertex
+                buffer[i++] = (float) (x + size) / totalSize;
+                buffer[i++] = (float) (y - join) / totalSize;
+
+                // Add the position for the back right vertex
+                buffer[i++] = (float) (x + size) / totalSize;
+                buffer[i++] = (float) (y + join) / totalSize;
+            }
+
+            // Add the position for the front right vertex
+            buffer[i++] = (float) (x + 0000) / totalSize;
+            buffer[i++] = (float) (y + size) / totalSize;
         }
-        
+
+        #region Private Fields
         private FrameBuffer _heightmapBuffer;
         private FrameBuffer _velocitymapBuffer;
         private FrameBuffer _spraymapBuffer;
         private Random _rand;
         private double _lastSim;
 
+        private float[,] _heightBuffer;
+        #endregion
+
+        /// <summary>
+        /// Constructor to create a new Water instance.
+        /// </summary>
         public Water()
         {
+            // Set up random number generator for random surface disturbance
             _rand = new Random();
-            _heightmapBuffer = new FrameBuffer(new BitmapTexture2D(Resolution, Resolution));
 
+            // Set up the three water texture frame buffers for use in the water
+            // physics simulation
             _heightmapBuffer = new FrameBuffer(new AlphaTexture2D(Resolution, Resolution, 0.5f));
             _velocitymapBuffer = new FrameBuffer(new AlphaTexture2D(Resolution, Resolution, 0.5f));
             _spraymapBuffer = new FrameBuffer(new AlphaTexture2D(Resolution, Resolution, 0.0f));
+
+            // Set up height buffer for use in finding surface data so that it doesn't
+            // need to be constructed for each request
+            _heightBuffer = new float[4, 4];
         }
 
+        /// <summary>
+        /// Given an X and Z coordinate in world-space, find the wrapped
+        /// position in water texture space.
+        /// </summary>
+        /// <param name="x">Horizontal component of the position</param>
+        /// <param name="z">Depth component of the position</param>
         private void NormalizePosition(ref float x, ref float z)
         {
+            // Scale down to texture space
             x = (x / 128f + 0.5f) * Resolution;
             z = (z / 128f + 0.5f) * Resolution;
 
+            // Wrap to be in the range of 0.0 to 1.0
             x -= (float) (Math.Floor(x / Resolution) * Resolution);
             z -= (float) (Math.Floor(z / Resolution) * Resolution);
         }
 
+        /// <summary>
+        /// Find the surface height and gradient at a given position.
+        /// </summary>
+        /// <param name="pos">The position in world-space</param>
+        /// <returns>Surface height and gradient</returns>
         public Vector3 GetSurfaceInfo(Vector3 pos)
         {
             return GetSurfaceInfo(pos.X, pos.Z);
         }
 
+        /// <summary>
+        /// Find the surface height and gradient at a given position.
+        /// </summary>
+        /// <param name="pos">The X and Z coordinates in world-space</param>
+        /// <returns>Surface height and gradient</returns>
         public Vector3 GetSurfaceInfo(Vector2 pos)
         {
             return GetSurfaceInfo(pos.X, pos.Y);
         }
 
-        private float InterpolateHeight(float[,] heights, float x, float z)
+        /// <summary>
+        /// Given a subtexture from the height map, find a height value that
+        /// is linearly interpolated from neighbouring heights.
+        /// </summary>
+        /// <param name="x">Horizontal index</param>
+        /// <param name="z">Depth index</param>
+        /// <returns>Linearly interpolated height</returns>
+        private float InterpolateHeight(float x, float z)
         {
+            // Find the integer indices in the height array
             int xi = (int) Math.Floor(x), zi = (int) Math.Floor(z);
+
+            // Reduce X and Z to ratios between 0.0 and 1.0
             x -= xi; z -= zi;
 
-            float l = (1f - z) * heights[xi, zi] + z * heights[xi, zi + 1];
-            float r = (1f - z) * heights[xi + 1, zi] + z * heights[xi + 1, zi + 1];
+            // Find the interpolated left and right heights
+            float l = (1f - z) * _heightBuffer[xi, zi] + z * _heightBuffer[xi, zi + 1];
+            float r = (1f - z) * _heightBuffer[xi + 1, zi] + z * _heightBuffer[xi + 1, zi + 1];
 
+            // Interpolate between the left and right heights, normalize, and return
             return ((1f - x) * l + x * r) * 2f - 1f;
         }
 
-        private float[,] heightBuffer = new float[4, 4];
+        /// <summary>
+        /// Find the surface height and gradient at a given position.
+        /// </summary>
+        /// <param name="x">Horizontal position in world-space</param>
+        /// <param name="z">Depth position in world-space</param>
+        /// <returns>Surface height and gradient</returns>
         public Vector3 GetSurfaceInfo(float x, float z)
         {
+            // Transform x and z to texture space
             NormalizePosition(ref x, ref z);
 
+            // Read a chunk from the height map to work out the interpolated
+            // height at the given point, and the gradient at that point
             _heightmapBuffer.Begin();
-            GL.ReadPixels((int) x - 1, (int) z - 1, 4, 4, PixelFormat.Alpha, PixelType.Float, heightBuffer);
+            GL.ReadPixels((int) x - 1, (int) z - 1, 4, 4, PixelFormat.Alpha, PixelType.Float, _heightBuffer);
             _heightmapBuffer.End();
 
+            // Reduce x and z to positions relative to the 4x4 height buffer
             x -= (float) Math.Floor(x) - 1f;
             z -= (float) Math.Floor(z) - 1f;
 
-            float c = InterpolateHeight(heightBuffer, x, z);
-            float l = InterpolateHeight(heightBuffer, x - 1f, z);
-            float t = InterpolateHeight(heightBuffer, x, z - 1f);
-            float r = InterpolateHeight(heightBuffer, x + 1f, z);
-            float b = InterpolateHeight(heightBuffer, x, z + 1f);
+            // Find the height at the given position, and the four neighbouring
+            // positions in each of the cardinal directions
+            float c = InterpolateHeight(x, z);
+            float l = InterpolateHeight(x - 1f, z);
+            float t = InterpolateHeight(x, z - 1f);
+            float r = InterpolateHeight(x + 1f, z);
+            float b = InterpolateHeight(x, z + 1f);
 
+            // Return the X and Z gradients, and height
             return new Vector3(t - b, c, l - r);
         }
 
-        public void Splash(Vector3 pos, float magnitude)
+        /// <summary>
+        /// Depress the water at a given position by a specified amount
+        /// </summary>
+        /// <param name="pos">Position to depress the water at</param>
+        /// <param name="magnitude"></param>
+        public void Depress(Vector3 pos, float magnitude)
         {
-            Splash(new Vector2(pos.X, pos.Z), magnitude);
+            Depress(new Vector2(pos.X, pos.Z), magnitude);
         }
 
-        public void Splash(Vector2 pos, float magnitude)
+        public void Depress(Vector2 pos, float magnitude)
         {
-            _sSplashVelocityShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
-            _sSplashVelocityShader.SplashPosition = pos;
-            _sSplashVelocityShader.SplashMagnitude = magnitude;
+            _sDepressVelocityShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);
+            _sDepressVelocityShader.SplashPosition = pos;
+            _sDepressVelocityShader.SplashMagnitude = magnitude;
 
             _velocitymapBuffer.Begin();
-            _sSplashVelocityShader.Begin(true);
-            _sSplashVelocityShader.Render();
-            _sSplashVelocityShader.End();
+            _sDepressVelocityShader.Begin(true);
+            _sDepressVelocityShader.Render();
+            _sDepressVelocityShader.End();
             _velocitymapBuffer.End();
         }
 
@@ -242,7 +363,7 @@ namespace ComputerGraphicsCoursework.Scene
             _lastSim = time;
 
             for (int i = 0; i < 16; ++i) {
-                Splash(new Vector2((float) _rand.NextDouble() * 512f, (float) _rand.NextDouble() * 512f), (float) _rand.NextDouble() / 8f);
+                Depress(new Vector2((float) _rand.NextDouble() * 512f, (float) _rand.NextDouble() * 512f), (float) _rand.NextDouble() / 8f);
             }         
 
             _sSimSprayShader.SetTextures(_heightmapBuffer.Texture, _velocitymapBuffer.Texture, _spraymapBuffer.Texture);

@@ -223,14 +223,14 @@ namespace ComputerGraphicsCoursework.Scene
             Vector3 splashPos;
             for (float i = 0f; i < 8f; i += 0.5f) {
                 splashPos = Position + Forward * (3.5f - i);
-                water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
+                water.Depress(new Vector2(splashPos.X, splashPos.Z), mag);
             }
 
             // Now depress the water under the two rear corners of the ship
             splashPos = Position - Forward * 3.5f - Right;
-            water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
+            water.Depress(new Vector2(splashPos.X, splashPos.Z), mag);
             splashPos += Right * 2f;
-            water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
+            water.Depress(new Vector2(splashPos.X, splashPos.Z), mag);
         }
 
         /// <summary>

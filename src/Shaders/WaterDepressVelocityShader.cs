@@ -4,7 +4,7 @@ using ComputerGraphicsCoursework.Utils;
 
 namespace ComputerGraphicsCoursework.Shaders
 {
-    public class WaterSplashVelocityShader : WaterEffectShader
+    public class WaterDepressVelocityShader : WaterEffectShader
     {
         private Vector3 _splash;
 
