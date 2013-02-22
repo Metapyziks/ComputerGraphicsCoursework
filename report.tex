@@ -1,8 +1,11 @@
 \documentclass[a4paper,11pt]{article}
 
 \usepackage{lipsum}
-\usepackage{fullpage}
+\usepackage[english]{babel}
+\usepackage[margin=20mm]{geometry}
 \usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
 
 \title{Computer Graphics OpenGL Coursework}
 \date{\today}
@@ -14,7 +17,7 @@
 \section{Application Overview}
 The application models a lone motor boat traversing an infinite and empty ocean, and simulates some simple water dynamics such as the wake left behind the boat as it moves. The boat may be controlled by the user, and a virtual camera may be oriented to look in any direction. It is also possible to toggle between a first-person view from within the boat to a third-person chase camera.
 
-The implementation is written in the C$\sharp$ programming language on the .NET Framework v4.5, using the freely available OpenTK library to interface with OpenGL. I have had some prior experience with OpenGL, so my main intention was to explore some graphical techniques that I hadn't previously used. These features include parsing .obj files, water shaders, environment mapping, and frame buffer objects. Also, the implementation would aim to include no deprecated OpenGL calls from older version of the library, and would be entirely using the shader pipeline.
+The implementation is written in the C$\sharp$ programming language on the .NET Framework v4.0, using the freely available OpenTK library to interface with OpenGL. I have had some prior experience with OpenGL, so my main intention was to explore some graphical techniques that I hadn't previously used. These features include parsing .obj files, water shaders, environment mapping, and frame buffer objects. Also, the implementation would aim to include no deprecated OpenGL calls from older version of the library, and would be entirely using the shader pipeline.
 
 \section{Assessment Criteria Catchment}
 \subsection{Model Structures}
@@ -42,6 +45,64 @@ When rendering, the height texture is used as a displacement map in the water ve
 The ship can traverse the surface of the water, with some basic physics reacting to the state of the surface it is touching. The outboard motor and tiller pivot on the spot relative to the ship's position, and the propeller spins independently with a fixed position relative to the rudder.
 
 \subsection{Interaction}
-The boat may be accelerated forwards with the W key, backwards with S key, and rotate left and right with the A and D keys respectively. The camera may be rotated with the mouse (the window must be clicked on first to enable mouse look), and the camera may be toggled between first person and chase cam with V. It is also possible to view a wireframe version of the scene with L, and to hide the ship with B.
+The boat may be accelerated forwards with the W key, backwards with S key, and rotate left and right with the A and D keys respectively. The camera may be rotated with the mouse (the window must be clicked on first to enable mouse look), and the camera may be toggled between first person and chase cam with V. It is also possible to view a wireframe version of the scene with L, and to hide the ship with B. The mouse may be detached with the Esc key, and fullscreen toggled with Alt+Enter.
 
+\subsection{Robustness}
+Assuming the application is executed on a system with a graphics card capable of the various OpenGL features used, the application runs consistently and without error. It has been tested on Windows and Linux, and on NVidia and ATI graphics cards successfully.
+
+\section{Limitations of the Design}
+The application relies on some fairly modern rendering techniques, so a recent graphics card is needed to see all the program has to offer. Also, the method used to simulate a wake behind the boat uses textures of finite size which wrap across their edges. It is therefore possible to see your own wake ahead of you when travelling fast enough in one direction. There currently aren't any options to change the rendering quality of various aspects of the program, so the performance can't yet be increased on slower machines.
+
+\section{Setup and Use}
+All files required to run the application are contained within the archive, although the .NET Framework v4.0 (or a recent version of Mono) is needed. To run, extract all files in the archive to a directory, then execute the .exe file. Also, as previously mentioned, a fairly recent graphics card is essential.
+
+\section{Opportunities for Improvement}
+Originally, the goal was to make a simple boat racing game where the player would attempt to navigate around a series of buoys along a route. Also, I was hoping to implement islands, but chose instead to focus on improving the water quality. Fixing the aforementioned problem with seeing your own wake repeat and the addition of customisable options are also features I would implement given enough time.
+
+\section{References}
+\subsection{Open Toolkit Library}
+Used for the OpenGL bindings, context creation and matrix helper functions
+
+\href{http://www.opentk.com/}{OpenTK Website}
+
+\subsection{Stormy Days Sky Environment Map}
+By Jockum `hipshot' Skoglund
+
+\href{http://forums.epicgames.com/threads/506748-My-skies-and-and-cliff-textures-(large-images}{Epic Games Forum Thread}
+
+\subsection{Plank Texture}
+Photographed and edited by Dmitriy Chugai
+
+\href{http://texturelib.com/texture/?path=/Textures/wood/planks+new/wood_planks_new_0034}{TextureLib Page}
+
+\subsection{Fiberglass Texture}
+Provided by CGTextures.com
+
+\href{http://www.cgtextures.com/texview.php?id=9707&PHPSESSID=7pk7t90or58pkeh3gnn73k1601}{CGTextures Page}
+
+\newpage
+\section{Screen Shots}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{screen1.png}
+\caption{First person view, showing the reflective water shader and sky}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{screen4.png}
+\caption{First person view, showing the wake behind the boat}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{screen2.png}
+\caption{The whole boat in third person view, along with its dynamic wake}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{screen3.png}
+\caption{Wireframe view showing the water mesh structure}
+\end{figure}
 \end{document}

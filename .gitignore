@@ -63,3 +63,4 @@ pingme.txt
 *.vspx
 *.aux
 *.log
+*.out
