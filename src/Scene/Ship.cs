@@ -217,13 +217,13 @@ namespace ComputerGraphicsCoursework.Scene
             _propAng += _propSpeed / 60f;
 
             // Calculate the amount to depress the water under the ship
-            float mag = Math.Min(1f, (_frontFloat.Velocity + _leftFloat.Velocity + _rightFloat.Velocity).Length / 12f);
+            float mag = Math.Min(4f, Velocity.Length);
 
             // Depress the water under the ship in positions down the length of the vessel
             Vector3 splashPos;
-            for (int i = 0; i < 8; ++i) {
+            for (float i = 0f; i < 8f; i += 0.5f) {
                 splashPos = Position + Forward * (3.5f - i);
-                water.Splash(new Vector2(splashPos.X, splashPos.Z), mag / 2f);
+                water.Splash(new Vector2(splashPos.X, splashPos.Z), mag);
             }
 
             // Now depress the water under the two rear corners of the ship
