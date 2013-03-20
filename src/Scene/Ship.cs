@@ -116,6 +116,11 @@ namespace ComputerGraphicsCoursework.Scene
         }
 
         /// <summary>
+        /// Draw the floats used to simulate ship physics.
+        /// </summary>
+        public bool DrawFloats { get; set; }
+
+        /// <summary>
         /// Constructor to create a new Ship instance.
         /// </summary>
         public Ship()
@@ -291,11 +296,11 @@ namespace ComputerGraphicsCoursework.Scene
             _sModel.Render(shader, _sProp);
 
             // Draw the otherwise invisible floats
-            /*
+            if (DrawFloats) {
                 _frontFloat.Render(shader);
-                leftFloat.Render(shader);
-                rightFloat.Render(shader);
-            */
+                _leftFloat.Render(shader);
+                _rightFloat.Render(shader);
+            }
         }
 
         /// <summary>

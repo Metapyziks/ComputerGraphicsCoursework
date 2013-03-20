@@ -58,7 +58,7 @@ namespace ComputerGraphicsCoursework
             var program = new Program();
 
             // Initiate the rendering and updating loop
-            program.Run();
+            program.Run(120, 120);
 
             // At program exit, dispose all unmanaged resources
             program.Dispose();
@@ -90,7 +90,7 @@ namespace ComputerGraphicsCoursework
         /// Constructor to create a new Program instance.
         /// Sets the default resolution, colour depth, and sample quality of the app.
         /// </summary>
-        public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 16, 0, 2))
+        public Program() : base(800, 600, new GraphicsMode(new ColorFormat(8, 8, 8, 0), 32, 0, 2))
         {
             this.Title = "Computer Graphics Coursework";
         }
@@ -218,6 +218,10 @@ namespace ComputerGraphicsCoursework
                     case Key.B: 
                         _drawModels = !_drawModels; break;
 
+                    // F toggles rendering of ship physics floats
+                    case Key.F:
+                        _world.Ship.DrawFloats = !_world.Ship.DrawFloats; break;
+
                     // V toggles first person view
                     case Key.V:
                         _firstPerson = !_firstPerson; break;
@@ -278,6 +282,18 @@ namespace ComputerGraphicsCoursework
         {
             base.OnRenderFrame(e);
 
+            if (_firstPerson) {
+                // In first person view, move the camera to be inside the ship
+                _camera.Position = _world.Ship.Position + _world.Ship.Up * 3f - _world.Ship.Forward * 2f;
+            } else {
+                // In third person view, move the camera so it is orbiting the ship
+                _camera.Position = _world.Ship.Position - _camera.ViewVector * _cameraDist;
+                if (_camera.Position.Y < 1f) {
+                    // Ensure the camera is above the water at all times
+                    _camera.Position = new Vector3(_camera.Position.X, 1f, _camera.Position.Z);
+                }
+            }
+
             // Clear the depth buffer
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
@@ -335,18 +351,6 @@ namespace ComputerGraphicsCoursework
 
             // Now rotate the camera to be relative to the new ship rotation
             _camera.Rotation -= new Vector2(_world.Ship.Pitch, _world.Ship.Yaw);
-
-            if (_firstPerson) {
-                // In first person view, move the camera to be inside the ship
-                _camera.Position = _world.Ship.Position + _world.Ship.Up * 3f - _world.Ship.Forward * 2f;
-            } else {
-                // In third person view, move the camera so it is orbiting the ship
-                _camera.Position = _world.Ship.Position - _camera.ViewVector * _cameraDist;
-                if (_camera.Position.Y < 1f) {
-                    // Ensure the camera is above the water at all times
-                    _camera.Position = new Vector3(_camera.Position.X, 1f, _camera.Position.Z);
-                }
-            }
         }
     }
 }
